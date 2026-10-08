@@ -97,6 +97,16 @@ language sql immutable parallel safe set search_path = '' as $$
     "madre": 6,
     "crescita": 1.13
   },
+  "fondazione": {
+    "basi": 2,
+    "costo": 150,
+    "crescita": 1.6,
+    "risorse": [
+      "metallo",
+      "silicio",
+      "ghiaccio"
+    ]
+  },
   "magazzino": {
     "ore": 168,
     "crescita": 1.45

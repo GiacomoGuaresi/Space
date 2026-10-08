@@ -95,3 +95,14 @@ export function pienoTra(i: Insediamento, ora: Date): number {
   }
   return Math.max(0, ore)
 }
+
+/**
+ * Quanto costa fondare una base avendone già fondate `fondate`: la prima è
+ * gratis (`{}`), le altre `150 × 1,6^(fondate − 1)` in parti uguali.
+ */
+export function costoFondazione(fondate: number): Partial<Quantita> {
+  if (fondate === 0) return {}
+  const { costo, crescita, risorse } = BILANCIAMENTO.fondazione
+  const totale = aLivello(costo, crescita, fondate)
+  return Object.fromEntries(risorse.map((r) => [r, totale / risorse.length]))
+}

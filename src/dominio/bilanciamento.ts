@@ -123,6 +123,15 @@ export const BILANCIAMENTO = {
     /** Ogni livello di produzione moltiplica il ritmo per tanto. */
     crescita: 1.13,
   },
+  fondazione: {
+    /** Le basi fondabili, oltre alla base madre (le ricerche le aumenteranno). */
+    basi: 2,
+    /** La prima base è gratis; le altre costano tanto… */
+    costo: 150,
+    /** …per tanto alla (basi già fondate − 1), in parti uguali di queste risorse. */
+    crescita: 1.6,
+    risorse: ['metallo', 'silicio', 'ghiaccio'],
+  },
   magazzino: {
     /** Il tetto di un magazzino: tante ore della produzione di livello 1… */
     ore: 168,

@@ -2,7 +2,8 @@ import { useContext, useState } from 'react'
 import { Flag } from 'lucide-react'
 import { ViaggioRifiutato } from '../dati'
 import { NOMI_RISORSE } from '../dominio/catalogo'
-import { ritmoInsediamento } from '../dominio/insediamenti'
+import { BILANCIAMENTO } from '../dominio/bilanciamento'
+import { costoFondazione, ritmoInsediamento } from '../dominio/insediamenti'
 import type { Nave } from '../dominio/navigazione'
 import { RISORSE } from '../dominio/risorse'
 import { settore, stessoSettore } from '../dominio/settore'
@@ -29,6 +30,10 @@ export function Fondazione({ nave, ora }: { nave: Nave; ora: Date }) {
   if (bordo.insediamenti.some((i) => stessoSettore(i.coordinate, nave.posizione))) return null
   const { pianeti } = corpo.dettagli
   const basi = bordo.insediamenti.filter((i) => i.tipo === 'base').length
+  const limite: number = BILANCIAMENTO.fondazione.basi
+  const costo = costoFondazione(basi)
+  const voci = RISORSE.filter((r) => costo[r])
+  const manca = voci.some((r) => bordo.quantita[r] < costo[r]!)
 
   const conferma = async () => {
     setInCorso(true)
@@ -46,7 +51,9 @@ export function Fondazione({ nave, ora }: { nave: Nave; ora: Date }) {
     <section aria-label="Fonda una base" className="mt-3 flex flex-col gap-2 border-t border-separatore pt-3">
       <div className="flex items-baseline justify-between gap-2">
         <h3 className="etichetta m-0 text-ambra!">Fonda una base</h3>
-        <Etichetta>{basi === 0 ? 'La prima è gratis' : `${basi} ${basi === 1 ? 'base' : 'basi'}`}</Etichetta>
+        <Etichetta>
+          {basi} di {limite} {limite === 1 ? 'base' : 'basi'}
+        </Etichetta>
       </div>
       <fieldset className="m-0 flex flex-col gap-1 border-0 p-0">
         <legend className="mb-1 p-0 text-xs text-testo-tenue">La base produce col mix del pianeta che scegli:</legend>
@@ -68,12 +75,28 @@ export function Fondazione({ nave, ora }: { nave: Nave; ora: Date }) {
           )
         })}
       </fieldset>
+      {basi >= limite ? (
+        <p className="m-0 text-xs text-testo-tenue">Hai fondato tutte le basi che puoi: le ricerche di Astrofisica ne apriranno altre.</p>
+      ) : voci.length > 0 ? (
+        <p className="m-0 text-xs">
+          Costo, dalla stiva:{' '}
+          {voci.map((r, n) => (
+            <span key={r}>
+              {n > 0 && ' · '}
+              <span className={bordo.quantita[r] < costo[r]! ? 'text-ambra' : ''}>
+                {numero(costo[r]!, 0)} {NOMI_RISORSE[r]}
+              </span>
+            </span>
+          ))}
+          {manca && <span className="text-testo-tenue"> (in ambra quello che manca)</span>}
+        </p>
+      ) : null}
       {errore && (
         <p className="m-0 text-xs text-pericolo" role="alert">
           {errore}
         </p>
       )}
-      <BottonePrimario disabled={inCorso} onClick={() => void conferma()}>
+      <BottonePrimario disabled={inCorso || basi >= limite || manca} onClick={() => void conferma()}>
         <Flag className="size-4" aria-hidden="true" />
         {basi === 0 ? 'Fonda · gratis' : 'Fonda'}
       </BottonePrimario>

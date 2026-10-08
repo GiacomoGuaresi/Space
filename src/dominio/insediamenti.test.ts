@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { magazzinoOra, mixColonia, pienoTra, ritmoInsediamento, tettoMagazzino, type Insediamento } from './insediamenti'
+import { costoFondazione, magazzinoOra, mixColonia, pienoTra, ritmoInsediamento, tettoMagazzino, type Insediamento } from './insediamenti'
 import { BASE, settore, tipoSettore, type Coordinate } from './settore'
 
 const t0 = new Date('2026-10-08T12:00:00Z')
@@ -54,5 +54,13 @@ describe('colonia', () => {
   it("un pianeta che non c'è non produce", () => {
     expect(mixColonia(dove, 99)).toBeNull()
     expect(ritmoInsediamento(madre({ tipo: 'base', coordinate: dove, pianeta: 99 }))).toEqual({})
+  })
+})
+
+describe('fondazione', () => {
+  it('la prima è gratis, poi 150 × 1,6^(fondate − 1) in parti uguali', () => {
+    expect(costoFondazione(0)).toEqual({})
+    expect(costoFondazione(1)).toEqual({ metallo: 50, silicio: 50, ghiaccio: 50 })
+    expect(costoFondazione(2).metallo).toBeCloseTo(80, 10)
   })
 })
