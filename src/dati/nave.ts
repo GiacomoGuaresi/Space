@@ -8,6 +8,7 @@ import type { Nave, Viaggio } from '../dominio/navigazione'
 import { nessuna, RISORSE, type Carico, type Risorsa } from '../dominio/risorse'
 import type { Coordinate } from '../dominio/settore'
 import type { Insediamento, TipoInsediamento } from '../dominio/insediamenti'
+import type { Lavoro } from '../dominio/cantiere'
 import { fallita } from './errore'
 
 export interface StatoRemoto {
@@ -48,7 +49,19 @@ export interface Prelievo {
   preso: Partial<Record<Risorsa, number>>
 }
 
-/** I rifiuti di `viaggia` e `fonda`, con il loro codice. */
+/** Un lavoro del cantiere: in coda, in corso o finito (doc/05-modello-dati.md). */
+export interface Costruzione {
+  id: number
+  insediamento: number
+  coda: 'nave' | 'base'
+  lavoro: Lavoro
+  livello: number
+  inizio: Date
+  fine: Date
+  costo: Partial<Record<Risorsa, number>>
+}
+
+/** I rifiuti delle funzioni, con il loro codice. */
 export type MotivoRifiuto =
   | 'in_viaggio'
   | 'stesso_settore'
@@ -58,6 +71,11 @@ export type MotivoRifiuto =
   | 'gia_fondato'
   | 'limite_basi'
   | 'risorse_insufficienti'
+  | 'nave_occupata'
+  | 'non_in_base'
+  | 'serve_cantiere'
+  | 'tetto_cantiere'
+  | 'non_disponibile'
 
 export class ViaggioRifiutato extends Error {
   constructor(readonly motivo: MotivoRifiuto) {
@@ -76,6 +94,9 @@ interface RigaNave {
   ricarica: number
   scanner: number
   stiva: number
+  liv_motore: number
+  liv_serbatoio: number
+  liv_ricarica: number
 }
 
 interface RigaViaggio {
@@ -104,6 +125,7 @@ function nave(r: RigaNave): Nave {
     ricarica: r.ricarica,
     scanner: r.scanner,
     stiva: r.stiva,
+    livelli: { motore: r.liv_motore, serbatoio: r.liv_serbatoio, ricarica: r.liv_ricarica },
   }
 }
 
@@ -141,6 +163,11 @@ const MOTIVI: readonly MotivoRifiuto[] = [
   'gia_fondato',
   'limite_basi',
   'risorse_insufficienti',
+  'nave_occupata',
+  'non_in_base',
+  'serve_cantiere',
+  'tetto_cantiere',
+  'non_disponibile',
 ]
 
 export class NaveSupabase {
@@ -178,6 +205,38 @@ export class NaveSupabase {
     }
   }
 
+  /** Avvia un lavoro nel cantiere della base dove sta la nave. */
+  async potenzia(lavoro: Lavoro): Promise<void> {
+    const { error } = await this.client.rpc('potenzia', { lavoro })
+    if (error) {
+      const motivo = MOTIVI.find((m) => m === error.message)
+      if (motivo) throw new ViaggioRifiutato(motivo)
+      throw fallita('Lavoro non avviato', error)
+    }
+  }
+
+  /** I lavori del cantiere finiti dopo `dal`, in corso o in coda. */
+  async costruzioniDal(dal: Date): Promise<Costruzione[]> {
+    const { data, error } = await this.client
+      .from('costruzione')
+      .select('id, insediamento, coda, lavoro, livello, inizio, fine, costo')
+      .gte('fine', dal.toISOString())
+      .order('fine')
+    if (error) throw fallita('Cantiere non letto', error)
+    return (
+      data as {
+        id: number
+        insediamento: number
+        coda: 'nave' | 'base'
+        lavoro: Lavoro
+        livello: number
+        inizio: string
+        fine: string
+        costo: Partial<Record<Risorsa, number>>
+      }[]
+    ).map((r) => ({ ...r, inizio: new Date(r.inizio), fine: new Date(r.fine) }))
+  }
+
   /** I viaggi arrivati (o in arrivo) dopo `dal`: servono al diario di bordo. */
   async viaggiDal(dal: Date): Promise<Viaggio[]> {
     const { data, error } = await this.client
@@ -204,7 +263,7 @@ export class NaveSupabase {
   async insediamenti(): Promise<Insediamento[]> {
     const { data, error } = await this.client
       .from('insediamento')
-      .select('id, x, y, z, tipo, pianeta, fondazione, ultima, scorte, produzione, magazzino')
+      .select('id, x, y, z, tipo, pianeta, fondazione, ultima, scorte, produzione, magazzino, cantiere, deposito, laboratorio')
       .order('id')
     if (error) throw fallita('Insediamenti non letti', error)
     return (
@@ -220,6 +279,9 @@ export class NaveSupabase {
         scorte: Partial<Record<Risorsa, number>>
         produzione: number
         magazzino: number
+        cantiere: number
+        deposito: number
+        laboratorio: number
       }[]
     ).map((r) => ({
       id: r.id,
@@ -231,6 +293,9 @@ export class NaveSupabase {
       scorte: r.scorte,
       produzione: r.produzione,
       magazzino: r.magazzino,
+      cantiere: r.cantiere,
+      deposito: r.deposito,
+      laboratorio: r.laboratorio,
     }))
   }
 

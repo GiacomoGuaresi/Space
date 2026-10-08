@@ -20,6 +20,10 @@ export interface Insediamento {
   scorte: Partial<Quantita>
   produzione: number
   magazzino: number
+  /** I livelli delle strutture: 0 se non c'è. */
+  cantiere: number
+  deposito: number
+  laboratorio: number
 }
 
 /** `base × crescita^(livello − 1)` con moltiplicazioni ripetute, come in SQL. */

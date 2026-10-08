@@ -24,6 +24,7 @@ const nave = (posizione: Coordinate, parziale: Partial<Nave> = {}): Nave => ({
   ricarica: 0.4,
   scanner: 1,
   stiva: 1,
+  livelli: { motore: 1, serbatoio: 1, ricarica: 1 },
   ...parziale,
 })
 

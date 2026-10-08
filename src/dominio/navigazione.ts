@@ -26,6 +26,8 @@ export interface Nave {
   scanner: number
   /** Il livello della stiva: decide la capacità per risorsa (risorse.ts). */
   stiva: number
+  /** I livelli di motore, serbatoio e ricarica (cantiere.ts): i valori sono già sopra. */
+  livelli: { motore: number; serbatoio: number; ricarica: number }
 }
 
 export interface Viaggio {

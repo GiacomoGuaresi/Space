@@ -17,6 +17,7 @@ const nave = (parziale: Partial<Nave> = {}): Nave => ({
   ...NAVE_INIZIALE,
   scanner: 1,
   stiva: 1,
+  livelli: { motore: 1, serbatoio: 1, ricarica: 1 },
   ...parziale,
 })
 
@@ -146,6 +147,9 @@ describe('insediamenti', () => {
     scorte: {},
     produzione: 1,
     magazzino: 1,
+    cantiere: 1,
+    deposito: 1,
+    laboratorio: 1,
   }
 
   it('dicono quando un magazzino è pieno, non prima', () => {

@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useContext, useEffect, useState, type FormEvent } from 'react'
 import { Rocket } from 'lucide-react'
 import { ViaggioRifiutato } from '../dati'
 import { BILANCIAMENTO } from '../dominio/bilanciamento'
@@ -6,6 +6,7 @@ import { CATALOGO } from '../dominio/catalogo'
 import { anteprima, tipiRilevabili, type Nave } from '../dominio/navigazione'
 import { distanza, stessoSettore, tipoSettore, type Coordinate } from '../dominio/settore'
 import { coordinate, durata, numero, orario, settori } from './formato'
+import { AzioniNave } from './azioni'
 import { BottonePrimario, Info } from './plancia'
 import { RIFIUTI } from './rifiuti'
 
@@ -47,6 +48,11 @@ export function Rotta({ nave, ora, meta, scoperti, onMeta, onParti }: Props) {
     evento.preventDefault()
     if (scritta) onMeta(scritta)
   }
+
+  // Durante un potenziamento la nave resta nel cantiere.
+  const cantiere = useContext(AzioniNave)
+    .costruzioni.filter((c) => c.coda === 'nave' && c.fine > ora)
+    .at(-1)
 
   const parti = async () => {
     if (!scritta || !prova?.possibile || inCorso) return
@@ -124,7 +130,8 @@ export function Rotta({ nave, ora, meta, scoperti, onMeta, onParti }: Props) {
         </p>
       )}
 
-      <BottonePrimario disabled={!prova?.possibile || inCorso} onClick={parti}>
+      {cantiere && <p className="m-0 text-xs text-ambra">La nave è nel cantiere fino a {orario(cantiere.fine, ora)}.</p>}
+      <BottonePrimario disabled={!prova?.possibile || inCorso || cantiere !== undefined} onClick={parti}>
         <Rocket className="size-4" aria-hidden="true" />
         {inCorso ? 'Partenza…' : 'Parti'}
       </BottonePrimario>

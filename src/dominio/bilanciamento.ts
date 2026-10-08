@@ -54,6 +54,8 @@ export const BILANCIAMENTO = {
     velocita: 0.25,
     serbatoio: 4,
     ricarica: 0.4,
+    /** Motore, serbatoio e ricarica crescono di tanto a livello. */
+    crescita: 1.12,
   },
   carburante: {
     /** Fin dove si ricarica il serbatoio fuori dalle basi e lontano dalle stelle. */
@@ -131,6 +133,41 @@ export const BILANCIAMENTO = {
     /** …per tanto alla (basi già fondate − 1), in parti uguali di queste risorse. */
     crescita: 1.6,
     risorse: ['metallo', 'silicio', 'ghiaccio'],
+  },
+  cantiere: {
+    /** Il costo di un livello è `base × crescita^(livello − 1)`, diviso secondo la ricetta. */
+    crescita: 1.45,
+    base: {
+      motore: 60,
+      serbatoio: 60,
+      ricarica: 60,
+      scanner: 60,
+      produzione: 40,
+      magazzino: 40,
+      deposito: 40,
+      cantiere: 50,
+    },
+    /** Il tempo: `ore × crescitaTempo^(livello − 2) / (1 + riduzione × (cantiere − 1))`. */
+    ore: 3,
+    crescitaTempo: 1.31,
+    riduzione: 0.12,
+    /** La nave non supera `tetto × livello del cantiere`. */
+    tetto: 2,
+    /** Le ricette: dal livello `da`, come si divide il costo (doc/09-bilanciamento.md#ricette). */
+    ricette: [
+      { da: 1, mix: { metallo: 0.6, silicio: 0.4 } },
+      { da: 4, mix: { metallo: 0.5, silicio: 0.3, ghiaccio: 0.2 } },
+      { da: 7, mix: { metallo: 0.45, silicio: 0.25, ghiaccio: 0.15, idrogeno: 0.15 } },
+      { da: 10, mix: { metallo: 0.4, silicio: 0.25, ghiaccio: 0.15, idrogeno: 0.1, terreRare: 0.1 } },
+      { da: 15, mix: { metallo: 0.38, silicio: 0.22, ghiaccio: 0.12, idrogeno: 0.08, terreRare: 0.1, materiaOscura: 0.1 } },
+    ],
+    /** La stiva: costa questa parte della stiva attuale, con questo mix, e dura sempre tanto. */
+    stiva: { quota: 0.4, mix: { metallo: 0.6, silicio: 0.4 }, ore: 1 },
+  },
+  deposito: {
+    /** Il pieno al deposito: tanto Idrogeno per unità di carburante, per tanto a ogni livello. */
+    idrogeno: 5,
+    crescita: 0.9,
   },
   magazzino: {
     /** Il tetto di un magazzino: tante ore della produzione di livello 1… */

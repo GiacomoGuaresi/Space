@@ -42,7 +42,22 @@ const Scena = lazy(async () => ({ default: (await import('../grafica/Scena')).Sc
 /** Le pagine dell'app (ui/indirizzo.ts): ponte, mappa, altro, diario, catalogo e l'osservatorio in sviluppo. */
 export function App() {
   const pagina = usePagina()
-  const { stato, scarto, scoperte, scansioni, viaggi, raccolti, insediamenti, prelievi, aperturaDiario, parti, fonda, ricarica } = useNave()
+  const {
+    stato,
+    scarto,
+    scoperte,
+    scansioni,
+    viaggi,
+    raccolti,
+    insediamenti,
+    prelievi,
+    aperturaDiario,
+    parti,
+    fonda,
+    potenzia,
+    costruzioni,
+    ricarica,
+  } = useNave()
   const ora = useOra(scarto)
 
   // Il diario si ricalcola al minuto: le voci nuove (un arrivo, una ricarica) compaiono da sole.
@@ -87,7 +102,7 @@ export function App() {
         : null,
     [carico, nave, secondo, raccolti, insediamenti],
   )
-  const azioni = useMemo(() => ({ fonda }), [fonda])
+  const azioni = useMemo(() => ({ fonda, potenzia, costruzioni }), [fonda, potenzia, costruzioni])
   const ultima = useMemo(() => ({ voce: voci[0] ?? null, nuove: daLeggere }), [voci, daLeggere])
 
   // Pallini: Ponte se la nave è arrivata da quando l'hai visto, Mappa se c'è un
@@ -220,7 +235,7 @@ export function App() {
             wiki: statoWiki ? { contenuto: <Wiki stato={statoWiki} voce={wikiPC.voce} numeri={wikiPC.numeri} affiancata /> } : undefined,
             catalogo: { contenuto: <ContenutoCatalogo scoperte={scoperte} /> },
             rete: { contenuto: <Rete nave={stato.nave} insediamenti={insediamenti} ora={ora} /> },
-            nave: { contenuto: <SchedaNave nave={stato.nave} quantita={bordo?.quantita ?? stato.carico.quantita} /> },
+            nave: { contenuto: <SchedaNave nave={stato.nave} quantita={bordo?.quantita ?? stato.carico.quantita} ora={ora} /> },
             impostazioni: { contenuto: <Impostazioni /> },
           }}
         />
@@ -236,7 +251,7 @@ export function App() {
     if (pagina.pagina === 'nave') {
       return (
         <Cornice pagina="nave" nave={stato.nave} viaggio={viaggio} scarto={scarto} fondo={<FondoNave nave={stato.nave} scarto={scarto} />}>
-          <SchedaNave nave={stato.nave} quantita={bordo?.quantita ?? stato.carico.quantita} />
+          <SchedaNave nave={stato.nave} quantita={bordo?.quantita ?? stato.carico.quantita} ora={ora} />
         </Cornice>
       )
     }

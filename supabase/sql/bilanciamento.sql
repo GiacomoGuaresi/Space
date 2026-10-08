@@ -44,7 +44,8 @@ language sql immutable parallel safe set search_path = '' as $$
   "nave": {
     "velocita": 0.25,
     "serbatoio": 4,
-    "ricarica": 0.4
+    "ricarica": 0.4,
+    "crescita": 1.12
   },
   "carburante": {
     "tettoFuori": 0.5,
@@ -106,6 +107,82 @@ language sql immutable parallel safe set search_path = '' as $$
       "silicio",
       "ghiaccio"
     ]
+  },
+  "cantiere": {
+    "crescita": 1.45,
+    "base": {
+      "motore": 60,
+      "serbatoio": 60,
+      "ricarica": 60,
+      "scanner": 60,
+      "produzione": 40,
+      "magazzino": 40,
+      "deposito": 40,
+      "cantiere": 50
+    },
+    "ore": 3,
+    "crescitaTempo": 1.31,
+    "riduzione": 0.12,
+    "tetto": 2,
+    "ricette": [
+      {
+        "da": 1,
+        "mix": {
+          "metallo": 0.6,
+          "silicio": 0.4
+        }
+      },
+      {
+        "da": 4,
+        "mix": {
+          "metallo": 0.5,
+          "silicio": 0.3,
+          "ghiaccio": 0.2
+        }
+      },
+      {
+        "da": 7,
+        "mix": {
+          "metallo": 0.45,
+          "silicio": 0.25,
+          "ghiaccio": 0.15,
+          "idrogeno": 0.15
+        }
+      },
+      {
+        "da": 10,
+        "mix": {
+          "metallo": 0.4,
+          "silicio": 0.25,
+          "ghiaccio": 0.15,
+          "idrogeno": 0.1,
+          "terreRare": 0.1
+        }
+      },
+      {
+        "da": 15,
+        "mix": {
+          "metallo": 0.38,
+          "silicio": 0.22,
+          "ghiaccio": 0.12,
+          "idrogeno": 0.08,
+          "terreRare": 0.1,
+          "materiaOscura": 0.1
+        }
+      }
+    ],
+    "stiva": {
+      "quota": 0.4,
+      "mix": {
+        "metallo": 0.6,
+        "silicio": 0.4
+      },
+      "ore": 1
+    }
+  },
+  "deposito": {
+    "idrogeno": 5,
+    "crescita": 0.9
   },
   "magazzino": {
     "ore": 168,

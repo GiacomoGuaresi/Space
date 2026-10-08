@@ -6,6 +6,7 @@ import { capacitaStiva, RISORSE, type Carico, type Quantita } from '../dominio/r
 import { NOMI_RISORSE } from '../dominio/catalogo'
 import { tipoSettore } from '../dominio/settore'
 import { numero } from './formato'
+import { Coda, Potenziamenti, STATISTICHE_ATTIVE } from './Cantiere'
 import { Etichetta, Info, Numero, Pannello } from './plancia'
 
 /** Quello che c'è a bordo adesso, raccolta a mano compresa: lo calcola l'App ogni secondo. */
@@ -21,7 +22,7 @@ export const CaricoAttuale = createContext<{
  * La Nave (doc/11-interfaccia.md#nave): le statistiche e la stiva, una barra
  * per risorsa. I potenziamenti arrivano col cantiere (M5).
  */
-export function SchedaNave({ nave, quantita }: { nave: Nave; quantita: Quantita }) {
+export function SchedaNave({ nave, quantita, ora }: { nave: Nave; quantita: Quantita; ora: Date }) {
   const capacita = capacitaStiva(nave.stiva)
   return (
     <Pannello className="flex min-h-0 flex-1 flex-col overflow-y-auto" etichetta="Nave">
@@ -33,9 +34,9 @@ export function SchedaNave({ nave, quantita }: { nave: Nave; quantita: Quantita 
       <section aria-label="Statistiche" className="border-b border-separatore p-3.5">
         <h2 className="etichetta m-0 mb-2">Statistiche</h2>
         <dl className="m-0 grid grid-cols-[1fr_auto] gap-x-4 gap-y-2 text-[13px]">
-          <Riga nome="Motore">{numero(nave.velocita, 2)} sett./h</Riga>
-          <Riga nome="Serbatoio">{numero(nave.serbatoio, 1)} unità</Riga>
-          <Riga nome="Ricarica">{numero(nave.ricarica, 2)} unità/h</Riga>
+          <Riga nome={`Motore · liv. ${nave.livelli.motore}`}>{numero(nave.velocita, 2)} sett./h</Riga>
+          <Riga nome={`Serbatoio · liv. ${nave.livelli.serbatoio}`}>{numero(nave.serbatoio, 1)} unità</Riga>
+          <Riga nome={`Ricarica · liv. ${nave.livelli.ricarica}`}>{numero(nave.ricarica, 2)} unità/h</Riga>
           <Riga nome={`Scanner · liv. ${nave.scanner}`}>
             raggio {numero(raggioScanner(nave.scanner, tipoSettore(nave.posizione)), 1)} sett.
           </Riga>
@@ -51,6 +52,13 @@ export function SchedaNave({ nave, quantita }: { nave: Nave; quantita: Quantita 
             </span>
           </Riga>
         </dl>
+      </section>
+
+      <section aria-label="Potenziamenti" className="border-b border-separatore p-3.5">
+        <h2 className="etichetta m-0 mb-1">Potenziamenti</h2>
+        <Potenziamenti nave={nave} ora={ora} lavori={STATISTICHE_ATTIVE} />
+        <h3 className="etichetta m-0 mt-3 mb-2">Coda del cantiere</h3>
+        <Coda coda="nave" ora={ora} />
       </section>
 
       <section aria-label="Stiva" className="p-3.5">

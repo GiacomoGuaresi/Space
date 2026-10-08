@@ -10,5 +10,10 @@ export const RIFIUTI: Readonly<Record<MotivoRifiuto, string>> = {
   pianeta_mancante: "Quel pianeta non c'è.",
   gia_fondato: "Qui c'è già un tuo insediamento.",
   limite_basi: 'Hai già tutte le basi che puoi fondare.',
-  risorse_insufficienti: "Nella stiva non c'è abbastanza.",
+  risorse_insufficienti: "Tra stiva e magazzino non c'è abbastanza.",
+  nave_occupata: 'La nave è ferma nel cantiere finché il potenziamento non finisce.',
+  non_in_base: 'Serve essere attraccati a una tua base.',
+  serve_cantiere: 'Questa base non ha un cantiere.',
+  tetto_cantiere: 'Il cantiere non basta: la nave non supera il doppio del suo livello.',
+  non_disponibile: 'Qui non si può: arriva con le ricerche.',
 }

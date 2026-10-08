@@ -11,6 +11,7 @@ export type { Accesso, EsitoAccesso } from './accesso'
 export {
   ViaggioRifiutato,
   type MotivoRifiuto,
+  type Costruzione,
   type NaveSupabase,
   type Prelievo,
   type Raccolto,

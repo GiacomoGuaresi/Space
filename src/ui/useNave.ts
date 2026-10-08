@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
-import { nave as datiNave, type Prelievo, type Raccolto, type Scansione, type Scoperta } from '../dati'
+import { nave as datiNave, type Costruzione, type Prelievo, type Raccolto, type Scansione, type Scoperta } from '../dati'
 import type { Nave, Viaggio } from '../dominio/navigazione'
 import type { Carico } from '../dominio/risorse'
 import type { Insediamento } from '../dominio/insediamenti'
+import type { Lavoro } from '../dominio/cantiere'
 import type { Coordinate } from '../dominio/settore'
 import { tipoSettore } from '../dominio/settore'
 import { suona } from './suoni'
@@ -40,6 +41,7 @@ export function useNave() {
   const [raccolti, setRaccolti] = useState<Raccolto[]>([])
   const [insediamenti, setInsediamenti] = useState<Insediamento[]>([])
   const [prelievi, setPrelievi] = useState<Prelievo[]>([])
+  const [costruzioni, setCostruzioni] = useState<Costruzione[]>([])
   /** Cresce ogni volta che il diario va aperto da solo: all'apertura con delle novità. */
   const [aperturaDiario, setAperturaDiario] = useState(0)
 
@@ -50,13 +52,14 @@ export function useNave() {
       const remoto = await datiNave().stato()
       const dopo = Date.now()
       const dal = new Date(remoto.ora.getTime() - GIORNI_DIARIO * 24 * 3_600_000)
-      const [elenco, soste, recenti, presi, basi, prelevati] = await Promise.all([
+      const [elenco, soste, recenti, presi, basi, prelevati, lavori] = await Promise.all([
         datiNave().scoperte(),
         datiNave().scansioni(),
         datiNave().viaggiDal(dal),
         datiNave().raccolti(),
         datiNave().insediamenti(),
         datiNave().prelieviDal(dal),
+        datiNave().costruzioniDal(dal),
       ])
       // Lo scarto si misura a metà della richiesta: la risposta ha viaggiato.
       const scartoNuovo = remoto.ora.getTime() - (prima + dopo) / 2
@@ -68,6 +71,7 @@ export function useNave() {
       setRaccolti(presi)
       setInsediamenti(basi)
       setPrelievi(prelevati)
+      setCostruzioni(lavori)
 
       if (apriDiario) {
         const voci = vociDiario({
@@ -119,6 +123,20 @@ export function useNave() {
     // La posizione cambia insieme a `dal`: basta quello.
   }, [dal, scarto, ricarica])
 
+  // Quando finisce un lavoro del cantiere si rilegge: il database lo applica alla lettura.
+  const prossima = costruzioni.map((c) => c.fine.getTime()).find((t) => t > Date.now() + scarto) ?? null
+  useEffect(() => {
+    if (prossima === null) return
+    const id = window.setTimeout(
+      () => {
+        suona('arrivo')
+        void ricarica()
+      },
+      Math.min(prossima - (Date.now() + scarto) + 500, 2 ** 31 - 1),
+    )
+    return () => window.clearTimeout(id)
+  }, [prossima, scarto, ricarica])
+
   // Tornando sull'app dopo un po' (telefono in tasca) si rilegge.
   useEffect(() => {
     const visibile = () => {
@@ -146,5 +164,29 @@ export function useNave() {
     [ricarica],
   )
 
-  return { stato, scarto, scoperte, scansioni, viaggi, raccolti, insediamenti, prelievi, aperturaDiario, parti, fonda, ricarica }
+  const potenzia = useCallback(
+    async (lavoro: Lavoro) => {
+      await datiNave().potenzia(lavoro)
+      suona('partenza')
+      await ricarica()
+    },
+    [ricarica],
+  )
+
+  return {
+    stato,
+    scarto,
+    scoperte,
+    scansioni,
+    viaggi,
+    raccolti,
+    insediamenti,
+    prelievi,
+    costruzioni,
+    aperturaDiario,
+    parti,
+    fonda,
+    potenzia,
+    ricarica,
+  }
 }

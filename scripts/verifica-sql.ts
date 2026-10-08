@@ -14,6 +14,7 @@ import { readFileSync } from 'node:fs'
 import { BILANCIAMENTO } from '../src/dominio/bilanciamento.ts'
 import { raggioScanner } from '../src/dominio/navigazione.ts'
 import { aLivello, ritmoInsediamento } from '../src/dominio/insediamenti.ts'
+import { costoLavoro, durataLavoro, STATISTICHE, STRUTTURE } from '../src/dominio/cantiere.ts'
 import { bottinoCometa, capacitaStiva, ritmoMano } from '../src/dominio/risorse.ts'
 import { settore, tipoSettore } from '../src/dominio/settore.ts'
 import { sottotipo } from '../src/dominio/sottotipi.ts'
@@ -81,6 +82,29 @@ const livelli = [
 const esitoLivelli = await interroga(`
   select count(*) filter (where space.a_livello(b, c, l) <> v) as livelli_diversi, count(*) as totale
   from (values ${livelli.join(',')}) as t(b, c, l, v)`)
+// Costi e tempi del cantiere, per ogni lavoro, livello e cantiere.
+const lavori: string[] = []
+for (const lavoro of [...STATISTICHE, ...STRUTTURE]) {
+  for (let livello = 2; livello <= 25; livello++) {
+    for (const cantiere of [0, 1, 3]) {
+      lavori.push(
+        `('${lavoro}',${livello},${cantiere},'${JSON.stringify(costoLavoro(lavoro, livello))}'::jsonb,${durataLavoro(lavoro, livello, cantiere)})`,
+      )
+    }
+  }
+}
+const esitoCantiere = await interroga(`
+  select
+    count(*) filter (where abs(space.durata_lavoro(l, v, c) - d) > 1e-12 * d) as durate_diverse,
+    count(*) filter (
+      where (select count(*) from jsonb_object_keys(space.costo_lavoro(l, v))) <> (select count(*) from jsonb_object_keys(costo))
+        or exists (
+          select 1 from jsonb_each_text(costo) e
+          where abs((space.costo_lavoro(l, v) ->> e.key)::double precision - e.value::double precision) > 1e-9 * e.value::double precision
+        )
+    ) as costi_diversi,
+    count(*) as totale
+  from (values ${lavori.join(',')}) as t(l, v, c, costo, d)`)
 const esitoStiva = await interroga(`
   select count(*) filter (where space.capacita_stiva(l) <> c) as capacita_diverse, count(*) as totale
   from (values ${capacita}) as v(l, c)`)
@@ -120,10 +144,10 @@ const esitoColonie = await interroga(`
   select count(*) filter (
     where exists (
       select 1 from jsonb_each_text(ritmo) e
-      where abs((space.ritmo_insediamento(row(0, null, x, y, z, 'base', p, now(), now(), '{}', l, 1)::space.insediamento, l) ->> e.key)::double precision
+      where abs((space.ritmo_insediamento(row(0, null, x, y, z, 'base', p, now(), now(), '{}', l, 1, 0, 0, 0)::space.insediamento, l) ->> e.key)::double precision
         - e.value::double precision) > 1e-9 * e.value::double precision
     )
-      or (select count(*) from jsonb_object_keys(space.ritmo_insediamento(row(0, null, x, y, z, 'base', p, now(), now(), '{}', l, 1)::space.insediamento, l)))
+      or (select count(*) from jsonb_object_keys(space.ritmo_insediamento(row(0, null, x, y, z, 'base', p, now(), now(), '{}', l, 1, 0, 0, 0)::space.insediamento, l)))
         <> (select count(*) from jsonb_object_keys(ritmo))
   ) as colonie_diverse, count(*) as totale
   from (values ${colonie.join(',')}) as c(x, y, z, p, l, ritmo)`)
@@ -151,6 +175,7 @@ console.log('Rotte', esitoRotte)
 console.log('Raggi dello scanner', esitoRaggi)
 console.log('Capacità della stiva', esitoStiva)
 console.log('Crescita per livello', esitoLivelli)
+console.log('Cantiere', esitoCantiere)
 console.log('Corpi con risorse', esitoCorpi)
 console.log('Produzione delle colonie', esitoColonie)
 if (
@@ -161,6 +186,8 @@ if (
   esitoRaggi.raggi_diversi ||
   esitoStiva.capacita_diverse ||
   esitoLivelli.livelli_diversi ||
+  esitoCantiere.durate_diverse ||
+  esitoCantiere.costi_diversi ||
   esitoColonie.colonie_diverse ||
   esitoCorpi.ricchezze_diverse ||
   esitoCorpi.sottotipi_diversi ||

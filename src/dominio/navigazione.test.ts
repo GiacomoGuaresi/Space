@@ -23,7 +23,7 @@ const t0 = new Date('2026-10-08T10:00:00Z')
 const dopo = (ms: number) => new Date(t0.getTime() + ms)
 
 function nave(parziale: Partial<Nave> = {}): Nave {
-  return { posizione: BASE, dal: t0, carburante: NAVE_INIZIALE.serbatoio, ...NAVE_INIZIALE, scanner: 1, stiva: 1, ...parziale }
+  return { posizione: BASE, dal: t0, carburante: NAVE_INIZIALE.serbatoio, ...NAVE_INIZIALE, scanner: 1, stiva: 1, livelli: { motore: 1, serbatoio: 1, ricarica: 1 }, ...parziale }
 }
 
 describe('carburante', () => {

@@ -184,6 +184,35 @@ const GUIDA: PaginaWiki[] = [
     },
   },
   {
+    id: 'cantiere',
+    sezione: 'guida',
+    titolo: 'Cantiere e potenziamenti',
+    sbloccata: sempre,
+    suggerimento: '',
+    testo: () => (
+      <>
+        <P>
+          La nave si potenzia nel cantiere di una base, attraccata: la base madre ne ha uno dall'inizio. Un livello si paga subito, prima
+          dal magazzino della base e poi dalla stiva, e per tutta la costruzione la nave resta ferma lì.
+        </P>
+        <P>
+          I lavori si mettono in coda: ognuno comincia quando finisce il precedente. Le ricette cambiano a gradini: salendo servono risorse
+          sempre più rare. La nave non supera il doppio del livello del cantiere.
+        </P>
+      </>
+    ),
+    numeri: () => {
+      const { cantiere, nave } = BILANCIAMENTO
+      return [
+        ['Costo', `base × ${cantiere.crescita}^(livello − 1); base ${cantiere.base.motore} per motore, serbatoio, ricarica e scanner`],
+        ['Tempo', `${cantiere.ore} h × ${cantiere.crescitaTempo}^(livello − 2) / (1 + ${cantiere.riduzione} × (cantiere − 1))`],
+        ['Statistiche', `valore di partenza × ${nave.crescita}^(livello − 1)`],
+        ['Tetto', `livello della nave ≤ ${cantiere.tetto} × livello del cantiere`],
+        ['Ricette', 'liv. 1-3 M 60 S 40 · 4-6 M 50 S 30 G 20 · 7-9 + Idrogeno · 10-14 + Terre rare · 15+ + Materia oscura'],
+      ]
+    },
+  },
+  {
     id: 'viaggio',
     sezione: 'guida',
     titolo: 'Viaggio e carburante',
