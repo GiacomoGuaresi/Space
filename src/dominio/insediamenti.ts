@@ -4,7 +4,7 @@
 
 import { BILANCIAMENTO } from './bilanciamento'
 import { RISORSE, type Quantita } from './risorse'
-import type { Coordinate } from './settore'
+import { settore, type Coordinate } from './settore'
 
 export type TipoInsediamento = 'madre' | 'base' | 'estrattore'
 
@@ -29,21 +29,37 @@ export function aLivello(base: number, crescita: number, livello: number): numbe
   return valore
 }
 
+/** Il mix di una colonia: quello del suo pianeta (doc/09-bilanciamento.md#produzione). */
+export function mixColonia(coordinate: Coordinate, pianeta: number): Partial<Quantita> | null {
+  const d = settore(coordinate).corpo?.dettagli
+  if (d?.tipo !== 'sistema' || !d.pianeti[pianeta]) return null
+  return { ...BILANCIAMENTO.mix.pianeti[d.pianeti[pianeta].tipo] }
+}
+
+type Produttore = Pick<Insediamento, 'tipo' | 'coordinate' | 'pianeta' | 'produzione'>
+
 /** Quanto produce all'ora per risorsa, al livello di produzione `livello`. */
-export function ritmoInsediamento(i: Pick<Insediamento, 'tipo' | 'produzione'>, livello = i.produzione): Partial<Quantita> {
-  const { madre, crescita } = BILANCIAMENTO.produzione
+export function ritmoInsediamento(i: Produttore, livello = i.produzione): Partial<Quantita> {
+  const { madre, crescita, ritmo } = BILANCIAMENTO.produzione
   const ritmi: Partial<Quantita> = {}
   if (i.tipo === 'madre') {
     for (const r of RISORSE.slice(0, 4)) ritmi[r] = aLivello(madre / 4, crescita, livello)
+  } else if (i.tipo === 'base' && i.pianeta !== null) {
+    const mix = mixColonia(i.coordinate, i.pianeta)
+    const ricchezza = settore(i.coordinate).corpo?.ricchezza ?? 0
+    for (const r of RISORSE) {
+      const parte = mix?.[r]
+      if (parte) ritmi[r] = aLivello(ritmo.comune * ricchezza * parte, crescita, livello)
+    }
   }
   return ritmi
 }
 
 /** Il tetto del magazzino per risorsa: 168 h della produzione di livello 1, ×1,45 per livello di magazzino. */
-export function tettoMagazzino(i: Pick<Insediamento, 'tipo' | 'magazzino'>): Partial<Quantita> {
+export function tettoMagazzino(i: Produttore & Pick<Insediamento, 'magazzino'>): Partial<Quantita> {
   const { ore, crescita } = BILANCIAMENTO.magazzino
   const tetti: Partial<Quantita> = {}
-  const base = ritmoInsediamento({ tipo: i.tipo, produzione: 1 })
+  const base = ritmoInsediamento(i, 1)
   for (const r of RISORSE) {
     const ritmo = base[r]
     if (ritmo) tetti[r] = aLivello(ritmo * ore, crescita, i.magazzino)

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { magazzinoOra, pienoTra, ritmoInsediamento, tettoMagazzino, type Insediamento } from './insediamenti'
-import { BASE } from './settore'
+import { magazzinoOra, mixColonia, pienoTra, ritmoInsediamento, tettoMagazzino, type Insediamento } from './insediamenti'
+import { BASE, settore, tipoSettore, type Coordinate } from './settore'
 
 const t0 = new Date('2026-10-08T12:00:00Z')
 const ore = (h: number) => new Date(t0.getTime() + h * 3_600_000)
@@ -30,5 +30,29 @@ describe('base madre', () => {
     expect(magazzinoOra(madre(), ore(1000)).metallo).toBe(252)
     expect(magazzinoOra(madre({ scorte: { metallo: 300 } }), ore(10)).metallo).toBe(300)
     expect(pienoTra(madre(), ore(68))).toBeCloseTo(100, 10)
+  })
+})
+
+describe('colonia', () => {
+  const dove = ((): Coordinate => {
+    for (let x = 1; ; x++) if (tipoSettore({ x, y: 7, z: -3 }) === 'sistema') return { x, y: 7, z: -3 }
+  })()
+  const d = settore(dove).corpo!.dettagli
+  const pianeti = d.tipo === 'sistema' ? d.pianeti : []
+
+  it('produce 7/h × ricchezza col mix del suo pianeta', () => {
+    const ricchezza = settore(dove).corpo!.ricchezza
+    pianeti.forEach((p, n) => {
+      const ritmi = ritmoInsediamento(madre({ tipo: 'base', coordinate: dove, pianeta: n }))
+      const totale = Object.values(ritmi).reduce((a, b) => a + b, 0)
+      expect(totale).toBeCloseTo(7 * ricchezza, 9)
+      expect(Object.keys(ritmi).sort()).toEqual(Object.keys(mixColonia(dove, n)!).sort())
+      expect(p.tipo).toBeTruthy()
+    })
+  })
+
+  it("un pianeta che non c'è non produce", () => {
+    expect(mixColonia(dove, 99)).toBeNull()
+    expect(ritmoInsediamento(madre({ tipo: 'base', coordinate: dove, pianeta: 99 }))).toEqual({})
   })
 })

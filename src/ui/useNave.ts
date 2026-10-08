@@ -137,5 +137,14 @@ export function useNave() {
     [ricarica],
   )
 
-  return { stato, scarto, scoperte, scansioni, viaggi, raccolti, insediamenti, prelievi, aperturaDiario, parti, ricarica }
+  const fonda = useCallback(
+    async (pianeta: number) => {
+      await datiNave().fonda(pianeta)
+      suona('scoperta')
+      await ricarica()
+    },
+    [ricarica],
+  )
+
+  return { stato, scarto, scoperte, scansioni, viaggi, raccolti, insediamenti, prelievi, aperturaDiario, parti, fonda, ricarica }
 }

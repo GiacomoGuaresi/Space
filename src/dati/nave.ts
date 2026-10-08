@@ -48,8 +48,16 @@ export interface Prelievo {
   preso: Partial<Record<Risorsa, number>>
 }
 
-/** I rifiuti di `viaggia`, con il loro codice. */
-export type MotivoRifiuto = 'in_viaggio' | 'stesso_settore' | 'carburante_insufficiente'
+/** I rifiuti di `viaggia` e `fonda`, con il loro codice. */
+export type MotivoRifiuto =
+  | 'in_viaggio'
+  | 'stesso_settore'
+  | 'carburante_insufficiente'
+  | 'non_fondabile'
+  | 'pianeta_mancante'
+  | 'gia_fondato'
+  | 'limite_basi'
+  | 'risorse_insufficienti'
 
 export class ViaggioRifiutato extends Error {
   constructor(readonly motivo: MotivoRifiuto) {
@@ -124,7 +132,16 @@ function carico(righe: Partial<Record<Risorsa, { quantita: number; dal: string }
   return { quantita, dal }
 }
 
-const MOTIVI: readonly MotivoRifiuto[] = ['in_viaggio', 'stesso_settore', 'carburante_insufficiente']
+const MOTIVI: readonly MotivoRifiuto[] = [
+  'in_viaggio',
+  'stesso_settore',
+  'carburante_insufficiente',
+  'non_fondabile',
+  'pianeta_mancante',
+  'gia_fondato',
+  'limite_basi',
+  'risorse_insufficienti',
+]
 
 export class NaveSupabase {
   constructor(private readonly client: SupabaseClient) {}
@@ -149,6 +166,16 @@ export class NaveSupabase {
       throw fallita('Partenza non riuscita', error)
     }
     return viaggio(data as RigaViaggio)
+  }
+
+  /** Fonda una base sul sistema dove sta la nave, col pianeta `pianeta`. */
+  async fonda(pianeta: number): Promise<void> {
+    const { error } = await this.client.rpc('fonda', { pianeta })
+    if (error) {
+      const motivo = MOTIVI.find((m) => m === error.message)
+      if (motivo) throw new ViaggioRifiutato(motivo)
+      throw fallita('Fondazione non riuscita', error)
+    }
   }
 
   /** I viaggi arrivati (o in arrivo) dopo `dal`: servono al diario di bordo. */

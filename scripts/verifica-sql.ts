@@ -13,7 +13,7 @@
 import { readFileSync } from 'node:fs'
 import { BILANCIAMENTO } from '../src/dominio/bilanciamento.ts'
 import { raggioScanner } from '../src/dominio/navigazione.ts'
-import { aLivello } from '../src/dominio/insediamenti.ts'
+import { aLivello, ritmoInsediamento } from '../src/dominio/insediamenti.ts'
 import { bottinoCometa, capacitaStiva, ritmoMano } from '../src/dominio/risorse.ts'
 import { settore, tipoSettore } from '../src/dominio/settore.ts'
 import { sottotipo } from '../src/dominio/sottotipi.ts'
@@ -103,6 +103,30 @@ for (const tipo of ['asteroidi', 'nebulosa', 'gigante', 'sistema', 'stella', 'co
     )
   }
 }
+// La produzione delle colonie, pianeta per pianeta, ai primi livelli.
+const colonie: string[] = []
+for (const riga of corpi) {
+  const [x, y, z] = riga.slice(1).split(',').map(Number)
+  const d = settore({ x, y, z }).corpo!.dettagli
+  if (d.tipo !== 'sistema') continue
+  d.pianeti.forEach((_, p) => {
+    for (const livello of [1, 2, 7]) {
+      const ritmo = ritmoInsediamento({ tipo: 'base', coordinate: { x, y, z }, pianeta: p, produzione: livello })
+      colonie.push(`(${x},${y},${z},${p},${livello},'${JSON.stringify(ritmo)}'::jsonb)`)
+    }
+  })
+}
+const esitoColonie = await interroga(`
+  select count(*) filter (
+    where exists (
+      select 1 from jsonb_each_text(ritmo) e
+      where abs((space.ritmo_insediamento(row(0, null, x, y, z, 'base', p, now(), now(), '{}', l, 1)::space.insediamento, l) ->> e.key)::double precision
+        - e.value::double precision) > 1e-9 * e.value::double precision
+    )
+      or (select count(*) from jsonb_object_keys(space.ritmo_insediamento(row(0, null, x, y, z, 'base', p, now(), now(), '{}', l, 1)::space.insediamento, l)))
+        <> (select count(*) from jsonb_object_keys(ritmo))
+  ) as colonie_diverse, count(*) as totale
+  from (values ${colonie.join(',')}) as c(x, y, z, p, l, ritmo)`)
 const esitoCorpi = await interroga(`
   select
     count(*) filter (where space.ricchezza(x, y, z) <> ricchezza) as ricchezze_diverse,
@@ -128,6 +152,7 @@ console.log('Raggi dello scanner', esitoRaggi)
 console.log('Capacità della stiva', esitoStiva)
 console.log('Crescita per livello', esitoLivelli)
 console.log('Corpi con risorse', esitoCorpi)
+console.log('Produzione delle colonie', esitoColonie)
 if (
   !esitoValori.uguali ||
   esitoSettori.seed_diversi ||
@@ -136,6 +161,7 @@ if (
   esitoRaggi.raggi_diversi ||
   esitoStiva.capacita_diverse ||
   esitoLivelli.livelli_diversi ||
+  esitoColonie.colonie_diverse ||
   esitoCorpi.ricchezze_diverse ||
   esitoCorpi.sottotipi_diversi ||
   esitoCorpi.pianeti_diversi ||

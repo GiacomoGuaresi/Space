@@ -1,20 +1,15 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Rocket } from 'lucide-react'
-import { ViaggioRifiutato, type MotivoRifiuto } from '../dati'
+import { ViaggioRifiutato } from '../dati'
 import { BILANCIAMENTO } from '../dominio/bilanciamento'
 import { CATALOGO } from '../dominio/catalogo'
 import { anteprima, tipiRilevabili, type Nave } from '../dominio/navigazione'
 import { distanza, stessoSettore, tipoSettore, type Coordinate } from '../dominio/settore'
 import { coordinate, durata, numero, orario, settori } from './formato'
 import { BottonePrimario, Info } from './plancia'
+import { RIFIUTI } from './rifiuti'
 
 const ASSI = ['x', 'y', 'z'] as const
-
-const RIFIUTI: Readonly<Record<MotivoRifiuto, string>> = {
-  in_viaggio: 'La nave è già in viaggio.',
-  stesso_settore: 'La nave è già qui.',
-  carburante_insufficiente: 'Il carburante non basta nemmeno per un settore: aspetta che si ricarichi.',
-}
 
 interface Props {
   nave: Nave
@@ -46,9 +41,7 @@ export function Rotta({ nave, ora, meta, scoperti, onMeta, onParti }: Props) {
   // rilevabile o già scoperto.
   const tipoVero = scritta ? tipoSettore(scritta) : null
   const tipo =
-    tipoVero && (tipiRilevabili(nave.scanner).has(tipoVero) || scoperti.has(`${scritta!.x},${scritta!.y},${scritta!.z}`))
-      ? tipoVero
-      : null
+    tipoVero && (tipiRilevabili(nave.scanner).has(tipoVero) || scoperti.has(`${scritta!.x},${scritta!.y},${scritta!.z}`)) ? tipoVero : null
 
   const invia = (evento: FormEvent) => {
     evento.preventDefault()
@@ -122,9 +115,7 @@ export function Rotta({ nave, ora, meta, scoperti, onMeta, onParti }: Props) {
       )}
 
       {prova?.fermata && prova.possibile && (
-        <p className="m-0 text-ambra">
-          Il carburante basta fino a {coordinate(prova.a)}: lì la nave si fermerà ad aspettare la ricarica.
-        </p>
+        <p className="m-0 text-ambra">Il carburante basta fino a {coordinate(prova.a)}: lì la nave si fermerà ad aspettare la ricarica.</p>
       )}
       {prova && !prova.possibile && <p className="m-0 text-pericolo">{RIFIUTI.carburante_insufficiente}</p>}
       {errore && (

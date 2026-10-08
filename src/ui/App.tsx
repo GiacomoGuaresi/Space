@@ -6,6 +6,7 @@ import { caricoOra, capacitaStiva } from '../dominio/risorse'
 import { BASE, settore as calcolaSettore } from '../dominio/settore'
 import { sottotipo } from '../dominio/sottotipi'
 import { Altro } from './Altro'
+import { AzioniNave } from './azioni'
 import { Pallini } from './Barra'
 import { Catalogo, ContenutoCatalogo } from './Catalogo'
 import { Cornice } from './Cornice'
@@ -40,7 +41,7 @@ const Scena = lazy(async () => ({ default: (await import('../grafica/Scena')).Sc
 /** Le pagine dell'app (ui/indirizzo.ts): ponte, mappa, altro, diario, catalogo e l'osservatorio in sviluppo. */
 export function App() {
   const pagina = usePagina()
-  const { stato, scarto, scoperte, scansioni, viaggi, raccolti, insediamenti, prelievi, aperturaDiario, parti, ricarica } = useNave()
+  const { stato, scarto, scoperte, scansioni, viaggi, raccolti, insediamenti, prelievi, aperturaDiario, parti, fonda, ricarica } = useNave()
   const ora = useOra(scarto)
 
   // Il diario si ricalcola al minuto: le voci nuove (un arrivo, una ricarica) compaiono da sole.
@@ -85,6 +86,7 @@ export function App() {
         : null,
     [carico, nave, secondo, raccolti, insediamenti],
   )
+  const azioni = useMemo(() => ({ fonda }), [fonda])
   const ultima = useMemo(() => ({ voce: voci[0] ?? null, nuove: daLeggere }), [voci, daLeggere])
 
   // Pallini: Ponte se la nave è arrivata da quando l'hai visto, Mappa se c'è un
@@ -341,7 +343,9 @@ export function App() {
   return (
     <Pallini.Provider value={pallini}>
       <UltimaVoce.Provider value={ultima}>
-        <CaricoAttuale.Provider value={bordo}>{vista()}</CaricoAttuale.Provider>
+        <CaricoAttuale.Provider value={bordo}>
+          <AzioniNave.Provider value={azioni}>{vista()}</AzioniNave.Provider>
+        </CaricoAttuale.Provider>
       </UltimaVoce.Provider>
     </Pallini.Provider>
   )
