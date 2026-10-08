@@ -37,10 +37,11 @@ Come Projects e Trekking:
 | Livello | Scelta | Note |
 |---|---|---|
 | Linguaggio | TypeScript | |
-| UI | React 19 | pannelli, scanner, catalogo |
+| UI | React 19 | finestre su PC, pagine sul telefono ([11](11-interfaccia.md)) |
+| Finestre | react-rnd | trascinare e ridimensionare le finestre su PC |
 | Build | Vite, `base: '/Space/'` | |
 | Routing | hash router | |
-| Stile | Tailwind CSS | palette scura, da definire |
+| Stile | Tailwind CSS | plancia ambra, IBM Plex |
 | Grafica | three.js + shader GLSL | generatori procedurali per corpo |
 | Dati e accesso | @supabase/supabase-js | |
 | PWA | vite-plugin-pwa | |

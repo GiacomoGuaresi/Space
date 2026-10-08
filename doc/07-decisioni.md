@@ -75,3 +75,7 @@
 | 2026-10-08 | Nelle impostazioni niente "esci": l'account è quello di casa, condiviso con le altre app | deciso |
 | 2026-10-08 | Nella **wiki** ci sono solo le pagine di ciò che esiste già; le altre arrivano con le loro meccaniche. Una pagina sbloccata resta sbloccata (sul dispositivo) | deciso |
 | 2026-10-08 | Sottotipi in `src/dominio/sottotipi.ts`: classe della stella per stelle e sistemi, composizione, genere, anelli, forma; comete, pulsar, buchi neri e wormhole non ne hanno | deciso |
+| 2026-10-08 | Pubblico **80 % PC, 20 % telefono**: da **1024 px** in su **plancia a finestre** trascinabili, ridimensionabili e riducibili nel dock; sotto, l'interfaccia a pagine di MI invariata ([11](11-interfaccia.md#pc--plancia-a-finestre)) | deciso |
+| 2026-10-08 | Su PC lo sfondo è la scena **o** la mappa 3D (Tab); Qui, Scanner e Rotta sono tre finestre; una finestra per tipo; disposizione ricordata sul dispositivo, con Riordina | deciso |
+| 2026-10-08 | Finestre con **react-rnd**; scorciatoie a una lettera; densità compatta su PC; nell'indirizzo solo link diretti | deciso |
+| 2026-10-08 | Macro step **MF · Plancia a finestre** prima di M4 | deciso |

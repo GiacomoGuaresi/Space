@@ -8,7 +8,7 @@ Sviluppo **agile a step piccoli**. Ogni step:
 - si chiude con test verdi, `npm run verifica-sql` (quando tocca il database), build, prova in locale, commit e push. **Il push pubblica**, quindi ogni step è un rilascio;
 - **non lascia il gioco rotto**: una meccanica a metà resta nascosta o disattivata finché non è giocabile;
 - aggiorna `doc/` se cambia una regola, e il registro [07](07-decisioni.md) se cambia una decisione;
-- porta con sé **la sua interfaccia** ([11](11-interfaccia.md)): sezione o scheda, voci del diario, pallini, pagina della wiki, ⓘ sui valori calcolati.
+- porta con sé **la sua interfaccia** ([11](11-interfaccia.md)): finestra su PC e sezione o scheda sul telefono, voci del diario, pallini, pagina della wiki, ⓘ sui valori calcolati.
 
 I macro step (M3, M4…) raggruppano gli step per tema. Si chiudono con una riga in "Si consegna" e la documentazione allineata. Regole e numeri vengono da [02](02-meccaniche.md), [09](09-bilanciamento.md) e [10](10-ricerche.md).
 
@@ -18,6 +18,7 @@ I macro step (M3, M4…) raggruppano gli step per tema. Si chiudono con una riga
 - [x] Giri di Q&A: meccaniche a lungo termine, numeri e simulazioni (giri 2-20, trasferiti il 2026-10-08)
 - [x] Documentazione senza punti aperti sulle meccaniche; la sicurezza si decide step per step
 - [x] Giri di UI/UX: stile, sezioni, wiki, diario e pallini, prototipo ([11](11-interfaccia.md), trasferiti il 2026-10-08)
+- [x] Giri di UI per PC: plancia a finestre trascinabili, pubblico 80 % PC ([11](11-interfaccia.md#pc--plancia-a-finestre))
 
 ## M0 · Fondamenta ✅
 - [x] `git init`, LICENSE MIT, repository pubblico `Space` su GitHub
@@ -80,13 +81,27 @@ Porta l'interfaccia di M2-M3 nella struttura di [11](11-interfaccia.md), senza m
 
 **Si consegna**: la plancia, pronta ad accogliere le meccaniche.
 
-## M4 · Risorse e prima colonia ← *prossimo*
+## MF · Plancia a finestre (PC) ← *prossimo*
 
-- [ ] **4.1 Stiva per risorsa** (tabella `stiva`, sei risorse) e sezione **Nave** nella barra, con la stiva.
+Porta l'interfaccia su PC nella [plancia a finestre](11-interfaccia.md#pc--plancia-a-finestre). Sotto i 1024 px di larghezza il telefono resta com'è, a ogni step.
+
+- [ ] **F.1 Cornice PC**: da 1024 px in su barra di stato su una riga, niente colonna centrale, dock in basso al posto della barra a schede (le voci aprono ancora le pagine di oggi). *Si vede: lo schermo intero usato.*
+- [ ] **F.2 Finestre**: componente `Finestra` con react-rnd (titolo, trascina, ridimensiona, _ riduci nel dock, × chiudi, primo piano, dentro lo schermo). **Qui, Scanner, Rotta** diventano tre finestre; un clic nello scanner riempie la Rotta. *Si gioca: navigazione a colpo d'occhio.*
+- [ ] **F.3 Archivio in finestra**: Diario, Wiki, Catalogo, Impostazioni come finestre; i link diretti (`#/wiki/…`, `#/rotta/…`, `#/diario`) aprono la finestra e l'indirizzo si pulisce; "Numeri ›" apre la Wiki. Pallini sulle voci del dock.
+- [ ] **F.4 Mappa come sfondo**: ⇆ scena/mappa, barretta dei filtri, clic su un corpo → Rotta.
+- [ ] **F.5 Memoria della disposizione** sul dispositivo, ↺ Riordina, finestre che rientrano quando lo schermo si restringe; nelle impostazioni si forza finestre o pagine.
+- [ ] **F.6 Tastiera e densità**: lettere delle finestre, Tab, Esc, ? con l'elenco; bottoni compatti, tooltip al passaggio (anche ⓘ), menu col tasto destro sui corpi.
+- [ ] **F.7 Barra di stato completa**: ultima voce del diario con le novità, ora del server. Attività in corso e stiva in breve arrivano con M4-M5.
+
+**Si consegna**: su PC la plancia a finestre, con tutto ciò che esiste oggi.
+
+## M4 · Risorse e prima colonia
+
+- [ ] **4.1 Stiva per risorsa** (tabella `stiva`, sei risorse) e la **Nave** (finestra N su PC, sezione sul telefono), con la stiva; stiva in breve nella barra di stato del PC.
 - [ ] **4.2 Raccolta a mano**: sosta su un corpo con risorse, estrazione nel tempo fino alla stiva piena. *Si gioca: prime risorse.*
 - [ ] **4.3 Comete**: raccolta una volta per giocatore (tabella `raccolto`).
 - [ ] **4.4 Base madre come insediamento**: produzione delle 4 comuni nel suo magazzino, fino al tetto.
-- [ ] **4.5 Raccolta di persona**: arrivando in un insediamento il magazzino passa da solo nella stiva; sezione **Rete** nella barra.
+- [ ] **4.5 Raccolta di persona**: arrivando in un insediamento il magazzino passa da solo nella stiva; la **Rete** (finestra E su PC, sezione sul telefono).
 - [ ] **4.6 Fondare la prima colonia** (gratis) su un sistema planetario, con il mix del pianeta. *Si gioca: il primo giro di raccolta.*
 - [ ] **4.7 Fondare altre basi**, pagando dalla stiva, fino al limite di 2.
 - [ ] **4.8 Eventi degli insediamenti nel diario** (pieno, fondazione) e pallino su Rete.
@@ -108,7 +123,7 @@ Porta l'interfaccia di M2-M3 nella struttura di [11](11-interfaccia.md), senza m
 
 ## M6 · Laboratorio e ricerche
 
-- [ ] **6.1 Motore delle ricerche** (tabella `ricerca`): una alla volta, nave ferma ≤ 1 h, gradino ≤ livello del laboratorio; laboratorio a livelli. Interfaccia dell'albero.
+- [ ] **6.1 Motore delle ricerche** (tabella `ricerca`): una alla volta, nave ferma ≤ 1 h, gradino ≤ livello del laboratorio; laboratorio a livelli. Interfaccia dell'albero (finestra T su PC).
 - [ ] **6.2 Ingegneria 1-4**: Automazione, Stiva modulare, Cantiere orbitale, Leghe.
 - [ ] **6.3 Colonizzazione 1-4**: Astrofisica I (+2 basi), Estrattori minerari, Raccoglitori di gas, Magazzini modulari.
 - [ ] **6.4 Sensori 1-4**: Scansione in volo, Spettrometria, Radar (solo lo sblocco), Telemetria.
@@ -148,7 +163,7 @@ Porta l'interfaccia di M2-M3 nella struttura di [11](11-interfaccia.md), senza m
 
 ## M10 · Traguardi e rifinitura
 
-- [ ] **10.1 Traguardi** (tabella `traguardo`), pagina delle medaglie in Altro, voci nel diario.
+- [ ] **10.1 Traguardi** (tabella `traguardo`), medaglie (finestra G su PC, voce di Altro sul telefono), voci nel diario.
 - [ ] **10.2 Rifinitura del bilanciamento** con i dati reali di gioco, aggiornando [09](09-bilanciamento.md) e `sim/`.
 - [ ] **10.3 Qualità grafica ridotta** in automatico sui dispositivi lenti (rimandata da M1).
 

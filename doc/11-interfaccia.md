@@ -1,13 +1,14 @@
 # 11 · Interfaccia
 
 Come si presenta e si usa il gioco. Le regole del gioco stanno in [02](02-meccaniche.md), i numeri in [09](09-bilanciamento.md).
-Prototipo approvato, con le 7 schermate del telefono: [Space · Prototipo interfaccia](https://claude.ai/artifact/79XXi2Bakn9k9Gp9J6K3So).
+Prototipo approvato delle 7 schermate del telefono: [Space · Prototipo interfaccia](https://claude.ai/artifact/79XXi2Bakn9k9Gp9J6K3So). Per il PC non c'è un prototipo: vale lo schema qui sotto.
 
 ## Principi
 
-- **Telefono e desktop alla pari**, con la stessa struttura; il desktop è solo più largo.
-- La **scena 3D è sempre di fondo** e i pannelli stanno sopra.
-- **Tutto si fa dal Ponte**: le azioni del luogo, e la scheda BASE quando si è attraccati. Le altre sezioni servono a consultare.
+- Pubblico **80 % PC, 20 % telefono**. Da **1024 px** di larghezza in su c'è la **plancia a finestre** ([PC](#pc--plancia-a-finestre)); sotto resta l'interfaccia a pagine del [telefono](#telefono--pagine-e-barra). Nelle impostazioni si può forzare l'una o l'altra.
+- Le due interfacce mostrano **gli stessi contenuti** (Qui, Scanner, Rotta, Diario, Wiki…): cambia solo il contenitore, finestra o pagina.
+- La **scena 3D è sempre di fondo** e i pannelli o le finestre stanno sopra.
+- **Le azioni si fanno sul posto**: le azioni del luogo stanno in Qui, quelle della base nella scheda BASE quando si è attraccati. Il resto serve a consultare.
 - **Costruzioni solo sul posto**: a distanza si consulta e basta.
 - **Niente notifiche**: c'è il diario di bordo, e i pallini segnalano dove c'è qualcosa.
 - È un gioco tattico: i numeri si mostrano, con le formule a portata di tocco.
@@ -26,9 +27,64 @@ Prototipo approvato, con le 7 schermate del telefono: [Space · Prototipo interf
 
 - **HUD vivo**: linee che si disegnano, numeri che scorrono. Tutto si spegne con **riduci movimento**.
 - **Suoni** discreti e disattivabili: clic, partenza, arrivo, scoperta.
+- **Densità su PC**: bottoni da ~32 px invece di 44-48, tooltip al passaggio del mouse (anche per le ⓘ), menu col tasto destro sui corpi (*Imposta rotta · Apri nella wiki*). Sul telefono restano i bersagli da dito.
 - **Accessibilità**: la rarità si distingue per **forma e colore** (● comune, ◆ non comune, ★ raro, ✦ leggendario); ARIA su barre e pannelli.
 
-## Ossatura
+## PC · plancia a finestre
+
+```
+┌───────────────────────────────────────────────────────────────────────────────────────┐
+│ ◉ FERMA 14·−2·9 FASCIA DI ORAN │ CARB ▰▰▰▰▰▱▱▱ 4,9/9,9 TETTO 50% │ ⚙ MOTORE 10 2:14 │ M▰S▰G▰H▰ │ ARRIVO Fascia… ●3 │ 18:40 │
+├───────────────────────────────────────────────────────────────────────────────────────┤
+│ ┌ SCANNER ─────────── _ × ┐                                    ┌ ROTTA ────────── _ × ┐ │
+│ │ ● Kumion       4,1      │                                    │ meta 3 · −1 · 2       │ │
+│ │ ◆ Talir        6,0      │          scena 3D del settore      │ 12 h · arrivo 18:40   │ │
+│ └─────────────────────────┘             oppure mappa 3D        │ [ PARTI ]             │ │
+│ ┌ QUI ─────────────── _ × ┐                                    └───────────────────────┘ │
+│ │ FASCIA DI ORAN …        │                                                              │
+│ └─────────────────────────┘                                                              │
+├───────────────────────────────────────────────────────────────────────────────────────┤
+│ Q S R │ N Nave  E Rete  B Base  T Ricerche │ D Diario● W Wiki C Catalogo G Traguardi │ ⇆ ↺ ⚙ ? │
+└───────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+- **Barra di stato** in alto, su una riga: stato e luogo · carburante con il tetto · **attività in corso** con conto alla rovescia (potenziamento, ricerca, raccolta a mano) · **stiva in breve** (sei mini barre) · **ultima voce del diario** con le novità (clic → Diario) · **ora del server**. Attività e stiva compaiono con le loro meccaniche.
+- **Sfondo**: la scena del settore **oppure** la mappa 3D, scambiate con ⇆ o **Tab**; le finestre restano aperte sopra. Con la mappa, i filtri per tipo e i tasti per ricentrare stanno in una barretta sotto la barra di stato; un clic su un corpo lo mette nella Rotta (e la apre).
+- **Dock** in basso, alto ~40 px, in quattro gruppi: *Navigazione* (Qui, Scanner, Rotta) · *Nave e rete* (Nave, Rete, Base, Ricerche) · *Archivio* (Diario, Wiki, Catalogo, Traguardi) · *comandi* (⇆ Scena/Mappa, ↺ Riordina, ⚙ Impostazioni, ? scorciatoie). Finestra aperta = accesa, ridotta = contorno, chiusa = spenta; i **pallini** stanno sulle voci del dock. Su PC non c'è la voce Altro.
+
+### Finestre
+
+| Tasto | Finestra | Contenuto | Da | Misura iniziale |
+|---|---|---|---|---|
+| Q | **Qui** | scheda del settore dove sta la nave, azioni del luogo (raccogli, fonda, attraversa) | ora | 340 × 300 |
+| S | **Scanner** | elenco dal più vicino; clic → Rotta | ora | 340 × 420 |
+| R | **Rotta** | meta, anteprima, PARTI | ora | 340 × 320 |
+| D | **Diario di bordo** | cronologia, novità evidenziate | ora | 420 × 520 |
+| W | **Wiki** | indice a sinistra, pagina a destra | ora | 720 × 560 |
+| C | **Catalogo** | album per tipo | ora | 640 × 520 |
+| , | **Impostazioni** | suoni, movimento, interfaccia (finestre o pagine) | ora | 380 × 360 |
+| N | **Nave** | statistiche, stiva, potenziamenti, coda del cantiere | M4-M5 | 420 × 560 |
+| E | **Rete** | insediamenti per riempimento, VAI → Rotta | M4 | 460 × 480 |
+| B | **Base** | strutture, cantiere, laboratorio, pieno; nel dock **solo quando si è attraccati**, si apre da sola all'arrivo | M5 | 460 × 560 |
+| T | **Ricerche** | grafo dei 4 rami | M6 | 800 × 600 |
+| G | **Traguardi** | medaglie per famiglia | M10 | 520 × 480 |
+
+Una finestra compare nel dock quando esiste la sua meccanica.
+
+### Regole delle finestre
+
+- **Una finestra per tipo**: riaprirla la porta in primo piano.
+- Titolo maiuscolo spaziato; **_** la riduce nel dock, **×** la chiude. Si **trascina** dal titolo e si **ridimensiona** dall'angolo, con misure minime (react-rnd). Clic → primo piano.
+- Le finestre non escono dallo schermo: se la finestra del browser si restringe, rientrano.
+- Un'azione che riguarda un'altra finestra la apre o la riporta su: scegliere una meta (scanner, mappa, Rete) apre la Rotta; "Numeri ›" di una ⓘ apre la Wiki su quella pagina.
+- In viaggio Scanner e Rotta restano aperte e mostrano "disponibile all'arrivo".
+- **Disposizione**: alla prima apertura Qui, Scanner e Rotta. Poi si ricordano **sul dispositivo** le finestre aperte e ridotte, la posizione e la dimensione. **↺ Riordina** torna alla disposizione iniziale.
+- **Tastiera**: la lettera della finestra la apre o la chiude, **Tab** scambia scena e mappa, **Esc** chiude la finestra in primo piano, **?** mostra l'elenco. Le lettere non valgono mentre si scrive in un campo.
+- **Indirizzo**: solo link diretti. `#/wiki/pulsar`, `#/rotta/x,y,z`, `#/diario` aprono la finestra, poi l'indirizzo si pulisce. La disposizione non va nell'URL.
+
+## Telefono · pagine e barra
+
+Sotto i 1024 px resta l'interfaccia di MI: una pagina alla volta.
 
 ```
 ┌──────────────────────────────────┐
@@ -48,11 +104,13 @@ Prototipo approvato, con le 7 schermate del telefono: [Space · Prototipo interf
 - **Striscia di stato**: in viaggio `▲ VERSO 40 · 2 · −7   03:12:44`, con il carburante e l'ora di arrivo. In sosta mostra il luogo, il carburante con il tetto di ricarica e l'attività in corso (potenziamento, ricerca, raccolta a mano) con il conto alla rovescia. Un tocco apre il diario.
 - **Barra**: Ponte · Mappa · Rete · Nave · Altro.
 
-## Sezioni
+## Contenuti
+
+I contenuti sono gli stessi su PC e telefono. Sul telefono ognuno è una sezione della barra (o una voce di Altro); su PC è una finestra.
 
 ### Ponte
 
-Schede **QUI · SCANNER · ROTTA**, più **BASE** quando la nave è attraccata a una base. In cima ci sono le azioni del luogo:
+Sul telefono è un pannello con le schede **QUI · SCANNER · ROTTA**, più **BASE** quando la nave è attraccata a una base; su PC sono le finestre Qui, Scanner, Rotta e Base. In cima ci sono le azioni del luogo:
 
 | Dove sei | Azioni |
 |---|---|
@@ -65,7 +123,7 @@ Schede **QUI · SCANNER · ROTTA**, più **BASE** quando la nave è attraccata a
 
 ### Mappa
 
-Mappa 3D dei settori scansionati, che si apre **centrata sulla nave**.
+Mappa 3D dei settori scansionati, che si apre **centrata sulla nave**. Sul telefono è una sezione; su PC è il secondo sfondo.
 - Un dito ruota; due dita zoomano e spostano.
 - Un tocco apre la scheda del corpo (tipo, coordinate, distanza) con IMPOSTA ROTTA.
 - I punti hanno la forma e il colore della rarità: pieni se visitati, vuoti se solo rilevati. Gli insediamenti hanno un simbolo proprio.
@@ -150,7 +208,7 @@ La cronologia di ciò che succede, dal più recente. All'apertura dell'app si ap
 
 ## Pallini
 
-I pallini segnalano sia ciò che è **successo** sia ciò che è **possibile** adesso.
+I pallini segnalano sia ciò che è **successo** sia ciò che è **possibile** adesso. Sul telefono stanno sulla barra, su PC sulle voci del dock (Altro si scompone nelle sue voci).
 
 | Voce | Si accende quando… | Si spegne quando… |
 |---|---|---|

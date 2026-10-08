@@ -43,5 +43,5 @@ npm run build
 | [doc/08-deploy.md](doc/08-deploy.md) | Pubblicazione, variabili, configurazione di Supabase |
 | [doc/09-bilanciamento.md](doc/09-bilanciamento.md) | Formule, valori, ritmo atteso; simulazioni in [`sim/`](sim/) |
 | [doc/10-ricerche.md](doc/10-ricerche.md) | Albero tecnologico (42 ricerche) |
-| [doc/11-interfaccia.md](doc/11-interfaccia.md) | Interfaccia: stile, sezioni, wiki, diario, pallini |
+| [doc/11-interfaccia.md](doc/11-interfaccia.md) | Interfaccia: finestre su PC, pagine sul telefono, stile, wiki, diario, pallini |
 | [Q&A.md](Q&A.md) | Domande ancora aperte |
