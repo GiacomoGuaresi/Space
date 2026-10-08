@@ -3,7 +3,7 @@ import { Rocket } from 'lucide-react'
 import { ViaggioRifiutato, type MotivoRifiuto } from '../dati'
 import { BILANCIAMENTO } from '../dominio/bilanciamento'
 import { CATALOGO } from '../dominio/catalogo'
-import { anteprima, type Nave } from '../dominio/navigazione'
+import { anteprima, tipiRilevabili, type Nave } from '../dominio/navigazione'
 import { distanza, stessoSettore, tipoSettore, type Coordinate } from '../dominio/settore'
 import { coordinate, durata, numero, orario, settori } from './formato'
 
@@ -19,6 +19,8 @@ interface Props {
   nave: Nave
   ora: Date
   meta: Coordinate | null
+  /** Le chiavi "x,y,z" dei settori già scoperti: il loro tipo si conosce sempre. */
+  scoperti: ReadonlySet<string>
   onMeta: (meta: Coordinate) => void
   onParti: (meta: Coordinate) => Promise<void>
 }
@@ -27,7 +29,7 @@ interface Props {
  * La rotta: si sceglie la meta (dallo scanner o scrivendo le coordinate), si
  * vede quanto dura, quanto consuma e se il carburante basta, e si parte.
  */
-export function Rotta({ nave, ora, meta, onMeta, onParti }: Props) {
+export function Rotta({ nave, ora, meta, scoperti, onMeta, onParti }: Props) {
   const [bozza, setBozza] = useState<Record<(typeof ASSI)[number], string>>(() => testi(meta ?? nave.posizione))
   const [inCorso, setInCorso] = useState(false)
   const [errore, setErrore] = useState<string | null>(null)
@@ -39,7 +41,13 @@ export function Rotta({ nave, ora, meta, onMeta, onParti }: Props) {
   const scritta = leggi(bozza)
   const valida = scritta !== null && !stessoSettore(scritta, nave.posizione)
   const prova = valida ? anteprima(nave, scritta, ora) : null
-  const tipo = scritta ? tipoSettore(scritta) : null
+  // Lo scanner non rivela i tipi che non rileva: si sa cosa c'è solo se è
+  // rilevabile o già scoperto.
+  const tipoVero = scritta ? tipoSettore(scritta) : null
+  const tipo =
+    tipoVero && (tipiRilevabili(nave.scanner).has(tipoVero) || scoperti.has(`${scritta!.x},${scritta!.y},${scritta!.z}`))
+      ? tipoVero
+      : null
 
   const invia = (evento: FormEvent) => {
     evento.preventDefault()
@@ -87,7 +95,7 @@ export function Rotta({ nave, ora, meta, onMeta, onParti }: Props) {
         <dl className="m-0 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
           <dt className="text-testo-tenue">Meta</dt>
           <dd className="m-0">
-            {coordinate(scritta)} · {tipo ? CATALOGO[tipo].nome : 'spazio vuoto'}
+            {coordinate(scritta)} · {tipo ? CATALOGO[tipo].nome : 'nessun corpo rilevato'}
           </dd>
           <dt className="text-testo-tenue">Distanza</dt>
           <dd className="m-0">{settori(distanza(nave.posizione, scritta))}</dd>

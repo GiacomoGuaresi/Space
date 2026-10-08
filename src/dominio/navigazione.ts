@@ -22,6 +22,8 @@ export interface Nave {
   velocita: number
   serbatoio: number
   ricarica: number
+  /** Il livello dello scanner. */
+  scanner: number
 }
 
 export interface Viaggio {
@@ -132,10 +134,22 @@ export function anteprima(nave: Nave, meta: Coordinate, ora: Date): Anteprima {
   }
 }
 
-export function raggioScanner(tipoQui: TipoCorpo | null): number {
-  if (tipoQui === 'nebulosa') return Math.floor(SCANNER.raggio / 2)
-  if (tipoQui === 'pulsar') return SCANNER.raggio * 2
-  return SCANNER.raggio
+const LIVELLI_SCANNER: readonly (TipoCorpo | 'raggio')[] = SCANNER.livelli
+
+/** I tipi di corpo che lo scanner rileva al livello dato: gli altri sono invisibili. */
+export function tipiRilevabili(livello: number): ReadonlySet<TipoCorpo> {
+  return new Set(LIVELLI_SCANNER.slice(0, livello).filter((v): v is TipoCorpo => v !== 'raggio'))
+}
+
+/** Il raggio dello scanner al livello dato, in settori, fermi nel settore di tipo `tipoQui`. */
+export function raggioScanner(livello: number, tipoQui: TipoCorpo | null): number {
+  const aumenti =
+    LIVELLI_SCANNER.slice(0, livello).filter((v) => v === 'raggio').length +
+    Math.max(0, livello - LIVELLI_SCANNER.length)
+  const raggio = SCANNER.raggio * SCANNER.crescita ** aumenti
+  if (tipoQui === 'nebulosa') return raggio * SCANNER.nebulosa
+  if (tipoQui === 'pulsar') return raggio * SCANNER.pulsar
+  return raggio
 }
 
 export interface Rilevamento {
@@ -144,18 +158,22 @@ export interface Rilevamento {
   distanza: number
 }
 
-/** I corpi entro il raggio dello scanner (in distanza euclidea), dal più vicino. */
-export function scansione(centro: Coordinate, raggio: number): Rilevamento[] {
+/**
+ * I corpi entro il raggio dello scanner (in distanza euclidea), dal più
+ * vicino; se si passano i `tipi`, solo quelli.
+ */
+export function scansione(centro: Coordinate, raggio: number, tipi?: ReadonlySet<TipoCorpo>): Rilevamento[] {
   const trovati: Rilevamento[] = []
-  for (let dx = -raggio; dx <= raggio; dx++)
-    for (let dy = -raggio; dy <= raggio; dy++)
-      for (let dz = -raggio; dz <= raggio; dz++) {
+  const lato = Math.floor(raggio)
+  for (let dx = -lato; dx <= lato; dx++)
+    for (let dy = -lato; dy <= lato; dy++)
+      for (let dz = -lato; dz <= lato; dz++) {
         if (dx === 0 && dy === 0 && dz === 0) continue
         const coordinate = { x: centro.x + dx, y: centro.y + dy, z: centro.z + dz }
         const d = distanza(centro, coordinate)
         if (d > raggio) continue
         const tipo = tipoSettore(coordinate)
-        if (tipo) trovati.push({ coordinate, tipo, distanza: d })
+        if (tipo && (!tipi || tipi.has(tipo))) trovati.push({ coordinate, tipo, distanza: d })
       }
   return trovati.sort((a, b) => a.distanza - b.distanza)
 }

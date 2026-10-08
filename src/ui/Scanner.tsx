@@ -1,13 +1,15 @@
 import { useMemo } from 'react'
 import { Check } from 'lucide-react'
 import { CATALOGO } from '../dominio/catalogo'
-import { raggioScanner, scansione } from '../dominio/navigazione'
+import { raggioScanner, scansione, tipiRilevabili } from '../dominio/navigazione'
 import { tipoSettore, type Coordinate } from '../dominio/settore'
 import { COLORI_RARITA } from './colori'
 import { coordinate, settori } from './formato'
 
 interface Props {
   centro: Coordinate
+  /** Il livello dello scanner: decide raggio e tipi rilevati. */
+  livello: number
   /** Le chiavi "x,y,z" dei settori già scoperti. */
   scoperti: ReadonlySet<string>
   onScegli: (meta: Coordinate) => void
@@ -15,21 +17,24 @@ interface Props {
 
 /**
  * I corpi attorno alla nave, dal più vicino. Lo scanner vede il tipo, non il
- * nome: quello si scopre arrivando.
+ * nome: quello si scopre arrivando. I tipi che non rileva restano invisibili.
  */
-export function Scanner({ centro, scoperti, onScegli }: Props) {
+export function Scanner({ centro, livello, scoperti, onScegli }: Props) {
   const tipoQui = tipoSettore(centro)
-  const raggio = raggioScanner(tipoQui)
-  const trovati = useMemo(() => scansione(centro, raggio), [centro, raggio])
+  const raggio = raggioScanner(livello, tipoQui)
+  const tipi = useMemo(() => tipiRilevabili(livello), [livello])
+  const trovati = useMemo(() => scansione(centro, raggio, tipi), [centro, raggio, tipi])
 
   return (
     <div className="flex flex-col gap-1.5">
       <p className="m-0 text-xs text-testo-tenue">
         Raggio {settori(raggio)}
         {tipoQui === 'nebulosa' ? ' · ridotto dalla nebulosa' : tipoQui === 'pulsar' ? ' · raddoppiato dalla pulsar' : ''}
+        {' · rileva: '}
+        {[...tipi].map((t) => CATALOGO[t].nome.toLowerCase()).join(', ')}
       </p>
       {trovati.length === 0 ? (
-        <p className="m-0 text-xs">Nessun corpo nel raggio dello scanner. Prova a spostarti.</p>
+        <p className="m-0 text-xs">Nessun corpo rilevato nel raggio. Prova a spostarti: gli altri tipi di corpo si scoprono solo arrivandoci.</p>
       ) : (
         <ul className="m-0 flex list-none flex-col gap-1 p-0">
           {trovati.map(({ coordinate: c, tipo, distanza }) => {

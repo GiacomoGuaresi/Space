@@ -60,7 +60,7 @@ Porta la navigazione di M2 sui valori v1 ([09](09-bilanciamento.md)).
 - [x] **3.3 Ricarica al 50 %** fuori dalla base, 100 % in base o accanto a una stella (ricarica ×2). *Si gioca: le stelle diventano tappe.*
 - [x] **3.4 Fionda v1**: ×1,5 e il 20 % dei settori percorsi gratis.
 - [x] **3.5 Soglie dei rari** in `catalogo.ts` e in SQL (`005_soglie_rari.sql`), con il campione di `verifica-sql` rigenerato. *Si gioca: i rari compaiono ad anelli.*
-- [ ] **3.6 Scanner a livelli**: raggio 4, al livello 1 rileva solo i sistemi planetari, gli altri tipi sono invisibili (livello fisso per ora).
+- [x] **3.6 Scanner a livelli**: raggio 4, al livello 1 rileva solo i sistemi planetari, gli altri tipi sono invisibili anche nella rotta (livello nella colonna `nave.scanner`, fisso a 1 per ora; `006_scanner.sql`).
 - [ ] **3.7 Mappa dei settori scansionati** (tabella `scansione`), visibile da subito.
 
 **Si consegna**: l'esplorazione con il ritmo definitivo.

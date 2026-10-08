@@ -73,6 +73,38 @@ export const BILANCIAMENTO = {
   },
   scanner: {
     /** Il raggio al livello 1, in settori. */
-    raggio: 3,
+    raggio: 4,
+    /** Ogni livello "raggio" lo moltiplica per tanto. */
+    crescita: 1.2,
+    /**
+     * Cosa porta ogni livello, dal primo: un tipo rilevabile o più raggio, in
+     * ordine di utilità. Oltre l'elenco ogni livello dà solo raggio.
+     */
+    livelli: [
+      'sistema',
+      'raggio',
+      'asteroidi',
+      'raggio',
+      'nebulosa',
+      'raggio',
+      'stella',
+      'raggio',
+      'gigante',
+      'raggio',
+      'cometa',
+      'raggio',
+      'pulsar',
+      'raggio',
+      'raggio',
+      'buconero',
+      'raggio',
+      'relitto',
+      'raggio',
+      'raggio',
+      'wormhole',
+    ],
+    /** Dentro una nebulosa il raggio si riduce, in sosta presso una pulsar cresce. */
+    nebulosa: 0.5,
+    pulsar: 2,
   },
 } as const

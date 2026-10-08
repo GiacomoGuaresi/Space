@@ -55,7 +55,33 @@ language sql immutable parallel safe set search_path = '' as $$
     "gratis": 0.2
   },
   "scanner": {
-    "raggio": 3
+    "raggio": 4,
+    "crescita": 1.2,
+    "livelli": [
+      "sistema",
+      "raggio",
+      "asteroidi",
+      "raggio",
+      "nebulosa",
+      "raggio",
+      "stella",
+      "raggio",
+      "gigante",
+      "raggio",
+      "cometa",
+      "raggio",
+      "pulsar",
+      "raggio",
+      "raggio",
+      "buconero",
+      "raggio",
+      "relitto",
+      "raggio",
+      "raggio",
+      "wormhole"
+    ],
+    "nebulosa": 0.5,
+    "pulsar": 2
   }
 }'::jsonb
 $$;

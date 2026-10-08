@@ -84,12 +84,13 @@ export function Ponte({ nave, viaggio, scarto, scoperte, riepilogo, onChiudiRiep
               ) : (
                 <div className="max-h-[42dvh] overflow-y-auto rounded-2xl border border-bordo/70 bg-pannello/75 p-3 backdrop-blur">
                   {scheda === 'scanner' ? (
-                    <Scanner centro={nave.posizione} scoperti={scoperti} onScegli={scegli} />
+                    <Scanner centro={nave.posizione} livello={nave.scanner} scoperti={scoperti} onScegli={scegli} />
                   ) : (
                     <Rotta
                       nave={nave}
                       ora={ora}
                       meta={meta}
+                      scoperti={scoperti}
                       onMeta={setMeta}
                       onParti={async (m) => {
                         await onParti(m)

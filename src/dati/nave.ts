@@ -40,6 +40,7 @@ interface RigaNave {
   velocita: number
   serbatoio: number
   ricarica: number
+  scanner: number
 }
 
 interface RigaViaggio {
@@ -66,6 +67,7 @@ function nave(r: RigaNave): Nave {
     velocita: r.velocita,
     serbatoio: r.serbatoio,
     ricarica: r.ricarica,
+    scanner: r.scanner,
   }
 }
 

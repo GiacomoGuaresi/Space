@@ -10,6 +10,7 @@ import {
   rotta,
   scansione,
   tettoQui,
+  tipiRilevabili,
   type Nave,
 } from './navigazione'
 import { BASE, distanza, tipoSettore } from './settore'
@@ -22,7 +23,7 @@ const t0 = new Date('2026-10-08T10:00:00Z')
 const dopo = (ms: number) => new Date(t0.getTime() + ms)
 
 function nave(parziale: Partial<Nave> = {}): Nave {
-  return { posizione: BASE, dal: t0, carburante: NAVE_INIZIALE.serbatoio, ...NAVE_INIZIALE, ...parziale }
+  return { posizione: BASE, dal: t0, carburante: NAVE_INIZIALE.serbatoio, ...NAVE_INIZIALE, scanner: 1, ...parziale }
 }
 
 describe('carburante', () => {
@@ -135,17 +136,38 @@ describe('anteprima', () => {
 
 describe('scanner', () => {
   it('ha il raggio ridotto nelle nebulose e doppio presso le pulsar', () => {
-    expect(raggioScanner(null)).toBe(3)
-    expect(raggioScanner('nebulosa')).toBe(1)
-    expect(raggioScanner('pulsar')).toBe(6)
+    expect(raggioScanner(1, null)).toBe(4)
+    expect(raggioScanner(1, 'nebulosa')).toBe(2)
+    expect(raggioScanner(1, 'pulsar')).toBe(8)
+  })
+
+  it('a livelli alterni sblocca un tipo o allarga il raggio', () => {
+    expect([...tipiRilevabili(1)]).toEqual(['sistema'])
+    expect([...tipiRilevabili(3)]).toEqual(['sistema', 'asteroidi'])
+    expect(tipiRilevabili(21).size).toBe(10)
+    // I valori di doc/09-bilanciamento.md#scanner.
+    expect(raggioScanner(2, null)).toBeCloseTo(4.8)
+    expect(raggioScanner(3, null)).toBeCloseTo(4.8)
+    expect(raggioScanner(15, null)).toBeCloseTo(17.2, 1)
+    expect(raggioScanner(20, null)).toBeCloseTo(29.7, 1)
+    expect(raggioScanner(22, null)).toBeCloseTo(raggioScanner(21, null) * 1.2)
+  })
+
+  it('vede solo i tipi rilevabili', () => {
+    const centro = { x: 1000, y: 0, z: 0 }
+    const tutti = scansione(centro, 6)
+    const sistemi = scansione(centro, 6, tipiRilevabili(1))
+    expect(sistemi.length).toBeGreaterThan(0)
+    expect(sistemi.length).toBeLessThan(tutti.length)
+    for (const r of sistemi) expect(r.tipo).toBe('sistema')
   })
 
   it('trova solo corpi entro il raggio, dal più vicino', () => {
     const centro = { x: 1000, y: 0, z: 0 }
-    const trovati = scansione(centro, 3)
+    const trovati = scansione(centro, 3.5)
     expect(trovati.length).toBeGreaterThan(3)
     for (let i = 0; i < trovati.length; i++) {
-      expect(trovati[i].distanza).toBeLessThanOrEqual(3)
+      expect(trovati[i].distanza).toBeLessThanOrEqual(3.5)
       expect(tipoSettore(trovati[i].coordinate)).toBe(trovati[i].tipo)
       if (i > 0) expect(trovati[i].distanza).toBeGreaterThanOrEqual(trovati[i - 1].distanza)
     }
