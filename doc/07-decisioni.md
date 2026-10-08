@@ -90,3 +90,5 @@
 | 2026-10-08 | Deposito: il pieno è sempre fino al 100 % (in base il tetto è il serbatoio); se l'Idrogeno non basta si rifiuta, niente mezzi pieni | deciso |
 | 2026-10-08 | Ricerche: gradini e prerequisiti in `bilanciamento.ts` (il database li legge dallo stesso JSON), con l'elenco `attive` dei nodi già giocabili; si avviano dalla finestra Ricerche, attraccati a una base col laboratorio (la Base mostra il laboratorio e rimanda lì) | deciso |
 | 2026-10-08 | Laboratorio: livello L al costo di una ricerca di gradino L, tempo come le altre strutture | deciso |
+| 2026-10-08 | *Scansione in volo*: un punto di scansione ogni raggio dello scanner lungo la rotta, visibile quando la nave ci passa | deciso |
+| 2026-10-08 | *Telemetria*: senza, la Rete mostra degli insediamenti lontani solo quando saranno pieni (calcolato); con, le barre del magazzino in diretta. Diario e pallino del magazzino pieno restano per tutti | deciso |

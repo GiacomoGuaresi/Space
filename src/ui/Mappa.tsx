@@ -1,4 +1,4 @@
-import { Suspense, lazy, useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { Suspense, lazy, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Navigation } from 'lucide-react'
 import type { Scansione, Scoperta } from '../dati'
 import { CATALOGO } from '../dominio/catalogo'
@@ -12,6 +12,7 @@ import { vaiA } from './indirizzo'
 import { MenuContesto, menuCorpo, type Menu } from './MenuContesto'
 import { segnaRaroVisto } from './pallini'
 import { BottonePrimario, Etichetta, Pannello, SimboloRarita } from './plancia'
+import { CaricoAttuale } from './SchedaNave'
 import { useOra } from './useNave'
 
 // three.js pesa: si carica a parte, come la scena del ponte.
@@ -32,6 +33,7 @@ interface Props {
  */
 export function Mappa({ nave, viaggio, scarto, scoperte, scansioni }: Props) {
   const ora = useOra(scarto)
+  const spettrometria = useContext(CaricoAttuale)?.fatte.has('S2') ?? false
   const tutti = useMemo(() => corpiNoti(scansioni, scoperte), [scansioni, scoperte])
   const [filtro, setFiltro] = useState<Filtro>('tutti')
   const punti = useMemo(() => tutti.filter(FILTRI[filtro].tiene), [tutti, filtro])
@@ -84,6 +86,7 @@ export function Mappa({ nave, viaggio, scarto, scoperte, scansioni }: Props) {
           {scoperta && <p className="m-0 text-base font-semibold tracking-[0.1em] uppercase">{settore(punto.coordinate).corpo?.nome}</p>}
           <div className="flex gap-5">
             <Valore etichetta="Distanza">{numero(distanza(nave.posizione, punto.coordinate), 1)} sett.</Valore>
+            {spettrometria && <Valore etichetta="Ricchezza">×{numero(settore(punto.coordinate).corpo?.ricchezza ?? 0, 2)}</Valore>}
             {prova && <Valore etichetta="Durata">{durata(prova.durata)}</Valore>}
             {prova && <Valore etichetta="Carb">{numero(prova.consumo, 1)}</Valore>}
           </div>

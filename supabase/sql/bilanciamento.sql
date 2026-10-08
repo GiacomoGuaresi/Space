@@ -431,7 +431,11 @@ language sql immutable parallel safe set search_path = '' as $$
       "C1",
       "C2",
       "C3",
-      "C4"
+      "C4",
+      "S1",
+      "S2",
+      "S3",
+      "S4"
     ],
     "effetti": {
       "I1": 0.1,

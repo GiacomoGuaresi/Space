@@ -4,7 +4,7 @@ import { inViaggio, type Nave } from '../dominio/navigazione'
 import { RISORSE, type Fatte } from '../dominio/risorse'
 import { CaricoAttuale } from './SchedaNave'
 import { distanza, settore, stessoSettore } from '../dominio/settore'
-import { coordinatePlancia, numero } from './formato'
+import { coordinatePlancia, durata, numero } from './formato'
 import { vaiA } from './indirizzo'
 import { BarreMagazzino, NOMI_INSEDIAMENTI } from './Magazzino'
 import { BottoneSecondario, Etichetta, Pannello } from './plancia'
@@ -25,6 +25,7 @@ function riempimento(i: Insediamento, ora: Date, fatte?: Fatte): number {
 export function Rete({ nave, insediamenti, ora }: { nave: Nave; insediamenti: readonly Insediamento[]; ora: Date }) {
   const [ordine, setOrdine] = useState<Ordine>('riempimento')
   const fatte = useContext(CaricoAttuale)?.fatte
+  const telemetria = fatte?.has('S4') ?? false
   const volo = inViaggio(nave, ora)
   const elenco = [...insediamenti].sort((a, b) =>
     ordine === 'riempimento'
@@ -79,7 +80,15 @@ export function Rete({ nave, insediamenti, ora }: { nave: Nave; insediamenti: re
                   </BottoneSecondario>
                 )}
               </div>
-              <BarreMagazzino insediamento={i} ora={ora} />
+              {/* Da lontano il magazzino si vede solo con *Telemetria* (S4); senza, si sa solo quando sarà pieno. */}
+              {qui || telemetria ? (
+                <BarreMagazzino insediamento={i} ora={ora} />
+              ) : (
+                <p className="m-0 text-xs text-testo-tenue">
+                  {tra === 0 ? 'Pieno, secondo i calcoli.' : `Pieno tra ${durata(tra * 3_600_000)}, secondo i calcoli.`} Il magazzino da
+                  lontano si vede con Telemetria.
+                </p>
+              )}
               {tra === 0 && !qui && <p className="m-0 text-xs text-ambra">Pieno: passa a raccogliere, la produzione è ferma.</p>}
             </li>
           )

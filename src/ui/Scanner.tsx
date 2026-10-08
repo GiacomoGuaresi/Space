@@ -1,9 +1,10 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useContext, useMemo, useState } from 'react'
 import { Check } from 'lucide-react'
 import { CATALOGO } from '../dominio/catalogo'
 import { raggioScanner, scansione, tipiRilevabili } from '../dominio/navigazione'
-import { tipoSettore, type Coordinate } from '../dominio/settore'
-import { coordinate, settori } from './formato'
+import { settore, tipoSettore, type Coordinate } from '../dominio/settore'
+import { CaricoAttuale } from './SchedaNave'
+import { coordinate, numero, settori } from './formato'
 import { MenuContesto, menuCorpo, type Menu } from './MenuContesto'
 import { SimboloRarita } from './plancia'
 import { usePC } from './schermo'
@@ -28,6 +29,7 @@ export function Scanner({ centro, livello, scoperti, onScegli }: Props) {
   const trovati = useMemo(() => scansione(centro, raggio, tipi), [centro, raggio, tipi])
   // Su PC il tasto destro su un corpo apre il menu: Imposta rotta · Apri nella wiki.
   const pc = usePC()
+  const spettrometria = useContext(CaricoAttuale)?.fatte.has('S2') ?? false
   const [menu, setMenu] = useState<Menu | null>(null)
   const chiudiMenu = useCallback(() => setMenu(null), [])
 
@@ -65,6 +67,12 @@ export function Scanner({ centro, livello, scoperti, onScegli }: Props) {
                     <span className="text-testo-tenue"> · {coordinate(c)}</span>
                   </span>
                   {scoperti.has(chiave) && <Check className="size-3.5 text-[#7fd1c7]" aria-label="Già scoperto" />}
+                  {/* *Spettrometria* (S2): la ricchezza dei corpi rilevati. */}
+                  {spettrometria && (
+                    <span className="shrink-0 tabular-nums text-ambra" title="Ricchezza">
+                      ×{numero(settore(c).corpo?.ricchezza ?? 0, 2)}
+                    </span>
+                  )}
                   <span className="shrink-0 tabular-nums text-testo-tenue">{settori(distanza)}</span>
                 </button>
               </li>
