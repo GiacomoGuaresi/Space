@@ -18,17 +18,18 @@ Lo sviluppo procede per **macro step stabili**: ognuno si chiude pubblicato e gi
 
 **Si consegna**: una pagina vuota online, dietro l'accesso.
 
-## M1 · Universo e corpi celesti ← *prossimo*
-- [ ] Hash delle coordinate e generatore casuale, con test sui settori noti
-- [ ] Catalogo: pesi, gradiente di distanza, sottotipi, ricchezza
-- [ ] Nomi per tipo
-- [ ] Scena three.js e sfondo comune
-- [ ] Un generatore grafico per ogni corpo (11)
-- [ ] **Osservatorio**: si scrivono le coordinate e si guarda il settore
+## M1 · Universo e corpi celesti ✅
+- [x] Hash delle coordinate e generatore casuale, con test sui settori noti (`src/dominio/casuale.ts`)
+- [x] Catalogo: pesi, gradiente di distanza, sottotipi, ricchezza (`catalogo.ts`, `settore.ts`), con valori provvisori
+- [x] Nomi per tipo (`nomi.ts`)
+- [x] Scena three.js con bloom e sfondo comune seminato (`src/grafica/`)
+- [x] Un generatore grafico per ogni corpo (11, più il vuoto)
+- [x] **Osservatorio**: coordinate nell'indirizzo (`#/x,y,z`), spostamento per asse, ricerca del corpo più vicino di un tipo, scheda del corpo
+- [ ] Qualità ridotta automatica sui dispositivi lenti: rimandata, da valutare provando sul telefono
 
 **Si consegna**: l'universo si esplora a vista.
 
-## M2 · Navigazione
+## M2 · Navigazione ← *prossimo*
 - [ ] Nave alla base, `space.viaggia()`, hash in SQL identico a quello in TypeScript
 - [ ] Durata, arrivo calcolato alla lettura, conto alla rovescia
 - [ ] Carburante: consumo, ricarica nel tempo, fermata forzata

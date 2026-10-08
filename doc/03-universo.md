@@ -12,14 +12,20 @@
 seed = hash(seedUniverso, x, y, z)   → intero a 32 bit senza segno
 ```
 
-- `hash` è una funzione di mescolamento di interi (tipo *splitmix32*), scritta da noi in TypeScript e **identica in SQL**, così il database può verificare cosa c'è in un settore (risorse, colonizzabilità).
-- Dal seed si ricava un generatore pseudo-casuale (tipo *mulberry32*). Tipo, sottotipo, ricchezza, nome e grafica leggono da lì in un ordine fisso. **Mai `Math.random()`.**
+- `hash` è il finalizzatore di **MurmurHash3** applicato in catena alle tre coordinate, a 32 bit (`src/dominio/casuale.ts`). In M2 andrà riscritto **identico in SQL**, così il database potrà verificare cosa c'è in un settore (risorse, colonizzabilità).
+- Dal seed si ricava un generatore pseudo-casuale, **Mulberry32**. Ogni parte del settore (tipo, nome, ricchezza, dettagli, grafica, sfondo) ha una sua sequenza derivata dal seed: aggiungere un dettaglio a un tipo non cambia nulla degli altri. **Mai `Math.random()`.**
 - `seedUniverso` è una costante: cambiarla vuol dire un universo nuovo.
 - I test fissano alcuni settori noti, così un cambiamento involontario si vede subito.
 
 ## Distanza dall'origine
 
-Allontanandosi dalla base, i corpi rari diventano **più frequenti** e tutti i corpi **più ricchi**. La curva è da definire ([Q&A](../Q&A.md)): vicino alla base ci sono soprattutto corpi comuni, lontano anche i rari e i leggendari.
+Allontanandosi dalla base, i corpi rari diventano **più frequenti** e tutti i corpi **più ricchi**. Valori provvisori (`src/dominio/catalogo.ts`, [Q&A](../Q&A.md)):
+
+- **un settore su dieci** non è vuoto, ovunque;
+- i pesi dei tipi passano in modo lineare da quelli "vicini" (alla base: niente buchi neri, relitti né varchi, pulsar rarissime) a quelli "lontani", raggiunti a **500 settori** dalla base;
+- la **ricchezza** media vale `1 + √(d / 100)`: ×2 a 100 settori, ×3 a 400; ogni corpo varia tra ×0,6 e ×1,4 attorno alla media.
+
+La base, in `(0, 0, 0)`, è sempre vuota.
 
 ## Catalogo dei corpi celesti
 
@@ -42,16 +48,20 @@ Allontanandosi dalla base, i corpi rari diventano **più frequenti** e tutti i c
 - **Stella solitaria** e **sistema planetario**: classe della stella (nana rossa, gialla, bianca, gigante blu), che cambia colore, dimensioni e ricchezza.
 - **Sistema planetario**: da 1 a N pianeti, ognuno con un tipo (roccioso, oceanico, ghiacciato, gassoso) che decide le risorse. La colonia sorge sul pianeta migliore.
 - **Nebulosa**: colore e densità.
-- **Wormhole**: il settore di uscita deriva dal seed. Il collegamento vale nei due sensi? Da decidere ([Q&A](../Q&A.md)).
+- **Campo di asteroidi**: composizione (metallica, silicea, mista) e numero di rocce grandi.
+- **Gigante gassoso**: raggio, tinta, anelli; qualche luna.
+- **Pulsar**: periodo, da millisecondi a qualche secondo. **Buco nero**: massa. **Relitto**: forma (nave, stazione, sonda) ed età.
+- **Wormhole**: il settore di uscita deriva dal seed, tra 300 e 1500 settori più in là. Il collegamento vale nei due sensi? Da decidere ([Q&A](../Q&A.md)).
 
 ## Nomi
 
-- Generati dal seed, con schemi diversi per tipo: nomi "pronunciabili" per stelle e sistemi, sigle di catalogo per pulsar e buchi neri (es. `PSR-4821`), nomi evocativi per relitti e wormhole.
+- Generati dal seed, con schemi diversi per tipo (`src/dominio/nomi.ts`): nomi "pronunciabili" di due o tre sillabe per stelle, sistemi e giganti (*Kumion*, *Codura*); *Nebulosa di …*, *Fascia di …*, *Varco di …*; comete come `C/4073 Razux`; sigle per pulsar (`PSR J4570+99`) e buchi neri (`PV-4438`); relitti evocativi (*Relitto «Veglia Muta»*). I pianeti prendono il nome del sistema con un numero romano.
 - Il nome generato è quello ufficiale.
 
 ## Grafica
 
-- **three.js** con shader GLSL procedurali (rumore, gradienti, particelle).
-- Un **generatore per corpo**, che riceve solo il seed: lo stesso settore appare sempre uguale.
-- Uno sfondo comune per tutti i settori (campo di stelle, polvere), anch'esso seminato.
-- Attenzione al telefono: qualità ridotta automaticamente se il dispositivo fatica.
+- **three.js** con shader GLSL procedurali (rumore simplex, fbm, domain warping), particelle calcolate nel vertex shader e **bloom** sulle luci forti (`src/grafica/`).
+- Un **generatore per corpo** (`src/grafica/corpi/`), che riceve solo il settore e un caso seminato: lo stesso settore appare sempre uguale. Si può girare attorno al corpo e zoomare; da ferma la camera gira piano.
+- Uno sfondo comune per tutti i settori: campo di stelle con una fascia galattica e un velo di polvere, anch'esso seminato.
+- Su schermi stretti la camera si allontana, così il corpo entra in larghezza.
+- Da fare: qualità ridotta automaticamente se il dispositivo fatica.

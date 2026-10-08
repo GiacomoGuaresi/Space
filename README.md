@@ -4,7 +4,7 @@ Piccolo gioco di esplorazione spaziale in tempo reale, nello spirito di OGame, c
 
 Si esplora, si raccolgono risorse, si fondano colonie che producono fino a riempire il magazzino (poi bisogna tornare a svuotarle) e si potenziano nave e base.
 
-> **Stato: M0 completato.** Online su [giacomoguaresi.github.io/Space](https://giacomoguaresi.github.io/Space/), per ora solo una pagina dietro l'accesso. Domande aperte in [Q&A.md](Q&A.md).
+> **Stato: M1 completato.** Online su [giacomoguaresi.github.io/Space](https://giacomoguaresi.github.io/Space/): l'**osservatorio** permette di guardare qualsiasi settore dell'universo, senza nave né viaggi (arrivano con M2). Domande aperte in [Q&A.md](Q&A.md).
 
 ## Per iniziare
 

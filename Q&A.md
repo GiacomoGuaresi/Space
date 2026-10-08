@@ -9,7 +9,7 @@
 ### Valori
 1. Quanto dura un salto di 1 settore con la nave iniziale? (es. 5 minuti, e la durata cresce linearmente con la distanza?)
 2. Quanti settori si fanno con il serbatoio pieno iniziale? In quanto tempo si ricarica da vuoto?
-3. Quanto è "vuoto" lo spazio vicino alla base? (es. 1 settore su 10 con un corpo) E quanto lontano bisogna andare per vedere i primi rari?
+3. Quanto è "vuoto" lo spazio vicino alla base? E quanto lontano bisogna andare per vedere i primi rari? *Per ora (M1): 1 settore su 10 ovunque, rari che compaiono allontanandosi e pesi pieni a 500 settori: si può provare nell'osservatorio e correggere.*
 
 ### Risorse
 4. A cosa serve ciascuna risorsa? (es. Metallo e Silicio per i potenziamenti, Ghiaccio per le colonie, Terre rare per i livelli alti)
