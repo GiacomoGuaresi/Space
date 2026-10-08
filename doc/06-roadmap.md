@@ -100,7 +100,7 @@ Porta l'interfaccia su PC nella [plancia a finestre](11-interfaccia.md#pc--planc
 - [x] **4.1 Stiva per risorsa** (tabella `stiva`, sei risorse) e la **Nave** (finestra N su PC, sezione sul telefono), con la stiva; stiva in breve nella barra di stato del PC. (`008_stiva.sql`: `nave.stiva` è il livello, `space.capacita_stiva` confrontata da `verifica-sql`; `src/dominio/risorse.ts`, `SchedaNave.tsx`.)
 - [x] **4.2 Raccolta a mano**: sosta su un corpo con risorse, estrazione nel tempo fino alla stiva piena. *Si gioca: prime risorse.* (`009_raccolta.sql`: ricchezza, sottotipo, pianeti e `ritmo_mano` in SQL, verificati su 240 corpi; la stiva si scrive alla partenza. Per ora solo le risorse comuni: Terre rare e Materia oscura con M8-M9.)
 - [x] **4.3 Comete**: raccolta una volta per giocatore (tabella `raccolto`). (`010_comete.sql`: `space.assesta` sistema gli eventi dell'arrivo in `stato` e `viaggia`; voce del diario e riquadro in Qui.)
-- [ ] **4.4 Base madre come insediamento**: produzione delle 4 comuni nel suo magazzino, fino al tetto.
+- [x] **4.4 Base madre come insediamento**: produzione delle 4 comuni nel suo magazzino, fino al tetto. (`011_insediamenti.sql`, `insediamenti.ts`; la base madre nasce alla prima lettura di `stato`, il magazzino si vede in Qui.)
 - [ ] **4.5 Raccolta di persona**: arrivando in un insediamento il magazzino passa da solo nella stiva; la **Rete** (finestra E su PC, sezione sul telefono).
 - [ ] **4.6 Fondare la prima colonia** (gratis) su un sistema planetario, con il mix del pianeta. *Si gioca: il primo giro di raccolta.*
 - [ ] **4.7 Fondare altre basi**, pagando dalla stiva, fino al limite di 2.

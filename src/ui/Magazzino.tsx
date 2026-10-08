@@ -72,8 +72,10 @@ export function MagazzinoQui({ nave, ora }: { nave: Nave; ora: Date }) {
     <section aria-label="Magazzino" className="mt-3 flex flex-col gap-2 border-t border-separatore pt-3">
       <div className="flex items-baseline justify-between gap-2">
         <h3 className="etichetta m-0 text-ambra!">Magazzino · {NOMI_INSEDIAMENTI[insediamento.tipo]}</h3>
-        <Etichetta>
-          produzione liv. {insediamento.produzione} · magazzino liv. {insediamento.magazzino}
+        <Etichetta className="shrink-0">
+          <span title="Livello di produzione · livello del magazzino">
+            liv. {insediamento.produzione} · {insediamento.magazzino}
+          </span>
         </Etichetta>
       </div>
       <BarreMagazzino insediamento={insediamento} ora={ora} />
