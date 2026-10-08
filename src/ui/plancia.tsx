@@ -1,7 +1,7 @@
 // I pezzi comuni della plancia ambra (doc/11-interfaccia.md): pannello,
 // etichetta, numero abbreviato, simbolo di rarità, bottoni e ⓘ con la formula.
 
-import { useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import type { Rarita } from '../dominio/catalogo'
 import { createPortal } from 'react-dom'
 import { COLORI_RARITA } from './colori'
@@ -20,12 +20,20 @@ export function Pannello({
   /** Il nome per le tecnologie assistive, se il pannello non ha un titolo. */
   etichetta?: string
 }) {
+  // Dentro una finestra il bordo e il fondo li mette già la finestra.
+  const nudo = useContext(DentroFinestra)
   return (
-    <section aria-label={etichetta} className={`rounded-plancia border border-linea bg-pannello/90 backdrop-blur ${className}`}>
+    <section
+      aria-label={etichetta}
+      className={`${nudo ? '' : 'rounded-plancia border border-linea bg-pannello/90 backdrop-blur'} ${className}`}
+    >
       {children}
     </section>
   )
 }
+
+/** Vero dentro una finestra della plancia per PC. */
+export const DentroFinestra = createContext(false)
 
 export function Etichetta({ children, className = '' }: { children: ReactNode; className?: string }) {
   return <span className={`etichetta ${className}`}>{children}</span>

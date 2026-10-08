@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { Suspense, lazy, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { CATALOGO, TIPI, type TipoCorpo } from '../dominio/catalogo'
 import { corpiNoti } from '../dominio/mappa'
 import { inViaggio, type Nave } from '../dominio/navigazione'
@@ -6,9 +6,10 @@ import { BASE, settore as calcolaSettore } from '../dominio/settore'
 import { sottotipo } from '../dominio/sottotipi'
 import { Altro } from './Altro'
 import { Pallini } from './Barra'
-import { Catalogo } from './Catalogo'
+import { Catalogo, ContenutoCatalogo } from './Catalogo'
 import { Cornice } from './Cornice'
 import { Diario } from './Diario'
+import { apri, useDisposizione, type IdFinestra } from './finestre'
 import { novita, segnaLetto, useLetto, vociDiario } from './diario'
 import { Impostazioni } from './Impostazioni'
 import { useImpostazioni, type Movimento } from './impostazioni'
@@ -20,6 +21,7 @@ import { segnaPonteVisto, segnaWikiSbloccate, useVisti } from './pallini'
 import { Pannello } from './plancia'
 import { Ponte } from './Ponte'
 import { Scheda } from './Scheda'
+import { usePC } from './schermo'
 import { useNave, useOra } from './useNave'
 import { Wiki } from './Wiki'
 
@@ -45,7 +47,10 @@ export function App() {
     () => (nave ? vociDiario({ viaggi, scoperte, scansioni, nave, ora: new Date(minuto * 60_000) }) : []),
     [viaggi, scoperte, scansioni, nave, minuto],
   )
-  const diarioAperto = pagina.pagina === 'diario'
+  // Su PC (doc/11-interfaccia.md#pc--plancia-a-finestre) le pagine sono finestre.
+  const pc = usePC()
+  const disposizione = useDisposizione()
+  const diarioAperto = pc ? disposizione.finestre.diario.stato === 'aperta' && pagina.pagina !== 'mappa' : pagina.pagina === 'diario'
   const lettoOra = useLetto()
   // Mentre il diario è aperto vale la lettura di quando si è aperto: le novità restano evidenziate.
   const [lettoCongelato, setLettoCongelato] = useState<Date | null>(null)
@@ -54,6 +59,12 @@ export function App() {
     // Solo all'apertura e alla chiusura: in mezzo la lettura può cambiare senza toccare ciò che si vede.
   }, [diarioAperto])
   const lettoAperto = diarioAperto ? (lettoCongelato ?? lettoOra) : lettoOra
+  // Su PC il diario si chiude con la sua ×, o riducendolo: allora è letto.
+  const eraAperto = useRef(false)
+  useEffect(() => {
+    if (pc && eraAperto.current && !diarioAperto) segnaLetto(new Date(Date.now() + scarto))
+    eraAperto.current = diarioAperto
+  }, [pc, diarioAperto, scarto])
   const daLeggere = voci.filter((v) => novita(v, lettoAperto)).length
 
   // Pallini: Ponte se la nave è arrivata da quando l'hai visto, Mappa se c'è un
@@ -64,7 +75,10 @@ export function App() {
   const volo = nave ? inViaggio(nave, ora) : true
   const arrivoNonVisto = nave !== null && !volo && (!visti.ponte || nave.dal > new Date(visti.ponte))
   const rariNuovi = noti.filter(
-    (p) => !p.scoperto && ['rara', 'leggendaria'].includes(CATALOGO[p.tipo].rarita) && !visti.rari.includes(`${p.coordinate.x},${p.coordinate.y},${p.coordinate.z}`),
+    (p) =>
+      !p.scoperto &&
+      ['rara', 'leggendaria'].includes(CATALOGO[p.tipo].rarita) &&
+      !visti.rari.includes(`${p.coordinate.x},${p.coordinate.y},${p.coordinate.z}`),
   ).length
   // La wiki: tipi rilevati, sottotipi trovati, fionda usata. Ciò che si è
   // sbloccato una volta resta sbloccato, anche quando i dati escono dai 30 giorni.
@@ -94,13 +108,35 @@ export function App() {
       ponte: arrivoNonVisto ? 'la nave è arrivata' : undefined,
       mappa: rariNuovi ? `${rariNuovi} ${rariNuovi === 1 ? 'corpo raro rilevato' : 'corpi rari rilevati'}` : undefined,
       altro: daLeggere ? `${daLeggere} novità nel diario` : wikiNuove.length ? 'nuove pagine nella wiki' : undefined,
+      diario: daLeggere ? `${daLeggere} novità` : undefined,
+      wiki: wikiNuove.length ? 'nuove pagine' : undefined,
     }),
     [arrivoNonVisto, rariNuovi, daLeggere, wikiNuove.length],
   )
   // Sul ponte, a nave ferma, l'arrivo è visto.
   useEffect(() => {
-    if (pagina.pagina === 'ponte' && arrivoNonVisto && nave) segnaPonteVisto(nave.dal)
-  }, [pagina.pagina, arrivoNonVisto, nave])
+    const ponte = pc ? disposizione.finestre.qui.stato === 'aperta' && pagina.pagina !== 'mappa' : pagina.pagina === 'ponte'
+    if (ponte && arrivoNonVisto && nave) segnaPonteVisto(nave.dal)
+  }, [pc, disposizione.finestre.qui.stato, pagina.pagina, arrivoNonVisto, nave])
+
+  // Su PC i link diretti (#/diario, #/wiki/pulsar, #/rotta/x,y,z…) aprono la
+  // finestra, poi l'indirizzo si pulisce: la disposizione non sta nell'URL.
+  const [wikiPC, setWikiPC] = useState<{ voce?: string; numeri?: boolean }>({})
+  useEffect(() => {
+    if (!pc || pagina.pagina === 'mappa' || pagina.pagina === 'osservatorio') return
+    if (pagina.pagina === 'ponte' && !pagina.meta) return
+    const finestre: Partial<Record<Pagina['pagina'], IdFinestra>> = {
+      diario: 'diario',
+      wiki: 'wiki',
+      catalogo: 'catalogo',
+      impostazioni: 'impostazioni',
+    }
+    const id = finestre[pagina.pagina]
+    if (id) apri(id)
+    if (pagina.pagina === 'wiki') setWikiPC({ voce: pagina.voce, numeri: pagina.numeri })
+    // La rotta l'ha già presa il ponte, che apre la sua finestra.
+    window.location.replace(indirizzo({ pagina: 'ponte' }))
+  }, [pc, pagina])
 
   // All'apertura dell'app (o al ritorno) con delle novità, il diario si apre da solo.
   useEffect(() => {
@@ -121,7 +157,11 @@ export function App() {
             <p className="m-0 text-sm text-pericolo" role="alert">
               {stato.messaggio}
             </p>
-            <button type="button" className="rounded-plancia border border-linea px-4 py-2 text-sm hover:border-ambra" onClick={() => void ricarica(true)}>
+            <button
+              type="button"
+              className="rounded-plancia border border-linea px-4 py-2 text-sm hover:border-ambra"
+              onClick={() => void ricarica(true)}
+            >
               Riprova
             </button>
           </div>
@@ -129,9 +169,33 @@ export function App() {
       )
     }
     const { viaggio } = stato
+    if (pc && pagina.pagina !== 'mappa') {
+      return (
+        <Ponte
+          nave={stato.nave}
+          viaggio={viaggio}
+          scarto={scarto}
+          scoperte={scoperte}
+          meta={pagina.pagina === 'ponte' ? pagina.meta : undefined}
+          onParti={parti}
+          archivio={{
+            diario: { contenuto: <Diario voci={voci} letto={lettoAperto} ora={ora} /> },
+            wiki: statoWiki ? { contenuto: <Wiki stato={statoWiki} voce={wikiPC.voce} numeri={wikiPC.numeri} affiancata /> } : undefined,
+            catalogo: { contenuto: <ContenutoCatalogo scoperte={scoperte} /> },
+            impostazioni: { contenuto: <Impostazioni /> },
+          }}
+        />
+      )
+    }
     if (pagina.pagina === 'diario') {
       return (
-        <Cornice pagina="diario" nave={stato.nave} viaggio={viaggio} scarto={scarto} fondo={<FondoNave nave={stato.nave} scarto={scarto} />}>
+        <Cornice
+          pagina="diario"
+          nave={stato.nave}
+          viaggio={viaggio}
+          scarto={scarto}
+          fondo={<FondoNave nave={stato.nave} scarto={scarto} />}
+        >
           <Diario
             voci={voci}
             letto={lettoAperto}
@@ -186,7 +250,13 @@ export function App() {
                 pagina: { pagina: 'impostazioni' },
               },
               ...(import.meta.env.DEV
-                ? [{ titolo: 'Osservatorio', sottotitolo: 'Solo in sviluppo: qualsiasi settore, senza nave', pagina: { pagina: 'osservatorio', coordinate: BASE } as const }]
+                ? [
+                    {
+                      titolo: 'Osservatorio',
+                      sottotitolo: 'Solo in sviluppo: qualsiasi settore, senza nave',
+                      pagina: { pagina: 'osservatorio', coordinate: BASE } as const,
+                    },
+                  ]
                 : []),
             ]}
           />
@@ -202,7 +272,13 @@ export function App() {
     }
     if (pagina.pagina === 'impostazioni') {
       return (
-        <Cornice pagina="impostazioni" nave={stato.nave} viaggio={viaggio} scarto={scarto} fondo={<FondoNave nave={stato.nave} scarto={scarto} />}>
+        <Cornice
+          pagina="impostazioni"
+          nave={stato.nave}
+          viaggio={viaggio}
+          scarto={scarto}
+          fondo={<FondoNave nave={stato.nave} scarto={scarto} />}
+        >
           <Impostazioni />
         </Cornice>
       )
@@ -243,7 +319,10 @@ function PaginaOsservatorio({ pagina }: { pagina: Extract<Pagina, { pagina: 'oss
             <h1 className="m-0 text-xs font-semibold tracking-[0.3em] text-testo-tenue">SPACE · OSSERVATORIO</h1>
             <Osservatorio settore={settore} />
           </div>
-          <a href={indirizzo({ pagina: 'altro' })} className="etichetta rounded-plancia border border-linea bg-pannello/85 px-3 py-2.5 no-underline">
+          <a
+            href={indirizzo({ pagina: 'altro' })}
+            className="etichetta rounded-plancia border border-linea bg-pannello/85 px-3 py-2.5 no-underline"
+          >
             Esci
           </a>
         </header>

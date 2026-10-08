@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Rnd } from 'react-rnd'
+import { DentroFinestra } from './plancia'
 import { chiudi, FINESTRE, primoPiano, riduci, sposta, type Finestra as DatiFinestra, type IdFinestra } from './finestre'
 
 interface Props {
@@ -8,6 +9,8 @@ interface Props {
   /** La posizione nell'ordine: più alta, più in primo piano. */
   livello: number
   attiva: boolean
+  /** Oltre a chiuderla: il diario, chiudendosi, segna la lettura. */
+  onChiudi?: () => void
   children: ReactNode
 }
 
@@ -16,8 +19,8 @@ interface Props {
  * si trascina dal titolo, si ridimensiona dall'angolo, _ la riduce nel dock,
  * × la chiude, un clic la porta in primo piano. Non esce dall'area.
  */
-export function Finestra({ id, finestra, livello, attiva, children }: Props) {
-  const { titolo, minW, minH } = FINESTRE[id]
+export function Finestra({ id, finestra, livello, attiva, onChiudi, children }: Props) {
+  const { titolo, minW, minH, piena } = FINESTRE[id]
   return (
     <Rnd
       bounds="parent"
@@ -59,12 +62,17 @@ export function Finestra({ id, finestra, livello, attiva, children }: Props) {
             className="comando grid size-6 place-items-center rounded-plancia text-testo-tenue hover:bg-separatore hover:text-testo"
             aria-label={`Chiudi ${titolo}`}
             title="Chiudi"
-            onClick={() => chiudi(id)}
+            onClick={() => {
+              chiudi(id)
+              onChiudi?.()
+            }}
           >
             ×
           </button>
         </header>
-        <div className="min-h-0 flex-1 overflow-y-auto p-3">{children}</div>
+        <div className={`flex min-h-0 flex-1 flex-col overflow-y-auto ${piena ? '' : 'p-3'}`}>
+          <DentroFinestra.Provider value={true}>{children}</DentroFinestra.Provider>
+        </div>
       </section>
     </Rnd>
   )

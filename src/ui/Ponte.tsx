@@ -25,15 +25,17 @@ interface Props {
   /** Una meta scelta altrove (dalla mappa): apre la rotta. */
   meta?: Coordinate
   onParti: (meta: Coordinate) => Promise<void>
+  /** Su PC: le altre finestre della plancia (diario, wiki…), con il loro contenuto. */
+  archivio?: Partial<Record<IdFinestra, { contenuto: ReactNode; onChiudi?: () => void }>>
 }
 
 /**
  * Il ponte di comando (M2): la vista del settore dove sta la nave (o il
  * viaggio, se è in volo), lo stato della nave in alto e in basso il settore,
  * lo scanner e la rotta: sul telefono come schede di un pannello, su PC come
- * tre finestre (doc/11-interfaccia.md#finestre).
+ * tre finestre (doc/11-interfaccia.md#finestre), insieme a quelle dell'archivio.
  */
-export function Ponte({ nave, viaggio, scarto, scoperte, meta: metaScelta, onParti }: Props) {
+export function Ponte({ nave, viaggio, scarto, scoperte, meta: metaScelta, onParti, archivio = {} }: Props) {
   const ora = useOra(scarto)
   const volo = inViaggio(nave, ora)
   const { x, y, z } = nave.posizione
@@ -83,16 +85,19 @@ export function Ponte({ nave, viaggio, scarto, scoperte, meta: metaScelta, onPar
   const inArrivo = <p className="m-0 text-xs text-testo-tenue">Disponibile all'arrivo.</p>
 
   if (pc) {
-    const contenuti: Record<IdFinestra, ReactNode> = {
-      qui: <Scheda settore={settore} />,
-      scanner: volo ? inArrivo : <Scanner centro={nave.posizione} livello={nave.scanner} scoperti={scoperti} onScegli={scegli} />,
-      rotta: volo ? inArrivo : rotta,
+    const contenuti: Partial<Record<IdFinestra, { contenuto: ReactNode; onChiudi?: () => void }>> = {
+      qui: { contenuto: <Scheda settore={settore} /> },
+      scanner: {
+        contenuto: volo ? inArrivo : <Scanner centro={nave.posizione} livello={nave.scanner} scoperti={scoperti} onScegli={scegli} />,
+      },
+      rotta: { contenuto: volo ? inArrivo : rotta },
+      ...archivio,
     }
     const attiva = inPrimoPiano(disposizione)
     return (
       <Cornice pagina="ponte" nave={nave} viaggio={viaggio} scarto={scarto} fondo={fondo} finestre>
         {(Object.keys(FINESTRE) as IdFinestra[])
-          .filter((id) => disposizione.finestre[id].stato === 'aperta')
+          .filter((id) => disposizione.finestre[id].stato === 'aperta' && contenuti[id])
           .map((id) => (
             <Finestra
               key={id}
@@ -100,8 +105,9 @@ export function Ponte({ nave, viaggio, scarto, scoperte, meta: metaScelta, onPar
               finestra={disposizione.finestre[id]}
               livello={disposizione.ordine.indexOf(id) + 1}
               attiva={attiva === id}
+              onChiudi={contenuti[id]!.onChiudi}
             >
-              {contenuti[id]}
+              {contenuti[id]!.contenuto}
             </Finestra>
           ))}
       </Cornice>

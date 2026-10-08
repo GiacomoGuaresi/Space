@@ -8,7 +8,8 @@ interface Props {
   /** Fin dove era stato letto quando il diario si è aperto. */
   letto: Date | null
   ora: Date
-  onChiudi: () => void
+  /** Su PC, in una finestra, si chiude con la sua × e Chiudi non serve. */
+  onChiudi?: () => void
 }
 
 /**
@@ -28,6 +29,7 @@ export function Diario({ voci, letto, ora, onChiudi }: Props) {
 
   // Esc chiude, come il bottone.
   useEffect(() => {
+    if (!onChiudi) return
     const tasto = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onChiudi()
     }
@@ -58,11 +60,13 @@ export function Diario({ voci, letto, ora, onChiudi }: Props) {
           <Gruppo key={`v${g[0].quando.getTime()}${g[0].tipo}`} voci={g} nuova={() => false} ora={ora} />
         ))}
       </ol>
-      <div className="border-t border-linea p-3">
-        <BottonePrimario className="w-full" autoFocus onClick={onChiudi}>
-          Chiudi
-        </BottonePrimario>
-      </div>
+      {onChiudi && (
+        <div className="border-t border-linea p-3">
+          <BottonePrimario className="w-full" autoFocus onClick={onChiudi}>
+            Chiudi
+          </BottonePrimario>
+        </div>
+      )}
     </Pannello>
   )
 }
@@ -89,7 +93,9 @@ function Gruppo({ voci, nuova, ora }: { voci: Voce[]; nuova: (v: Voce) => boolea
         onClick={() => setAperto(true)}
       >
         <span className="cifre row-span-2 text-xs text-testo-tenue">{orario(prima.quando, ora)}</span>
-        <Etichetta className={nuova(prima) ? 'text-ambra!' : ''}>{NOMI_VOCI[prima.tipo].uno} ×{voci.length}</Etichetta>
+        <Etichetta className={nuova(prima) ? 'text-ambra!' : ''}>
+          {NOMI_VOCI[prima.tipo].uno} ×{voci.length}
+        </Etichetta>
         <span className="text-[13px] leading-snug">
           {voci.length} {NOMI_VOCI[prima.tipo].tanti}: {nomi.slice(0, 4).join(', ')}
           {nomi.length > 4 ? '…' : ''} <span className="text-ambra">▾</span>

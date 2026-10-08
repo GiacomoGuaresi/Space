@@ -87,7 +87,7 @@ Porta l'interfaccia su PC nella [plancia a finestre](11-interfaccia.md#pc--planc
 
 - [x] **F.1 Cornice PC**: da 1024 px in su barra di stato su una riga, niente colonna centrale, dock in basso al posto della barra a schede (le voci aprono ancora le pagine di oggi). *Si vede: lo schermo intero usato.* (`schermo.ts`, `Dock.tsx`, `StrisciaStato` con `riga`)
 - [x] **F.2 Finestre**: componente `Finestra` con react-rnd (titolo, trascina, ridimensiona, _ riduci nel dock, × chiudi, primo piano, dentro lo schermo). **Qui, Scanner, Rotta** diventano tre finestre; un clic nello scanner riempie la Rotta. *Si gioca: navigazione a colpo d'occhio.* (`Finestra.tsx`, `finestre.ts`; la ⓘ si apre sopra tutto, fuori dalle finestre)
-- [ ] **F.3 Archivio in finestra**: Diario, Wiki, Catalogo, Impostazioni come finestre; i link diretti (`#/wiki/…`, `#/rotta/…`, `#/diario`) aprono la finestra e l'indirizzo si pulisce; "Numeri ›" apre la Wiki. Pallini sulle voci del dock.
+- [x] **F.3 Archivio in finestra**: Diario, Wiki, Catalogo, Impostazioni come finestre; i link diretti (`#/wiki/…`, `#/rotta/…`, `#/diario`) aprono la finestra e l'indirizzo si pulisce; "Numeri ›" apre la Wiki. Pallini sulle voci del dock. (Su PC il `Ponte` ospita tutte le finestre; la Wiki in finestra ha l'indice a sinistra; dentro una finestra i pannelli perdono il bordo.)
 - [ ] **F.4 Mappa come sfondo**: ⇆ scena/mappa, barretta dei filtri, clic su un corpo → Rotta.
 - [ ] **F.5 Memoria della disposizione** sul dispositivo, ↺ Riordina, finestre che rientrano quando lo schermo si restringe; nelle impostazioni si forza finestre o pagine.
 - [ ] **F.6 Tastiera e densità**: lettere delle finestre, Tab, Esc, ? con l'elenco; bottoni compatti, tooltip al passaggio (anche ⓘ), menu col tasto destro sui corpi.

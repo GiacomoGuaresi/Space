@@ -26,8 +26,11 @@ const ICONE: Readonly<Record<Sezione, ReactNode>> = {
   altro: <path d="M5 6h14M5 12h14M5 18h14" />,
 }
 
-/** I pallini accesi, con il motivo per le tecnologie assistive: li calcola l'App. */
-export const Pallini = createContext<Partial<Record<Sezione, string>>>({})
+/**
+ * I pallini accesi, con il motivo per le tecnologie assistive: li calcola
+ * l'App. Diario e Wiki servono al dock del PC, dove Altro non c'è.
+ */
+export const Pallini = createContext<Partial<Record<Sezione | 'diario' | 'wiki', string>>>({})
 
 const VOCI: readonly { sezione: Sezione; nome: string; pagina: Pagina }[] = [
   { sezione: 'ponte', nome: 'Ponte', pagina: { pagina: 'ponte' } },

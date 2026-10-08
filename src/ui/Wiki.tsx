@@ -13,23 +13,50 @@ const COPERTO = '■■■■ ■■■■'
  * chiuse coperte e il suggerimento; con `voce` la pagina, che finisce con i
  * Numeri. `numeri` porta subito lì (dalla ⓘ di un valore).
  */
-export function Wiki({ stato, voce, numeri }: { stato: StatoWiki; voce?: string; numeri?: boolean }) {
+export function Wiki({
+  stato,
+  voce,
+  numeri,
+  affiancata = false,
+}: {
+  stato: StatoWiki
+  voce?: string
+  numeri?: boolean
+  affiancata?: boolean
+}) {
   const pagina = voce ? PAGINE_WIKI.find((p) => p.id === voce) : undefined
-  return pagina && pagina.sbloccata(stato) ? (
-    <PaginaAperta stato={stato} id={pagina.id} numeri={numeri} />
-  ) : (
-    <Indice stato={stato} />
-  )
+  const aperta = pagina && pagina.sbloccata(stato)
+  // Su PC (doc/11-interfaccia.md#finestre) l'indice sta a sinistra e la pagina a destra.
+  if (affiancata) {
+    return (
+      <div className="flex min-h-0 flex-1">
+        <div className="flex w-60 shrink-0 flex-col border-r border-linea">
+          <Indice stato={stato} attuale={aperta ? pagina.id : undefined} compatto />
+        </div>
+        <div className="flex min-w-0 flex-1 flex-col">
+          {aperta ? (
+            <PaginaAperta stato={stato} id={pagina.id} numeri={numeri} />
+          ) : (
+            <p className="m-0 p-3.5 text-[13px] text-testo-tenue">Scegli una pagina dall'indice.</p>
+          )}
+        </div>
+      </div>
+    )
+  }
+  return aperta ? <PaginaAperta stato={stato} id={pagina.id} numeri={numeri} /> : <Indice stato={stato} />
 }
 
-function Indice({ stato }: { stato: StatoWiki }) {
+function Indice({ stato, attuale, compatto = false }: { stato: StatoWiki; attuale?: string; compatto?: boolean }) {
   const { wiki: aperte } = useVisti()
   return (
     <Pannello className="flex min-h-0 flex-1 flex-col overflow-y-auto" etichetta="Wiki">
-      <header className="border-b border-linea p-3.5">
-        <h1 className="m-0 text-base font-semibold tracking-[0.2em] uppercase">Wiki</h1>
-        <Etichetta>Come funziona il gioco · il catalogo dice cosa hai trovato</Etichetta>
-      </header>
+      {/* Accanto alla pagina il titolo lo dà la finestra. */}
+      {!compatto && (
+        <header className="border-b border-linea p-3.5">
+          <h1 className="m-0 text-base font-semibold tracking-[0.2em] uppercase">Wiki</h1>
+          <Etichetta>Come funziona il gioco · il catalogo dice cosa hai trovato</Etichetta>
+        </header>
+      )}
       {(Object.keys(NOMI_SEZIONI) as SezioneWiki[]).map((sezione) => (
         <section key={sezione} aria-label={NOMI_SEZIONI[sezione]}>
           <h2 className="etichetta m-0 border-b border-separatore px-3.5 pt-3 pb-1.5">{NOMI_SEZIONI[sezione]}</h2>
@@ -42,7 +69,8 @@ function Indice({ stato }: { stato: StatoWiki }) {
                   {aperta ? (
                     <a
                       href={indirizzo({ pagina: 'wiki', voce: p.id })}
-                      className="flex min-h-12 items-center justify-between gap-2 px-3.5 py-2.5 text-sm no-underline hover:text-ambra"
+                      aria-current={attuale === p.id ? 'page' : undefined}
+                      className="flex min-h-12 items-center justify-between gap-2 px-3.5 py-2.5 text-sm no-underline hover:text-ambra aria-[current=page]:text-ambra"
                     >
                       {p.titolo}
                       {nuova && (
