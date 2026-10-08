@@ -7,7 +7,8 @@ Sviluppo **agile a step piccoli**. Ogni step:
 - è **piccolo**, da una a tre sessioni di lavoro, e aggiunge **una cosa sola** che si vede o si gioca;
 - si chiude con test verdi, `npm run verifica-sql` (quando tocca il database), build, prova in locale, commit e push. **Il push pubblica**, quindi ogni step è un rilascio;
 - **non lascia il gioco rotto**: una meccanica a metà resta nascosta o disattivata finché non è giocabile;
-- aggiorna `doc/` se cambia una regola, e il registro [07](07-decisioni.md) se cambia una decisione.
+- aggiorna `doc/` se cambia una regola, e il registro [07](07-decisioni.md) se cambia una decisione;
+- porta con sé **la sua interfaccia** ([11](11-interfaccia.md)): sezione o scheda, voci del diario, pallini, pagina della wiki, ⓘ sui valori calcolati.
 
 I macro step (M3, M4…) raggruppano gli step per tema. Si chiudono con una riga in "Si consegna" e la documentazione allineata. Regole e numeri vengono da [02](02-meccaniche.md), [09](09-bilanciamento.md) e [10](10-ricerche.md).
 
@@ -15,7 +16,8 @@ I macro step (M3, M4…) raggruppano gli step per tema. Si chiudono con una riga
 - [x] Bozza della documentazione
 - [x] Catalogo dei corpi celesti e macro step
 - [x] Giri di Q&A: meccaniche a lungo termine, numeri e simulazioni (giri 2-20, trasferiti il 2026-10-08)
-- [x] Documentazione senza punti aperti sulle meccaniche; interfaccia e sicurezza si decidono step per step
+- [x] Documentazione senza punti aperti sulle meccaniche; la sicurezza si decide step per step
+- [x] Giri di UI/UX: stile, sezioni, wiki, diario e pallini, prototipo ([11](11-interfaccia.md), trasferiti il 2026-10-08)
 
 ## M0 · Fondamenta ✅
 - [x] `git init`, LICENSE MIT, repository pubblico `Space` su GitHub
@@ -65,16 +67,29 @@ Porta la navigazione di M2 sui valori v1 ([09](09-bilanciamento.md)).
 
 **Si consegna**: l'esplorazione con il ritmo definitivo.
 
-## M4 · Risorse e prima colonia ← *prossimo*
+## MI · Ossatura dell'interfaccia ← *prossimo*
 
-- [ ] **4.1 Stiva per risorsa** (tabella `stiva`, sei risorse) e pannello della stiva.
+Porta l'interfaccia di M2-M3 nella struttura di [11](11-interfaccia.md), senza meccaniche nuove.
+
+- [ ] **I.1 Stile plancia**: colori ambra come variabili, IBM Plex Sans e Mono, componenti di base (pannello, etichetta, numero abbreviato, ⓘ con formula). *Si vede: la plancia ambra.*
+- [ ] **I.2 Striscia di stato** al posto di StatoNave: luogo o rotta, conto alla rovescia, carburante con il tetto di ricarica.
+- [ ] **I.3 Barra in basso**: Ponte (schede Qui, Scanner, Rotta), Mappa (`#/mappa`), Altro (Catalogo, Impostazioni). Rete e Nave compaiono con le loro meccaniche in M4.
+- [ ] **I.4 Diario di bordo** al posto del riepilogo: novità evidenziate, "Già visti", 30 giorni, raggruppamento; si apre dalla striscia, da Altro e da solo all'apertura se ci sono novità.
+- [ ] **I.5 Pallini** su Ponte, Mappa e Altro; **Impostazioni** con suoni e riduci movimento.
+- [ ] **I.6 Wiki**: indice con le pagine chiuse e il suggerimento, Guida per ciò che esiste già (nave, viaggio, scanner), pagine dei corpi sbloccate alla prima rilevazione, sezione Numeri.
+
+**Si consegna**: la plancia, pronta ad accogliere le meccaniche.
+
+## M4 · Risorse e prima colonia
+
+- [ ] **4.1 Stiva per risorsa** (tabella `stiva`, sei risorse) e sezione **Nave** nella barra, con la stiva.
 - [ ] **4.2 Raccolta a mano**: sosta su un corpo con risorse, estrazione nel tempo fino alla stiva piena. *Si gioca: prime risorse.*
 - [ ] **4.3 Comete**: raccolta una volta per giocatore (tabella `raccolto`).
 - [ ] **4.4 Base madre come insediamento**: produzione delle 4 comuni nel suo magazzino, fino al tetto.
-- [ ] **4.5 Raccolta di persona** dal magazzino di un insediamento alla stiva.
+- [ ] **4.5 Raccolta di persona**: arrivando in un insediamento il magazzino passa da solo nella stiva; sezione **Rete** nella barra.
 - [ ] **4.6 Fondare la prima colonia** (gratis) su un sistema planetario, con il mix del pianeta. *Si gioca: il primo giro di raccolta.*
 - [ ] **4.7 Fondare altre basi**, pagando dalla stiva, fino al limite di 2.
-- [ ] **4.8 Riepilogo come cronologia**, con gli eventi degli insediamenti.
+- [ ] **4.8 Eventi degli insediamenti nel diario** (pieno, fondazione) e pallino su Rete.
 
 **Si consegna**: il ciclo esplora → fonda → raccogli.
 
@@ -133,7 +148,7 @@ Porta la navigazione di M2 sui valori v1 ([09](09-bilanciamento.md)).
 
 ## M10 · Traguardi e rifinitura
 
-- [ ] **10.1 Traguardi** (tabella `traguardo`) e una pagina delle medaglie.
+- [ ] **10.1 Traguardi** (tabella `traguardo`), pagina delle medaglie in Altro, voci nel diario.
 - [ ] **10.2 Rifinitura del bilanciamento** con i dati reali di gioco, aggiornando [09](09-bilanciamento.md) e `sim/`.
 - [ ] **10.3 Qualità grafica ridotta** in automatico sui dispositivi lenti (rimandata da M1).
 

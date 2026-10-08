@@ -63,3 +63,9 @@
 | 2026-10-08 | Il tratto gratis della fionda si calcola sui **settori percorsi**, non sulla rotta chiesta: una meta lontanissima non allunga il viaggio gratis | deciso |
 | 2026-10-08 | Il carburante oltre il tetto di ricarica (arrivando da una base piena) **non cala**: smette solo di salire | deciso |
 | 2026-10-08 | **Mappa 3D** (`#/mappa`): corpi noti colorati per rarità, pieni se scoperti, ad anello se solo rilevati; bolle delle soste, griglia di un settore; si tocca un corpo e si imposta la rotta | deciso |
+| 2026-10-08 | **Interfaccia** ([11](11-interfaccia.md)): telefono e desktop con la stessa struttura, scena 3D sempre di fondo, striscia di stato in alto, barra Ponte · Mappa · Rete · Nave · Altro; stile plancia ambra con IBM Plex | deciso |
+| 2026-10-08 | **Tutto dal Ponte**: azioni del luogo e scheda BASE quando attraccati; costruzioni solo sul posto | deciso |
+| 2026-10-08 | **Raccolta automatica all'arrivo** in un insediamento; a mano sui corpi liberi | deciso |
+| 2026-10-08 | **Wiki** di 29 pagine a sblocco, separata dal catalogo; **ⓘ** con le formule accanto ai valori calcolati | deciso |
+| 2026-10-08 | **Diario di bordo** al posto del riepilogo (30 giorni, voci raggruppate) e **pallini** sulla barra, anche per ciò che è pagabile | deciso |
+| 2026-10-08 | Macro step **MI · Ossatura dell'interfaccia** prima di M4; poi ogni step porta la sua interfaccia | deciso |

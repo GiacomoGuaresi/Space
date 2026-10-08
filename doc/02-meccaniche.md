@@ -81,7 +81,7 @@ Due tipi:
 - **Fondazione**: si paga sul posto **dalla stiva**. La **prima colonia è gratis**.
 - **Limiti**: le basi fondabili partono da 2 e crescono con le ricerche di *Astrofisica*. Gli estrattori hanno un limite a parte e i loro tipi si sbloccano con le ricerche di Colonizzazione.
 - **Produzione**: è un mix di risorse che dipende dal **sottotipo** del corpo (es. asteroidi metallici 80 % Metallo e 20 % Silicio) e cresce con la distanza (ricchezza). Si accumula nel magazzino dell'insediamento **fino al tetto, ~1 settimana** di produzione, poi si ferma. La produzione persa non si mostra.
-- **Raccolta solo di persona**: la nave va sul posto e carica nella stiva. I **giri di raccolta** sono il cuore dell'economia.
+- **Raccolta solo di persona**: la nave va sul posto e, **all'arrivo, il magazzino passa da solo nella stiva** (fin dove c'è posto). I **giri di raccolta** sono il cuore dell'economia.
 - **Abbandono**: solo il fondatore può abbandonare un insediamento. Strutture e scorte spariscono e il corpo torna subito libero.
 
 ## Strutture di base
@@ -132,4 +132,4 @@ Le basi non appartengono davvero a nessuno: il fondatore è solo un'**etichetta*
 
 ## Riepilogo all'apertura
 
-Niente notifiche: all'apertura c'è una **cronologia** di ciò che è successo dall'ultima volta. Contiene la nave (arrivi, soste forzate, potenziamenti e ricerche finiti), gli insediamenti (pieni, costruzioni finite), le scoperte (corpi rilevati, traguardi) e, in futuro, i passaggi di altri giocatori.
+Niente notifiche: all'apertura c'è il **diario di bordo** ([11](11-interfaccia.md#diario-di-bordo)), una **cronologia** di ciò che è successo dall'ultima volta. Contiene la nave (arrivi, soste forzate, potenziamenti e ricerche finiti), gli insediamenti (pieni, costruzioni finite), le scoperte (corpi rilevati, traguardi) e, in futuro, i passaggi di altri giocatori.
