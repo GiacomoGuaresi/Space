@@ -1,15 +1,18 @@
-import { BookOpen, Telescope, Rocket } from 'lucide-react'
+import { BookOpen, Map as IconaMappa, Rocket, Telescope } from 'lucide-react'
 import { indirizzo, type Pagina } from './indirizzo'
 
 const voce =
   'grid size-9 place-items-center rounded-lg border border-bordo/70 bg-pannello/75 backdrop-blur hover:border-nebula hover:text-nebula aria-[current=page]:border-nebula aria-[current=page]:text-nebula'
 
-/** Le pagine: ponte, catalogo e, solo in sviluppo, l'osservatorio libero. */
+/** Le pagine: ponte, mappa, catalogo e, solo in sviluppo, l'osservatorio libero. */
 export function Menu({ attuale }: { attuale: Pagina['pagina'] }) {
   return (
     <nav className="flex gap-1.5" aria-label="Pagine">
       <a className={voce} href={indirizzo({ pagina: 'ponte' })} aria-current={attuale === 'ponte' ? 'page' : undefined} title="Ponte di comando">
         <Rocket className="size-4" aria-label="Ponte di comando" />
+      </a>
+      <a className={voce} href={indirizzo({ pagina: 'mappa' })} aria-current={attuale === 'mappa' ? 'page' : undefined} title="Mappa">
+        <IconaMappa className="size-4" aria-label="Mappa" />
       </a>
       <a className={voce} href={indirizzo({ pagina: 'catalogo' })} aria-current={attuale === 'catalogo' ? 'page' : undefined} title="Catalogo delle scoperte">
         <BookOpen className="size-4" aria-label="Catalogo delle scoperte" />

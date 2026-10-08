@@ -19,6 +19,9 @@ describe('leggiPagina', () => {
     expect(leggiPagina('')).toEqual({ pagina: 'ponte' })
     expect(leggiPagina('#/')).toEqual({ pagina: 'ponte' })
     expect(leggiPagina('#/catalogo')).toEqual({ pagina: 'catalogo' })
+    expect(leggiPagina('#/mappa')).toEqual({ pagina: 'mappa' })
+    expect(leggiPagina('#/rotta/4,-1,0')).toEqual({ pagina: 'ponte', meta: { x: 4, y: -1, z: 0 } })
+    expect(leggiPagina('#/rotta/4,a')).toEqual({ pagina: 'ponte' })
     expect(leggiPagina('#/osservatorio/3,-2,1')).toEqual({ pagina: 'osservatorio', coordinate: { x: 3, y: -2, z: 1 } })
   })
 
@@ -32,5 +35,8 @@ describe('leggiPagina', () => {
     const pagina = { pagina: 'osservatorio', coordinate: { x: -300, y: 7, z: 2_000_000 } } as const
     expect(leggiPagina(indirizzo(pagina))).toEqual(pagina)
     expect(leggiPagina(indirizzo({ pagina: 'catalogo' }))).toEqual({ pagina: 'catalogo' })
+    expect(leggiPagina(indirizzo({ pagina: 'mappa' }))).toEqual({ pagina: 'mappa' })
+    const rotta = { pagina: 'ponte', meta: { x: -1, y: 2, z: 3 } } as const
+    expect(leggiPagina(indirizzo(rotta))).toEqual(rotta)
   })
 })

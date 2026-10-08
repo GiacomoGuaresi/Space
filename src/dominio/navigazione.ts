@@ -146,7 +146,10 @@ export function raggioScanner(livello: number, tipoQui: TipoCorpo | null): numbe
   const aumenti =
     LIVELLI_SCANNER.slice(0, livello).filter((v) => v === 'raggio').length +
     Math.max(0, livello - LIVELLI_SCANNER.length)
-  const raggio = SCANNER.raggio * SCANNER.crescita ** aumenti
+  // Moltiplicazioni ripetute, non `**`: in SQL (`space.raggio_scanner`) danno
+  // lo stesso numero fino all'ultima cifra.
+  let raggio: number = SCANNER.raggio
+  for (let i = 0; i < aumenti; i++) raggio *= SCANNER.crescita
   if (tipoQui === 'nebulosa') return raggio * SCANNER.nebulosa
   if (tipoQui === 'pulsar') return raggio * SCANNER.pulsar
   return raggio

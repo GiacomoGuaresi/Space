@@ -38,7 +38,7 @@ Fatte il 2026-10-08 con la Management API:
 2. `space` aggiunto agli *Exposed schemas* (`PATCH /v1/projects/{ref}/postgrest`). La lista `db_schema` si manda sempre intera, con gli schemi delle altre app
 3. `https://giacomoguaresi.github.io/Space/` aggiunto agli URL di redirect di Auth (`PATCH /v1/projects/{ref}/config/auth`, `uri_allow_list`). Anche questa lista si manda intera
 
-Gli script successivi si applicano allo stesso modo, oppure dal SQL Editor. Applicati il 2026-10-08: `002_navigazione.sql`, `003_bilanciamento.sql`, `004_nave_v1.sql`.
+Gli script successivi si applicano allo stesso modo, oppure dal SQL Editor. Applicati il 2026-10-08: `002_navigazione.sql`, `003_bilanciamento.sql`, `004_nave_v1.sql`, `005_soglie_rari.sql`, `006_scanner.sql`, `007_scansione.sql`, e `bilanciamento.sql` con i valori v1.
 
 ### Cambiare un valore del bilanciamento
 
@@ -57,6 +57,6 @@ I valori del bilanciamento e le funzioni dell'universo esistono due volte, in Ty
 SUPABASE_ACCESS_TOKEN=sbp_... npm run verifica-sql
 ```
 
-Lo script confronta i due bilanciamenti come JSON, poi il campione fisso `src/dominio/campione.json` (seed, tipi, rotte), che `npm test` confronta già con TypeScript. Quando l'universo o le rotte cambiano di proposito, il campione si rigenera con `npm run campione` (gli script in Node leggono il codice di `src/` grazie a `scripts/estensioni.mjs`). Il token della Management API sta in `credenziali.local`, nella cartella sopra i repository, mai nel repo.
+Lo script confronta i due bilanciamenti come JSON, i raggi dello scanner per livello, poi il campione fisso `src/dominio/campione.json` (seed, tipi, rotte), che `npm test` confronta già con TypeScript. Quando l'universo o le rotte cambiano di proposito, il campione si rigenera con `npm run campione` (gli script in Node leggono il codice di `src/` grazie a `scripts/estensioni.mjs`). Il token della Management API sta in `credenziali.local`, nella cartella sopra i repository, mai nel repo.
 
 ⚠️ Il progetto è quello di produzione di Grocery: ogni modifica alla configurazione va fatta senza toccare le impostazioni usate dalle altre app.

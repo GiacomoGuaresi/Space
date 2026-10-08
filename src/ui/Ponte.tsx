@@ -1,7 +1,8 @@
-import { Suspense, lazy, useMemo, useState } from 'react'
+import { Suspense, lazy, useEffect, useMemo, useState } from 'react'
 import type { Scoperta } from '../dati'
 import { inViaggio, type Nave, type Viaggio } from '../dominio/navigazione'
 import { settore as calcolaSettore, type Coordinate } from '../dominio/settore'
+import { vaiA } from './indirizzo'
 import { Menu } from './Menu'
 import { Riepilogo } from './Riepilogo'
 import { Rotta } from './Rotta'
@@ -20,6 +21,8 @@ interface Props {
   viaggio: Viaggio | null
   scarto: number
   scoperte: Scoperta[]
+  /** Una meta scelta altrove (dalla mappa): apre la rotta. */
+  meta?: Coordinate
   riepilogo: Evento[]
   onChiudiRiepilogo: () => void
   onParti: (meta: Coordinate) => Promise<void>
@@ -30,14 +33,21 @@ interface Props {
  * viaggio, se è in volo), lo stato della nave in alto e in basso il settore,
  * lo scanner e la rotta.
  */
-export function Ponte({ nave, viaggio, scarto, scoperte, riepilogo, onChiudiRiepilogo, onParti }: Props) {
+export function Ponte({ nave, viaggio, scarto, scoperte, meta: metaScelta, riepilogo, onChiudiRiepilogo, onParti }: Props) {
   const ora = useOra(scarto)
   const volo = inViaggio(nave, ora)
   const { x, y, z } = nave.posizione
   const settore = useMemo(() => calcolaSettore({ x, y, z }), [x, y, z])
   const scoperti = useMemo(() => new Set(scoperte.map(({ coordinate: c }) => `${c.x},${c.y},${c.z}`)), [scoperte])
-  const [scheda, setScheda] = useState<Linguetta>('qui')
-  const [meta, setMeta] = useState<Coordinate | null>(null)
+  const [scheda, setScheda] = useState<Linguetta>(metaScelta ? 'rotta' : 'qui')
+  const [meta, setMeta] = useState<Coordinate | null>(metaScelta ?? null)
+
+  const { x: mx, y: my, z: mz } = metaScelta ?? { x: null, y: null, z: null }
+  useEffect(() => {
+    if (mx === null || my === null || mz === null) return
+    setMeta({ x: mx, y: my, z: mz })
+    setScheda('rotta')
+  }, [mx, my, mz])
 
   const scegli = (c: Coordinate) => {
     setMeta(c)
@@ -96,6 +106,8 @@ export function Ponte({ nave, viaggio, scarto, scoperte, riepilogo, onChiudiRiep
                         await onParti(m)
                         setMeta(null)
                         setScheda('qui')
+                        // La meta della mappa non serve più: l'indirizzo torna quello del ponte.
+                        if (metaScelta) vaiA({ pagina: 'ponte' })
                       }}
                     />
                   )}

@@ -1,11 +1,13 @@
-// Le pagine nell'indirizzo: `#/` il ponte, `#/catalogo` le scoperte,
+// Le pagine nell'indirizzo: `#/` il ponte (`#/rotta/x,y,z` con una meta già
+// scelta), `#/mappa` i settori scansionati, `#/catalogo` le scoperte,
 // `#/osservatorio/x,y,z` l'osservatorio libero (solo in sviluppo, doc/06).
 
 import { useSyncExternalStore } from 'react'
 import { BASE, type Coordinate } from '../dominio/settore'
 
 export type Pagina =
-  | { pagina: 'ponte' }
+  | { pagina: 'ponte'; meta?: Coordinate }
+  | { pagina: 'mappa' }
   | { pagina: 'catalogo' }
   | { pagina: 'osservatorio'; coordinate: Coordinate }
 
@@ -23,6 +25,11 @@ export function leggiCoordinate(testo: string): Coordinate | null {
 export function leggiPagina(hash: string): Pagina {
   const percorso = hash.replace(/^#\/?/, '')
   if (percorso === 'catalogo') return { pagina: 'catalogo' }
+  if (percorso === 'mappa') return { pagina: 'mappa' }
+  if (percorso.startsWith('rotta/')) {
+    const meta = leggiCoordinate(percorso.slice('rotta/'.length))
+    return meta ? { pagina: 'ponte', meta } : { pagina: 'ponte' }
+  }
   if (percorso === 'osservatorio' || percorso.startsWith('osservatorio/')) {
     return { pagina: 'osservatorio', coordinate: leggiCoordinate(percorso.slice('osservatorio/'.length)) ?? BASE }
   }
@@ -31,8 +38,13 @@ export function leggiPagina(hash: string): Pagina {
 
 export function indirizzo(pagina: Pagina): string {
   switch (pagina.pagina) {
-    case 'ponte':
-      return '#/'
+    case 'ponte': {
+      if (!pagina.meta) return '#/'
+      const { x, y, z } = pagina.meta
+      return `#/rotta/${x},${y},${z}`
+    }
+    case 'mappa':
+      return '#/mappa'
     case 'catalogo':
       return '#/catalogo'
     case 'osservatorio': {

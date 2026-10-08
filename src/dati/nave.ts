@@ -1,6 +1,6 @@
-// La nave nel database (supabase/sql/002_navigazione.sql): si legge lo stato e
-// si parte solo con le funzioni `stato` e `viaggia`; viaggi e scoperte si
-// leggono dalle tabelle, in sola lettura.
+// La nave nel database (supabase/sql/): si legge lo stato e si parte solo con
+// le funzioni `stato` e `viaggia`; viaggi, scoperte e scansioni si leggono
+// dalle tabelle, in sola lettura.
 
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { TipoCorpo } from '../dominio/catalogo'
@@ -20,6 +20,13 @@ export interface Scoperta {
   coordinate: Coordinate
   tipo: TipoCorpo
   scoperta: Date
+}
+
+/** Una sosta della nave vista dallo scanner: da qui si ricalcola la mappa. */
+export interface Scansione {
+  centro: Coordinate
+  raggio: number
+  livello: number
 }
 
 /** I rifiuti di `viaggia`, con il loro codice. */
@@ -125,6 +132,17 @@ export class NaveSupabase {
       coordinate: { x: r.x, y: r.y, z: r.z },
       tipo: r.tipo,
       scoperta: new Date(r.scoperta),
+    }))
+  }
+
+  /** Le scansioni delle soste: quella dell'arrivo in corso la nasconde il database. */
+  async scansioni(): Promise<Scansione[]> {
+    const { data, error } = await this.client.from('scansione').select('x, y, z, raggio, livello')
+    if (error) throw fallita('Scansioni non lette', error)
+    return (data as { x: number; y: number; z: number; raggio: number; livello: number }[]).map((r) => ({
+      centro: { x: r.x, y: r.y, z: r.z },
+      raggio: r.raggio,
+      livello: r.livello,
     }))
   }
 }

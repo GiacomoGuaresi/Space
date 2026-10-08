@@ -51,7 +51,7 @@ I macro step (M3, M4…) raggruppano gli step per tema. Si chiudono con una riga
 
 **Si consegna**: il gioco di esplorazione in tempo reale.
 
-## M3 · Navigazione ricalibrata ← *prossimo*
+## M3 · Navigazione ricalibrata ✅
 
 Porta la navigazione di M2 sui valori v1 ([09](09-bilanciamento.md)).
 
@@ -61,11 +61,11 @@ Porta la navigazione di M2 sui valori v1 ([09](09-bilanciamento.md)).
 - [x] **3.4 Fionda v1**: ×1,5 e il 20 % dei settori percorsi gratis.
 - [x] **3.5 Soglie dei rari** in `catalogo.ts` e in SQL (`005_soglie_rari.sql`), con il campione di `verifica-sql` rigenerato. *Si gioca: i rari compaiono ad anelli.*
 - [x] **3.6 Scanner a livelli**: raggio 4, al livello 1 rileva solo i sistemi planetari, gli altri tipi sono invisibili anche nella rotta (livello nella colonna `nave.scanner`, fisso a 1 per ora; `006_scanner.sql`).
-- [ ] **3.7 Mappa dei settori scansionati** (tabella `scansione`), visibile da subito.
+- [x] **3.7 Mappa dei settori scansionati** (tabella `scansione`, `007_scansione.sql`), visibile da subito: pagina `#/mappa` in 3D, si tocca un corpo e si imposta la rotta (`#/rotta/x,y,z`).
 
 **Si consegna**: l'esplorazione con il ritmo definitivo.
 
-## M4 · Risorse e prima colonia
+## M4 · Risorse e prima colonia ← *prossimo*
 
 - [ ] **4.1 Stiva per risorsa** (tabella `stiva`, sei risorse) e pannello della stiva.
 - [ ] **4.2 Raccolta a mano**: sosta su un corpo con risorse, estrazione nel tempo fino alla stiva piena. *Si gioca: prime risorse.*

@@ -30,7 +30,7 @@
 | 2026-10-08 | ~~Valori provvisori della nave: **12 settori all'ora**, **serbatoio 20**, consumo 1 a settore, **ricarica 2,5 all'ora** solo da fermi~~ | superata |
 | 2026-10-08 | ~~Effetti: ricarica **×3** accanto alle stelle, scanner **3 settori** (1 nelle nebulose, 6 presso le pulsar), fionda **×2** dai buchi neri~~ | superata |
 | 2026-10-08 | Distanze con `√(dx²+dy²+dz²)` e arrotondamenti con `floor(v + 0,5)`, uguali in JavaScript e Postgres; campione fisso e `npm run verifica-sql` per controllarlo | deciso |
-| 2026-10-08 | Scanner come **elenco** (tipo e distanza, il nome si scopre arrivando); mappa 3D rimandata | deciso |
+| 2026-10-08 | Scanner come **elenco** (tipo e distanza, il nome si scopre arrivando) | deciso |
 | 2026-10-08 | In viaggio niente scanner né rotta; **il viaggio non si annulla** | deciso |
 | 2026-10-08 | Scoperta registrata alla partenza con l'istante d'arrivo, nascosta dalla policy finché la nave non arriva | deciso |
 | 2026-10-08 | Riepilogo dall'ultima visita salvata sul dispositivo; gli arrivi visti dal vivo non ci finiscono | deciso |
@@ -59,3 +59,7 @@
 | 2026-10-08 | Basi **condivise** in futuro: il fondatore è un'etichetta; gli altri usano, prelevano, potenziano | deciso |
 | 2026-10-08 | Riepilogo all'apertura come **cronologia** | deciso |
 | 2026-10-08 | Sviluppo **agile a step piccoli**, ognuno pubblicato; macro step M3-M10 ([06](06-roadmap.md)) | deciso |
+| 2026-10-08 | Valori del bilanciamento **solo in `bilanciamento.ts`**; `bilanciamento.sql` è generato e `verifica-sql` confronta i due | deciso |
+| 2026-10-08 | Il tratto gratis della fionda si calcola sui **settori percorsi**, non sulla rotta chiesta: una meta lontanissima non allunga il viaggio gratis | deciso |
+| 2026-10-08 | Il carburante oltre il tetto di ricarica (arrivando da una base piena) **non cala**: smette solo di salire | deciso |
+| 2026-10-08 | **Mappa 3D** (`#/mappa`): corpi noti colorati per rarità, pieni se scoperti, ad anello se solo rilevati; bolle delle soste, griglia di un settore; si tocca un corpo e si imposta la rotta | deciso |

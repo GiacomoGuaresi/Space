@@ -1,6 +1,7 @@
 // Confronta con il database i valori del bilanciamento (bilanciamento.ts contro
 // `space.bilanciamento()`) e il campione fisso dell'universo
-// (src/dominio/campione.json): seed, tipi e rotte devono essere identici.
+// (src/dominio/campione.json): seed, tipi, rotte e raggi dello scanner devono
+// essere identici.
 //
 //   SUPABASE_ACCESS_TOKEN=sbp_... npm run verifica-sql
 //
@@ -10,6 +11,7 @@
 
 import { readFileSync } from 'node:fs'
 import { BILANCIAMENTO } from '../src/dominio/bilanciamento.ts'
+import { raggioScanner } from '../src/dominio/navigazione.ts'
 
 const PROGETTO = 'fvsohjlrulwabvfvcfxo'
 const token = process.env.SUPABASE_ACCESS_TOKEN
@@ -57,9 +59,18 @@ const esitoRotte = await interroga(`
     lateral space.rotta(dx, dy, dz, mx, my, mz, f::double precision, q::double precision) r`)
 
 if (!esitoValori.uguali) console.error('Bilanciamento diverso. Nel database:', esitoValori.sql)
+const raggi = Array.from({ length: 30 }, (_, i) => i + 1)
+  .flatMap((livello) => (['vuoto', 'nebulosa', 'pulsar'] as const).map((tipo) => [livello, tipo] as const))
+  .map(([livello, tipo]) => `(${livello},'${tipo}',${raggioScanner(livello, tipo === 'vuoto' ? null : tipo)})`)
+  .join(',')
+const esitoRaggi = await interroga(`
+  select count(*) filter (where space.raggio_scanner(l, nullif(t, 'vuoto')) <> r) as raggi_diversi, count(*) as totale
+  from (values ${raggi}) as c(l, t, r)`)
+
 console.log('Settori', esitoSettori)
 console.log('Rotte', esitoRotte)
-if (!esitoValori.uguali || esitoSettori.seed_diversi || esitoSettori.tipi_diversi || esitoRotte.rotte_diverse) {
+console.log('Raggi dello scanner', esitoRaggi)
+if (!esitoValori.uguali || esitoSettori.seed_diversi || esitoSettori.tipi_diversi || esitoRotte.rotte_diverse || esitoRaggi.raggi_diversi) {
   console.error('TypeScript e SQL non danno lo stesso universo')
   process.exit(1)
 }

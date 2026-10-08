@@ -2,6 +2,7 @@ import { Suspense, lazy, useMemo } from 'react'
 import { settore as calcolaSettore } from '../dominio/settore'
 import { Catalogo } from './Catalogo'
 import { usePagina, type Pagina } from './indirizzo'
+import { Mappa } from './Mappa'
 import { Menu } from './Menu'
 import { Osservatorio } from './Osservatorio'
 import { Ponte } from './Ponte'
@@ -11,10 +12,10 @@ import { useNave } from './useNave'
 // three.js pesa: si carica a parte, così i comandi compaiono subito.
 const Scena = lazy(async () => ({ default: (await import('../grafica/Scena')).Scena }))
 
-/** Le pagine dell'app (ui/indirizzo.ts): il ponte, il catalogo, l'osservatorio in sviluppo. */
+/** Le pagine dell'app (ui/indirizzo.ts): il ponte, la mappa, il catalogo, l'osservatorio in sviluppo. */
 export function App() {
   const pagina = usePagina()
-  const { stato, scarto, scoperte, riepilogo, chiudiRiepilogo, parti, ricarica } = useNave()
+  const { stato, scarto, scoperte, scansioni, riepilogo, chiudiRiepilogo, parti, ricarica } = useNave()
 
   if (pagina.pagina === 'osservatorio' && import.meta.env.DEV) return <PaginaOsservatorio pagina={pagina} />
 
@@ -36,12 +37,16 @@ export function App() {
     )
   }
   if (pagina.pagina === 'catalogo') return <Catalogo scoperte={scoperte} />
+  if (pagina.pagina === 'mappa') {
+    return <Mappa nave={stato.nave} viaggio={stato.viaggio} scoperte={scoperte} scansioni={scansioni} />
+  }
   return (
     <Ponte
       nave={stato.nave}
       viaggio={stato.viaggio}
       scarto={scarto}
       scoperte={scoperte}
+      meta={pagina.pagina === 'ponte' ? pagina.meta : undefined}
       riepilogo={riepilogo}
       onChiudiRiepilogo={chiudiRiepilogo}
       onParti={parti}

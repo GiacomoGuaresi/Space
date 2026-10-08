@@ -6,10 +6,10 @@ Schema `space`. Le colonne arrivano con lo step che le usa ([06](06-roadmap.md))
 
 | Tabella | Contenuto | Step |
 |---|---|---|
-| `nave` ✅ | una riga per giocatore: dove si trova o arriverà (`x`, `y`, `z`), da quando (`dal`), il carburante a quell'istante; poi i livelli di motore, serbatoio, ricarica, stiva e scanner, e l'eventuale attività in corso (raccolta a mano, potenziamento, ricerca) | M2, M3, M5 |
+| `nave` ✅ | una riga per giocatore: dove si trova o arriverà (`x`, `y`, `z`), da quando (`dal`), il carburante a quell'istante, velocità, serbatoio, ricarica e livello dello `scanner` (M3); poi i livelli di motore, serbatoio, ricarica, stiva e scanner, e l'eventuale attività in corso (raccolta a mano, potenziamento, ricerca) | M2, M3, M5 |
 | `viaggio` ✅ | da, meta, a (dove si arriva davvero), partenza, arrivo, consumo, fionda; poi ponte e wormhole | M2, M8, M9 |
 | `scoperta` ✅ | coordinate, tipo di corpo, istante della prima visita (nascosta finché la nave non arriva) | M2 |
-| `scansione` | centro, raggio e livello dello scanner di ogni sosta: da qui si ricalcola la mappa dei settori scansionati | M3 |
+| `scansione` ✅ | centro, raggio e livello dello scanner di ogni sosta, una riga per settore (tornando con uno scanner migliore si aggiorna), nascosta finché la nave non arriva: da qui si ricalcola la mappa dei settori scansionati | M3 |
 | `stiva` | quantità per risorsa a bordo | M4 |
 | `insediamento` | coordinate, tipo (base, estrattore), fondatore (etichetta), fondazione, ultima raccolta, scorte a quell'istante, livelli di produzione e magazzino; la base madre è la prima riga | M4 |
 | `struttura` | insediamento, tipo (cantiere, laboratorio, deposito, radar, ponte), livello | M5, M7, M8 |

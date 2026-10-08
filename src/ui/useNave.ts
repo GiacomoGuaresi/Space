@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { nave as datiNave, type Scoperta } from '../dati'
+import { nave as datiNave, type Scansione, type Scoperta } from '../dati'
 import type { Nave, Viaggio } from '../dominio/navigazione'
 import type { Coordinate } from '../dominio/settore'
 import { eventi, segnaVisita, ultimaVisita, type Evento } from './riepilogo'
@@ -32,17 +32,22 @@ export function useNave() {
   const [stato, setStato] = useState<StatoNave>({ fase: 'carico' })
   const [scarto, setScarto] = useState(0)
   const [scoperte, setScoperte] = useState<Scoperta[]>([])
+  const [scansioni, setScansioni] = useState<Scansione[]>([])
   const [riepilogo, setRiepilogo] = useState<Evento[]>([])
 
   const ricarica = useCallback(async () => {
     try {
       const prima = Date.now()
-      const [remoto, elenco] = await Promise.all([datiNave().stato(), datiNave().scoperte()])
+      // Prima lo stato: alla prima apertura scrive la scansione della base.
+      const remoto = await datiNave().stato()
+      const dopo = Date.now()
+      const [elenco, soste] = await Promise.all([datiNave().scoperte(), datiNave().scansioni()])
       // Lo scarto si misura a metà della richiesta: la risposta ha viaggiato.
-      const scartoNuovo = remoto.ora.getTime() - (prima + Date.now()) / 2
+      const scartoNuovo = remoto.ora.getTime() - (prima + dopo) / 2
       setScarto(scartoNuovo)
       setStato({ fase: 'pronta', nave: remoto.nave, viaggio: remoto.viaggio })
       setScoperte(elenco)
+      setScansioni(soste)
 
       // Gli arrivi dall'ultima rilettura: all'apertura e al ritorno sull'app
       // (che sul telefono può restare aperta in sottofondo per ore). Quelli
@@ -99,5 +104,5 @@ export function useNave() {
     [ricarica],
   )
 
-  return { stato, scarto, scoperte, riepilogo, chiudiRiepilogo: () => setRiepilogo([]), parti, ricarica }
+  return { stato, scarto, scoperte, scansioni, riepilogo, chiudiRiepilogo: () => setRiepilogo([]), parti, ricarica }
 }
