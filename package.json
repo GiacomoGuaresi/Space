@@ -18,6 +18,8 @@
     "verifica-sql": "node --import ./scripts/estensioni.mjs scripts/verifica-sql.ts"
   },
   "dependencies": {
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@fontsource/ibm-plex-sans": "^5.3.0",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.116.0",
     "lucide-react": "^1.46.0",

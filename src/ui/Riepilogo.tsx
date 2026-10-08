@@ -1,11 +1,12 @@
 import type { Evento } from './riepilogo'
 import { orario } from './formato'
+import { BottonePrimario } from './plancia'
 
 /** Cosa è successo dall'ultima visita: compare all'apertura, se c'è qualcosa. */
 export function Riepilogo({ eventi, ora, onChiudi }: { eventi: Evento[]; ora: Date; onChiudi: () => void }) {
   return (
     <div className="pointer-events-auto fixed inset-0 z-10 grid place-items-center bg-black/60 p-4" role="dialog" aria-modal="true" aria-labelledby="riepilogo-titolo">
-      <section className="flex w-full max-w-sm flex-col gap-3 rounded-2xl border border-bordo bg-pannello p-4">
+      <section className="flex w-full max-w-sm flex-col gap-3 rounded-plancia border border-linea bg-pannello p-4">
         <h2 id="riepilogo-titolo" className="m-0 text-base font-semibold">
           Mentre eri via
         </h2>
@@ -17,14 +18,9 @@ export function Riepilogo({ eventi, ora, onChiudi }: { eventi: Evento[]; ora: Da
             </li>
           ))}
         </ul>
-        <button
-          type="button"
-          autoFocus
-          className="min-h-10 rounded-xl bg-nebula font-semibold text-fondo hover:bg-nebula-scura"
-          onClick={onChiudi}
-        >
+        <BottonePrimario autoFocus onClick={onChiudi}>
           Ok
-        </button>
+        </BottonePrimario>
       </section>
     </div>
   )

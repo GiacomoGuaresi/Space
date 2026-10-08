@@ -36,14 +36,14 @@ export function Accesso({ onEntra }: Props) {
   return (
     <main className="grid min-h-dvh place-items-center bg-fondo p-3">
       <form className="flex w-full max-w-[300px] flex-col gap-2" onSubmit={invia}>
-        <Orbit className="size-11 self-center text-nebula" aria-hidden="true" />
+        <Orbit className="size-11 self-center text-ambra" aria-hidden="true" />
         <h1 className="mb-3 text-center text-lg font-semibold">Space</h1>
         <label className="text-xs text-testo-tenue" htmlFor="passphrase">
           Passphrase
         </label>
         <input
           id="passphrase"
-          className="min-h-11 rounded-[11px] border border-bordo bg-pannello px-3 focus:outline-2 focus:-outline-offset-1 focus:outline-nebula"
+          className="min-h-11 rounded-[11px] border border-linea bg-pannello px-3 focus:outline-2 focus:-outline-offset-1 focus:outline-ambra"
           type="password"
           autoComplete="current-password"
           autoFocus
@@ -59,7 +59,7 @@ export function Accesso({ onEntra }: Props) {
           </p>
         )}
         <button
-          className="min-h-11 rounded-[11px] bg-nebula font-semibold text-fondo hover:bg-nebula-scura disabled:opacity-50"
+          className="min-h-11 rounded-[11px] bg-ambra font-semibold text-su-ambra hover:bg-ambra-scura disabled:opacity-50"
           type="submit"
           disabled={!passphrase || inCorso}
         >

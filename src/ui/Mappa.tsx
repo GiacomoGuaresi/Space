@@ -5,8 +5,8 @@ import { CATALOGO } from '../dominio/catalogo'
 import { corpiNoti } from '../dominio/mappa'
 import { inViaggio, type Nave, type Viaggio } from '../dominio/navigazione'
 import { distanza, settore, stessoSettore, type Coordinate } from '../dominio/settore'
-import { COLORI_RARITA } from './colori'
 import { coordinate, orario, settori } from './formato'
+import { SimboloRarita } from './plancia'
 import { vaiA } from './indirizzo'
 import { Menu } from './Menu'
 
@@ -41,7 +41,7 @@ export function Mappa({ nave, viaggio, scoperte, scansioni }: Props) {
       </Suspense>
       <div className="pointer-events-none absolute inset-0 flex flex-col justify-between gap-3 p-3 pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(0.75rem,env(safe-area-inset-bottom))]">
         <header className="pointer-events-auto flex items-start justify-between gap-2">
-          <div className="rounded-2xl border border-bordo/70 bg-pannello/75 px-3 py-2 backdrop-blur">
+          <div className="rounded-plancia border border-linea/70 bg-pannello/75 px-3 py-2 backdrop-blur">
             <h1 className="m-0 text-sm font-semibold">Mappa</h1>
             <p className="m-0 text-[11px] text-testo-tenue">
               {punti.length} {punti.length === 1 ? 'corpo noto' : 'corpi noti'} · {scansioni.length}{' '}
@@ -53,9 +53,9 @@ export function Mappa({ nave, viaggio, scoperte, scansioni }: Props) {
 
         <section className="pointer-events-auto w-full max-w-md self-start">
           {punto ? (
-            <div className="flex flex-col gap-2 rounded-2xl border border-bordo/70 bg-pannello/80 p-3 text-xs backdrop-blur">
+            <div className="flex flex-col gap-2 rounded-plancia border border-linea/70 bg-pannello/80 p-3 text-xs backdrop-blur">
               <div className="flex items-start gap-2">
-                <span className={`mt-1 size-2 shrink-0 rounded-full ${COLORI_RARITA[CATALOGO[punto.tipo].rarita].punto}`} aria-hidden="true" />
+                <SimboloRarita rarita={CATALOGO[punto.tipo].rarita} className="w-3 shrink-0 text-center" />
                 <div className="flex-1">
                   <p className="m-0 text-sm">{scoperta ? settore(punto.coordinate).corpo?.nome : CATALOGO[punto.tipo].nome}</p>
                   <p className="m-0 text-testo-tenue">
@@ -71,7 +71,7 @@ export function Mappa({ nave, viaggio, scoperte, scansioni }: Props) {
                 <button
                   type="button"
                   disabled={volo}
-                  className="flex items-center justify-center gap-1.5 rounded-xl bg-nebula px-3 py-2 text-sm font-medium text-fondo disabled:opacity-40"
+                  className="flex items-center justify-center gap-1.5 rounded-plancia bg-ambra px-3 py-2 text-sm font-medium text-su-ambra disabled:opacity-40"
                   onClick={() => vaiA({ pagina: 'ponte', meta: punto.coordinate })}
                 >
                   <Navigation className="size-4" aria-hidden="true" />
@@ -80,7 +80,7 @@ export function Mappa({ nave, viaggio, scoperte, scansioni }: Props) {
               )}
             </div>
           ) : (
-            <p className="m-0 rounded-2xl border border-bordo/70 bg-pannello/75 p-3 text-xs text-testo-tenue backdrop-blur">
+            <p className="m-0 rounded-plancia border border-linea/70 bg-pannello/75 p-3 text-xs text-testo-tenue backdrop-blur">
               Tocca un corpo per vederne la scheda. Pieni i corpi scoperti, ad anello quelli solo rilevati; la nave è blu,
               la base bianca. Un quadretto della griglia è un settore.
             </p>

@@ -25,8 +25,8 @@ export default defineConfig({
         lang: 'it',
         display: 'standalone',
         // Come il fondo dell'app (src/index.css).
-        theme_color: '#070b14',
-        background_color: '#070b14',
+        theme_color: '#040507',
+        background_color: '#040507',
         icons: [
           { src: 'pwa-64x64.png', sizes: '64x64', type: 'image/png' },
           { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },

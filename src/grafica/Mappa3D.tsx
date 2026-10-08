@@ -18,8 +18,8 @@ interface Props {
   onSeleziona: (punto: Coordinate | null) => void
 }
 
-const COLORE_NAVE = '#7aa2ff'
-const COLORE_BASE = '#dbe4f5'
+const COLORE_NAVE = '#ffb547'
+const COLORE_BASE = '#f2e6cc'
 
 /** Forme dei punti, disegnate dal fragment shader. */
 const PIENO = 0
@@ -116,7 +116,7 @@ export function Mappa3D({ punti, soste, nave, rotta, selezionato, onSeleziona }:
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     dove.appendChild(renderer.domElement)
     const scena = new THREE.Scene()
-    scena.background = new THREE.Color('#05070d')
+    scena.background = new THREE.Color('#030405')
     const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 5000)
     camera.position.set(9, 7, 12)
     const controlli = new OrbitControls(camera, renderer.domElement)
@@ -211,7 +211,7 @@ export function Mappa3D({ punti, soste, nave, rotta, selezionato, onSeleziona }:
     }
 
     // Una griglia sul piano della nave, un quadretto per settore.
-    const griglia = new THREE.GridHelper(40, 40, '#24304a', '#141c2e')
+    const griglia = new THREE.GridHelper(40, 40, '#3a2b15', '#1a1309')
     ;(griglia.material as THREE.Material).transparent = true
     ;(griglia.material as THREE.Material).opacity = 0.6
     gruppo.add(griglia)

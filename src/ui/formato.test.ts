@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { durata, rovescia, settori } from './formato'
+import { abbreviato, durata, rovescia, settori } from './formato'
 
 const MIN = 60_000
 
@@ -30,5 +30,15 @@ describe('settori', () => {
   it('concorda il plurale', () => {
     expect(settori(1)).toBe('1 settore')
     expect(settori(2.45)).toBe('2,5 settori')
+  })
+})
+
+describe('abbreviato', () => {
+  it('abbrevia migliaia e milioni come la plancia', () => {
+    expect(abbreviato(840)).toBe('840')
+    expect(abbreviato(2.15)).toBe('2,2')
+    expect(abbreviato(1234)).toBe('1,2 k')
+    expect(abbreviato(55_400)).toBe('55,4 k')
+    expect(abbreviato(2_680_000)).toBe('2,68 M')
   })
 })

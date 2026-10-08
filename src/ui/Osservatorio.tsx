@@ -8,7 +8,7 @@ import { osserva } from './indirizzo'
 const ASSI = ['x', 'y', 'z'] as const
 
 const pulsante =
-  'grid min-h-9 min-w-9 place-items-center rounded-lg border border-bordo/70 bg-pannello/75 px-2 text-xs backdrop-blur hover:border-nebula hover:text-nebula disabled:opacity-40'
+  'grid min-h-9 min-w-9 place-items-center rounded-plancia border border-linea/70 bg-pannello/75 px-2 text-xs backdrop-blur hover:border-ambra hover:text-ambra disabled:opacity-40'
 
 /**
  * I comandi dell'osservatorio (M1): si scrivono le coordinate, ci si sposta di
@@ -51,7 +51,7 @@ export function Osservatorio({ settore }: { settore: Settore }) {
             {asse.toUpperCase()}
             <div className="flex">
               <input
-                className="h-9 w-[4.25rem] rounded-l-lg border border-bordo/70 bg-pannello/75 px-2 text-testo tabular-nums backdrop-blur focus:outline-2 focus:-outline-offset-1 focus:outline-nebula"
+                className="h-9 w-[4.25rem] rounded-l-lg border border-linea/70 bg-pannello/75 px-2 text-testo tabular-nums backdrop-blur focus:outline-2 focus:-outline-offset-1 focus:outline-ambra"
                 type="number"
                 inputMode="numeric"
                 step={1}
@@ -61,7 +61,7 @@ export function Osservatorio({ settore }: { settore: Settore }) {
               <div className="flex flex-col">
                 <button
                   type="button"
-                  className="grid h-[18px] w-6 place-items-center rounded-tr-lg border border-l-0 border-bordo/70 bg-pannello/75 hover:text-nebula"
+                  className="grid h-[18px] w-6 place-items-center rounded-tr-lg border border-l-0 border-linea/70 bg-pannello/75 hover:text-ambra"
                   aria-label={`${asse} + 1`}
                   onClick={() => sposta(asse, 1)}
                 >
@@ -69,7 +69,7 @@ export function Osservatorio({ settore }: { settore: Settore }) {
                 </button>
                 <button
                   type="button"
-                  className="grid h-[18px] w-6 place-items-center rounded-br-lg border border-t-0 border-l-0 border-bordo/70 bg-pannello/75 hover:text-nebula"
+                  className="grid h-[18px] w-6 place-items-center rounded-br-lg border border-t-0 border-l-0 border-linea/70 bg-pannello/75 hover:text-ambra"
                   aria-label={`${asse} − 1`}
                   onClick={() => sposta(asse, -1)}
                 >
@@ -86,7 +86,7 @@ export function Osservatorio({ settore }: { settore: Settore }) {
 
       <div className="flex flex-wrap items-center gap-1.5">
         <select
-          className="h-9 rounded-lg border border-bordo/70 bg-pannello/75 px-2 text-xs backdrop-blur"
+          className="h-9 rounded-plancia border border-linea/70 bg-pannello/75 px-2 text-xs backdrop-blur"
           value={tipo}
           onChange={(e) => setTipo(e.target.value as TipoCorpo | 'qualsiasi')}
           aria-label="Tipo di corpo da cercare"
@@ -120,7 +120,7 @@ export function Osservatorio({ settore }: { settore: Settore }) {
         </button>
       </div>
       {avviso && (
-        <p className="m-0 max-w-sm rounded-lg bg-pannello/75 px-2 py-1 text-xs text-pericolo backdrop-blur" role="alert">
+        <p className="m-0 max-w-sm rounded-plancia bg-pannello/75 px-2 py-1 text-xs text-pericolo backdrop-blur" role="alert">
           {avviso}
         </p>
       )}

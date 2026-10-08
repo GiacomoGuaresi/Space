@@ -1,21 +1,43 @@
 @import 'tailwindcss';
 
-/* Palette spazio, solo tema scuro: provvisoria, si definisce con l'interfaccia.
-   Font e scala come le altre app di casa. */
+/* Plancia ambra (doc/11-interfaccia.md#stile--plancia-ambra): solo tema scuro.
+   I font stanno nel pacchetto, così funzionano anche senza rete. */
 @theme {
-  --color-fondo: #070b14;
-  --color-pannello: #0f1626;
-  --color-bordo: #24304a;
-  --color-testo: #dbe4f5;
-  --color-testo-tenue: #8796b3;
-  --color-nebula: #7aa2ff;
-  --color-nebula-scura: #5a82e0;
-  --color-pericolo: #ff7a85;
+  --color-fondo: #040507;
+  --color-pannello: #0c0905;
+  --color-barra: #080603;
+  --color-linea: #5a4220;
+  --color-separatore: #2e2312;
+  --color-testo: #f2e6cc;
+  --color-testo-tenue: #a8926b;
+  --color-ambra: #ffb547;
+  --color-ambra-scura: #b97a22;
+  --color-su-ambra: #1a1206;
+  --color-pericolo: #ff7b5c;
 
-  --font-sans: 'Avenir Next', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --radius-plancia: 3px;
 }
 
-/* Chi ha chiesto meno movimento vede tutto cambiare di colpo. */
+/* Etichette della plancia: maiuscole, spaziate, piccole. */
+@utility etichetta {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-testo-tenue);
+}
+
+/* Numeri in monospazio a cifre tabulari. */
+@utility cifre {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Chi ha chiesto meno movimento (al sistema o nelle impostazioni) vede tutto
+   cambiare di colpo. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -23,6 +45,12 @@
     animation-duration: 1ms !important;
     transition-duration: 1ms !important;
   }
+}
+:root[data-movimento='ridotto'] *,
+:root[data-movimento='ridotto'] *::before,
+:root[data-movimento='ridotto'] *::after {
+  animation-duration: 1ms !important;
+  transition-duration: 1ms !important;
 }
 
 :root {

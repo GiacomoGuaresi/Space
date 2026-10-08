@@ -6,6 +6,7 @@ import { CATALOGO } from '../dominio/catalogo'
 import { anteprima, tipiRilevabili, type Nave } from '../dominio/navigazione'
 import { distanza, stessoSettore, tipoSettore, type Coordinate } from '../dominio/settore'
 import { coordinate, durata, numero, orario, settori } from './formato'
+import { BottonePrimario, Info } from './plancia'
 
 const ASSI = ['x', 'y', 'z'] as const
 
@@ -74,7 +75,7 @@ export function Rotta({ nave, ora, meta, scoperti, onMeta, onParti }: Props) {
           <label key={asse} className="flex flex-col gap-0.5 text-[11px] text-testo-tenue">
             {asse.toUpperCase()}
             <input
-              className="h-9 w-[4.5rem] rounded-lg border border-bordo/70 bg-fondo/60 px-2 text-testo tabular-nums focus:outline-2 focus:-outline-offset-1 focus:outline-nebula"
+              className="h-9 w-[4.5rem] rounded-plancia border border-linea/70 bg-fondo/60 px-2 text-testo tabular-nums focus:outline-2 focus:-outline-offset-1 focus:outline-ambra"
               inputMode="numeric"
               value={bozza[asse]}
               onChange={(e) => {
@@ -102,7 +103,14 @@ export function Rotta({ nave, ora, meta, scoperti, onMeta, onParti }: Props) {
           <dt className="text-testo-tenue">Durata</dt>
           <dd className="m-0">
             {durata(prova.durata)} · arrivo alle {orario(new Date(ora.getTime() + prova.durata), ora)}
-            {prova.fionda ? ` · fionda ×${numero(BILANCIAMENTO.fionda.velocita, 1)}` : ''}
+            {prova.fionda ? ` · fionda ×${numero(BILANCIAMENTO.fionda.velocita, 1)}` : ''}{' '}
+            <Info
+              titolo="Durata"
+              formula={`${numero(prova.percorsa, 2)} settori / (${numero(nave.velocita, 2)} settori/h${
+                prova.fionda ? ` × ${numero(BILANCIAMENTO.fionda.velocita, 1)}` : ''
+              })`}
+              esatto={`${numero(prova.durata / 3_600_000, 2)} h`}
+            />
           </dd>
           <dt className="text-testo-tenue">Consumo</dt>
           <dd className="m-0">
@@ -113,7 +121,7 @@ export function Rotta({ nave, ora, meta, scoperti, onMeta, onParti }: Props) {
       )}
 
       {prova?.fermata && prova.possibile && (
-        <p className="m-0 text-[#ffc46b]">
+        <p className="m-0 text-ambra">
           Il carburante basta fino a {coordinate(prova.a)}: lì la nave si fermerà ad aspettare la ricarica.
         </p>
       )}
@@ -124,15 +132,10 @@ export function Rotta({ nave, ora, meta, scoperti, onMeta, onParti }: Props) {
         </p>
       )}
 
-      <button
-        type="button"
-        className="flex min-h-10 items-center justify-center gap-2 rounded-xl bg-nebula font-semibold text-fondo hover:bg-nebula-scura disabled:opacity-40"
-        disabled={!prova?.possibile || inCorso}
-        onClick={parti}
-      >
+      <BottonePrimario disabled={!prova?.possibile || inCorso} onClick={parti}>
         <Rocket className="size-4" aria-hidden="true" />
         {inCorso ? 'Partenza…' : 'Parti'}
-      </button>
+      </BottonePrimario>
     </div>
   )
 }

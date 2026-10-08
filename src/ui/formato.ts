@@ -42,3 +42,15 @@ export function numero(n: number, cifre = 0): string {
 export function settori(n: number): string {
   return `${numero(n, 1)} ${n === 1 ? 'settore' : 'settori'}`
 }
+
+/**
+ * Un numero abbreviato per la plancia: 840 · 1,2 k · 55,4 k · 2,68 M. Sotto
+ * il migliaio tiene al massimo `cifre` decimali (1 se non si dice).
+ */
+export function abbreviato(n: number, cifre = 1): string {
+  const assoluto = Math.abs(n)
+  if (assoluto < 1000) return numero(n, cifre)
+  if (assoluto < 1_000_000) return `${numero(n / 1000, 1)} k`
+  if (assoluto < 1_000_000_000) return `${numero(n / 1_000_000, 2)} M`
+  return `${numero(n / 1_000_000_000, 2)} G`
+}

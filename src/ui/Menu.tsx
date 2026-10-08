@@ -2,7 +2,7 @@ import { BookOpen, Map as IconaMappa, Rocket, Telescope } from 'lucide-react'
 import { indirizzo, type Pagina } from './indirizzo'
 
 const voce =
-  'grid size-9 place-items-center rounded-lg border border-bordo/70 bg-pannello/75 backdrop-blur hover:border-nebula hover:text-nebula aria-[current=page]:border-nebula aria-[current=page]:text-nebula'
+  'grid size-9 place-items-center rounded-plancia border border-linea/70 bg-pannello/75 backdrop-blur hover:border-ambra hover:text-ambra aria-[current=page]:border-ambra aria-[current=page]:text-ambra'
 
 /** Le pagine: ponte, mappa, catalogo e, solo in sviluppo, l'osservatorio libero. */
 export function Menu({ attuale }: { attuale: Pagina['pagina'] }) {

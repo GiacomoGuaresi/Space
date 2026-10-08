@@ -29,11 +29,11 @@ export function StatoNave({ nave, viaggio, ora }: Props) {
         : 'Serbatoio pieno'
 
   return (
-    <section className="flex w-64 flex-col gap-2 rounded-2xl border border-bordo/70 bg-pannello/75 p-3 backdrop-blur">
+    <section className="flex w-64 flex-col gap-2 rounded-plancia border border-linea/70 bg-pannello/75 p-3 backdrop-blur">
       {volo ? (
         <div>
           <p className="m-0 flex items-center gap-1.5 text-xs text-testo-tenue">
-            <Rocket className="size-3.5 text-nebula" aria-hidden="true" />
+            <Rocket className="size-3.5 text-ambra" aria-hidden="true" />
             In viaggio verso {coordinate(nave.posizione)}
           </p>
           <p className="m-0 text-3xl font-semibold tabular-nums" aria-live="polite">
@@ -44,14 +44,14 @@ export function StatoNave({ nave, viaggio, ora }: Props) {
             {viaggio?.fionda ? ' · fionda gravitazionale' : ''}
           </p>
           {viaggio && !stessoSettore(viaggio.a, viaggio.meta) && (
-            <p className="m-0 mt-1 text-xs text-[#ffc46b]">
+            <p className="m-0 mt-1 text-xs text-ambra">
               Il carburante finirà prima della meta {coordinate(viaggio.meta)}.
             </p>
           )}
         </div>
       ) : (
         <p className="m-0 flex items-center gap-1.5 text-sm">
-          <Navigation className="size-3.5 text-nebula" aria-hidden="true" />
+          <Navigation className="size-3.5 text-ambra" aria-hidden="true" />
           Ferma in {coordinate(nave.posizione)}
         </p>
       )}
@@ -67,14 +67,14 @@ export function StatoNave({ nave, viaggio, ora }: Props) {
           </span>
         </div>
         <div
-          className="relative mt-1 h-1.5 overflow-hidden rounded-full bg-bordo/60"
+          className="relative mt-1 h-1.5 overflow-hidden rounded-full bg-linea/60"
           role="meter"
           aria-label="Carburante"
           aria-valuemin={0}
           aria-valuemax={nave.serbatoio}
           aria-valuenow={Math.round(carburante * 10) / 10}
         >
-          <div className="h-full rounded-full bg-nebula" style={{ width: `${(carburante / nave.serbatoio) * 100}%` }} />
+          <div className="h-full rounded-full bg-ambra" style={{ width: `${(carburante / nave.serbatoio) * 100}%` }} />
           {parziale && !volo && (
             <div className="absolute inset-y-0 w-px bg-testo/60" style={{ left: `${percento}%` }} aria-hidden="true" />
           )}

@@ -59,7 +59,7 @@ export function Ponte({ nave, viaggio, scarto, scoperte, meta: metaScelta, riepi
       type="button"
       role="tab"
       aria-selected={scheda === valore}
-      className="flex-1 rounded-lg px-2 py-1.5 text-xs text-testo-tenue aria-selected:bg-fondo/70 aria-selected:text-testo"
+      className="flex-1 rounded-plancia px-2 py-1.5 text-xs text-testo-tenue aria-selected:bg-fondo/70 aria-selected:text-testo"
       onClick={() => setScheda(valore)}
     >
       {testo}
@@ -79,12 +79,12 @@ export function Ponte({ nave, viaggio, scarto, scoperte, meta: metaScelta, riepi
 
         <section className="pointer-events-auto w-full max-w-md self-start">
           {volo ? (
-            <div className="rounded-2xl border border-bordo/70 bg-pannello/75 p-3 text-xs text-testo-tenue backdrop-blur">
+            <div className="rounded-plancia border border-linea/70 bg-pannello/75 p-3 text-xs text-testo-tenue backdrop-blur">
               Lo scanner e la rotta tornano disponibili all'arrivo. Il nome di quello che c'è laggiù lo scoprirai arrivando.
             </div>
           ) : (
             <div className="flex flex-col gap-2">
-              <div className="flex gap-1 rounded-xl border border-bordo/70 bg-pannello/75 p-1 backdrop-blur" role="tablist">
+              <div className="flex gap-1 rounded-plancia border border-linea/70 bg-pannello/75 p-1 backdrop-blur" role="tablist">
                 {linguetta('qui', 'Qui')}
                 {linguetta('scanner', 'Scanner')}
                 {linguetta('rotta', 'Rotta')}
@@ -92,7 +92,7 @@ export function Ponte({ nave, viaggio, scarto, scoperte, meta: metaScelta, riepi
               {scheda === 'qui' ? (
                 <Scheda settore={settore} />
               ) : (
-                <div className="max-h-[42dvh] overflow-y-auto rounded-2xl border border-bordo/70 bg-pannello/75 p-3 backdrop-blur">
+                <div className="max-h-[42dvh] overflow-y-auto rounded-plancia border border-linea/70 bg-pannello/75 p-3 backdrop-blur">
                   {scheda === 'scanner' ? (
                     <Scanner centro={nave.posizione} livello={nave.scanner} scoperti={scoperti} onScegli={scegli} />
                   ) : (

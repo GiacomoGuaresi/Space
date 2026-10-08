@@ -29,7 +29,7 @@ export function App() {
           <p className="m-0 text-sm text-pericolo" role="alert">
             {stato.messaggio}
           </p>
-          <button type="button" className="rounded-xl border border-bordo px-4 py-2 text-sm hover:border-nebula" onClick={() => void ricarica()}>
+          <button type="button" className="rounded-plancia border border-linea px-4 py-2 text-sm hover:border-ambra" onClick={() => void ricarica()}>
             Riprova
           </button>
         </div>

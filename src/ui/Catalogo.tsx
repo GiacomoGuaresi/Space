@@ -1,9 +1,10 @@
 import { useMemo } from 'react'
 import type { Scoperta } from '../dati'
 import { CATALOGO, TIPI } from '../dominio/catalogo'
-import { settore } from '../dominio/settore'
 import { COLORI_RARITA } from './colori'
+import { settore } from '../dominio/settore'
 import { coordinate, orario } from './formato'
+import { SimboloRarita } from './plancia'
 import { Menu } from './Menu'
 
 /**
@@ -38,7 +39,7 @@ export function Catalogo({ scoperte }: { scoperte: Scoperta[] }) {
             return (
               <li
                 key={t}
-                className={`rounded-xl border border-bordo/70 bg-pannello p-2 text-xs ${quanti ? '' : 'opacity-45'}`}
+                className={`rounded-plancia border border-linea/70 bg-pannello p-2 text-xs ${quanti ? '' : 'opacity-45'}`}
               >
                 <span className={`block text-[11px] ${COLORI_RARITA[CATALOGO[t].rarita].testo}`}>{CATALOGO[t].rarita}</span>
                 <span className="block">{quanti ? CATALOGO[t].nome : '???'}</span>
@@ -58,8 +59,8 @@ export function Catalogo({ scoperte }: { scoperte: Scoperta[] }) {
               const corpo = settore(s.coordinate).corpo
               const chiave = `${s.coordinate.x},${s.coordinate.y},${s.coordinate.z}`
               return (
-                <li key={chiave} className="flex items-center gap-2 rounded-xl border border-bordo/70 bg-pannello px-3 py-2 text-xs">
-                  <span className={`size-2 shrink-0 rounded-full ${COLORI_RARITA[CATALOGO[s.tipo].rarita].punto}`} aria-hidden="true" />
+                <li key={chiave} className="flex items-center gap-2 rounded-plancia border border-linea/70 bg-pannello px-3 py-2 text-xs">
+                  <SimboloRarita rarita={CATALOGO[s.tipo].rarita} className="w-3 shrink-0 text-center" />
                   <span className="flex-1">
                     <span className="block text-sm">{corpo?.nome ?? '—'}</span>
                     <span className="text-testo-tenue">

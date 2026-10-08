@@ -47,7 +47,7 @@ export function Scheda({ settore }: { settore: Settore }) {
 
   if (!corpo) {
     return (
-      <section className="rounded-2xl border border-bordo/70 bg-pannello/75 p-3 backdrop-blur">
+      <section className="rounded-plancia border border-linea/70 bg-pannello/75 p-3 backdrop-blur">
         <h2 className="m-0 text-base font-semibold">{settore.base ? 'Base' : 'Spazio vuoto'}</h2>
         <p className="m-0 mt-0.5 text-xs text-testo-tenue">
           {dove} · {settore.base ? 'il punto di partenza' : lontano}
@@ -65,7 +65,7 @@ export function Scheda({ settore }: { settore: Settore }) {
   if (corpo.effetto) righe.push(['Effetto', corpo.effetto])
 
   return (
-    <section className="rounded-2xl border border-bordo/70 bg-pannello/75 p-3 backdrop-blur">
+    <section className="rounded-plancia border border-linea/70 bg-pannello/75 p-3 backdrop-blur">
       <div className="flex items-baseline justify-between gap-3">
         <h2 className="m-0 text-base font-semibold">{corpo.nome}</h2>
         <span className={`shrink-0 text-xs ${COLORI_RARITA[corpo.rarita].testo}`}>{corpo.rarita}</span>

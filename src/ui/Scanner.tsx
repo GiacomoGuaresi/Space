@@ -3,8 +3,8 @@ import { Check } from 'lucide-react'
 import { CATALOGO } from '../dominio/catalogo'
 import { raggioScanner, scansione, tipiRilevabili } from '../dominio/navigazione'
 import { tipoSettore, type Coordinate } from '../dominio/settore'
-import { COLORI_RARITA } from './colori'
 import { coordinate, settori } from './formato'
+import { SimboloRarita } from './plancia'
 
 interface Props {
   centro: Coordinate
@@ -43,15 +43,15 @@ export function Scanner({ centro, livello, scoperti, onScegli }: Props) {
               <li key={chiave}>
                 <button
                   type="button"
-                  className="flex w-full items-center gap-2 rounded-lg border border-transparent px-2 py-1.5 text-left text-xs hover:border-bordo hover:bg-fondo/50"
+                  className="flex w-full items-center gap-2 rounded-plancia border border-transparent px-2 py-1.5 text-left text-xs hover:border-linea hover:bg-fondo/50"
                   onClick={() => onScegli(c)}
                 >
-                  <span className={`size-2 shrink-0 rounded-full ${COLORI_RARITA[CATALOGO[tipo].rarita].punto}`} aria-hidden="true" />
+                  <SimboloRarita rarita={CATALOGO[tipo].rarita} className="w-3 shrink-0 text-center" />
                   <span className="flex-1">
                     {CATALOGO[tipo].nome}
                     <span className="text-testo-tenue"> · {coordinate(c)}</span>
                   </span>
-                  {scoperti.has(chiave) && <Check className="size-3.5 text-[#7fd1a8]" aria-label="Già scoperto" />}
+                  {scoperti.has(chiave) && <Check className="size-3.5 text-[#7fd1c7]" aria-label="Già scoperto" />}
                   <span className="shrink-0 tabular-nums text-testo-tenue">{settori(distanza)}</span>
                 </button>
               </li>
