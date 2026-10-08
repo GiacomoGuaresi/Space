@@ -1,5 +1,6 @@
 import { Fragment, useContext, type ReactNode } from 'react'
 import { Pallini } from './Barra'
+import { mostraAiuto } from './tastiera'
 import { alterna, FINESTRE, mostra, riordina, useDisposizione, type IdFinestra, type StatoFinestra } from './finestre'
 
 // Nave, Rete, Base, Ricerche e Traguardi arrivano con le loro meccaniche (doc/06-roadmap.md).
@@ -86,6 +87,17 @@ export function Dock() {
             onClick={riordina}
           >
             <Tasto>↺</Tasto>
+          </button>
+        </li>
+        <li className="flex">
+          <button
+            type="button"
+            title="Scorciatoie da tastiera"
+            aria-label="Scorciatoie da tastiera"
+            className={`${CLASSI} ${STILI.chiusa}`}
+            onClick={() => mostraAiuto(true)}
+          >
+            <Tasto>?</Tasto>
           </button>
         </li>
         <li className="flex">{voce('impostazioni', <span className="sr-only">Impostazioni</span>)}</li>

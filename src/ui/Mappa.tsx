@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { Suspense, lazy, useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Navigation } from 'lucide-react'
 import type { Scansione, Scoperta } from '../dati'
 import { CATALOGO } from '../dominio/catalogo'
@@ -9,6 +9,7 @@ import { COLORI_RARITA } from './colori'
 import { Cornice } from './Cornice'
 import { coordinatePlancia, durata, numero, orario } from './formato'
 import { vaiA } from './indirizzo'
+import { MenuContesto, menuCorpo, type Menu } from './MenuContesto'
 import { segnaRaroVisto } from './pallini'
 import { BottonePrimario, Etichetta, Pannello, SimboloRarita } from './plancia'
 import { useOra } from './useNave'
@@ -80,9 +81,7 @@ export function Mappa({ nave, viaggio, scarto, scoperte, scansioni }: Props) {
             </Etichetta>
             <span className="cifre shrink-0 text-xs text-testo-tenue">{coordinatePlancia(punto.coordinate)}</span>
           </div>
-          {scoperta && (
-            <p className="m-0 text-base font-semibold tracking-[0.1em] uppercase">{settore(punto.coordinate).corpo?.nome}</p>
-          )}
+          {scoperta && <p className="m-0 text-base font-semibold tracking-[0.1em] uppercase">{settore(punto.coordinate).corpo?.nome}</p>}
           <div className="flex gap-5">
             <Valore etichetta="Distanza">{numero(distanza(nave.posizione, punto.coordinate), 1)} sett.</Valore>
             {prova && <Valore etichetta="Durata">{durata(prova.durata)}</Valore>}
@@ -104,9 +103,9 @@ export function Mappa({ nave, viaggio, scarto, scoperte, scansioni }: Props) {
       ) : (
         <Pannello className="p-3 text-xs text-testo-tenue">
           <span className="cifre text-testo">{punti.length}</span> {punti.length === 1 ? 'corpo noto' : 'corpi noti'} ·{' '}
-          <span className="cifre text-testo">{scansioni.length}</span> {scansioni.length === 1 ? 'sosta' : 'soste'}. Tocca un
-          corpo per la sua scheda: ● comune, ◆ non comune, ★ raro, ✦ leggendario; pieni i visitati, vuoti quelli solo
-          rilevati; ▲ la nave, ○ la base madre. Un quadretto è un settore.
+          <span className="cifre text-testo">{scansioni.length}</span> {scansioni.length === 1 ? 'sosta' : 'soste'}. Tocca un corpo per la
+          sua scheda: ● comune, ◆ non comune, ★ raro, ✦ leggendario; pieni i visitati, vuoti quelli solo rilevati; ▲ la nave, ○ la base
+          madre. Un quadretto è un settore.
         </Pannello>
       )}
     </Cornice>
@@ -206,6 +205,12 @@ export function useSfondoMappa({
   const [filtro, setFiltro] = useState<Filtro>('tutti')
   const punti = useMemo(() => tutti.filter(FILTRI[filtro].tiene), [tutti, filtro])
   const [centra, setCentra] = useState<{ su: Coordinate; volta: number } | null>(null)
+  const [menu, setMenu] = useState<Menu | null>(null)
+  const chiudiMenu = useCallback(() => setMenu(null), [])
+  const contesto = (c: Coordinate, x: number, y: number) => {
+    const punto = punti.find((p) => stessoSettore(p.coordinate, c))
+    if (punto) setMenu(menuCorpo(x, y, punto.tipo, c, stessoSettore(c, nave) ? undefined : () => onScegli(c)))
+  }
   const seleziona = (c: Coordinate | null) => {
     const punto = c && punti.find((p) => stessoSettore(p.coordinate, c))
     if (!punto) return
@@ -216,7 +221,16 @@ export function useSfondoMappa({
   return {
     fondo: (
       <Suspense fallback={null}>
-        <Mappa3D punti={punti} soste={scansioni} nave={nave} centra={centra} selezionato={meta} onSeleziona={seleziona} />
+        <Mappa3D
+          punti={punti}
+          soste={scansioni}
+          nave={nave}
+          centra={centra}
+          selezionato={meta}
+          onSeleziona={seleziona}
+          onContesto={contesto}
+        />
+        <MenuContesto menu={menu} onChiudi={chiudiMenu} />
       </Suspense>
     ),
     barretta: (

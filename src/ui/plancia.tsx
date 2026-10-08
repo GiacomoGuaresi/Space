@@ -57,12 +57,13 @@ export function SimboloRarita({ rarita, className = '' }: { rarita: Rarita; clas
 const BOTTONE =
   'flex items-center justify-center gap-2 rounded-plancia px-3 text-[13px] font-semibold uppercase tracking-[0.16em] disabled:opacity-40'
 
-/** Il bottone dell'azione principale: pieno, ambra. */
+/** Il bottone dell'azione principale: pieno, ambra. Nelle finestre del PC è più basso: lì si usa il mouse. */
 export function BottonePrimario({ className = '', onClick, ...resto }: ButtonHTMLAttributes<HTMLButtonElement>) {
+  const compatto = useContext(DentroFinestra)
   return (
     <button
       type="button"
-      className={`${BOTTONE} min-h-12 bg-ambra text-su-ambra hover:bg-[#ffc46b] ${className}`}
+      className={`${BOTTONE} ${compatto ? 'min-h-9' : 'min-h-12'} bg-ambra text-su-ambra hover:bg-[#ffc46b] ${className}`}
       onClick={(e) => {
         suona('clic')
         onClick?.(e)
@@ -74,10 +75,11 @@ export function BottonePrimario({ className = '', onClick, ...resto }: ButtonHTM
 
 /** Il bottone delle azioni secondarie: solo il bordo. */
 export function BottoneSecondario({ className = '', ...resto }: ButtonHTMLAttributes<HTMLButtonElement>) {
+  const compatto = useContext(DentroFinestra)
   return (
     <button
       type="button"
-      className={`${BOTTONE} min-h-11 border border-ambra-scura bg-transparent text-ambra hover:border-ambra ${className}`}
+      className={`${BOTTONE} ${compatto ? 'min-h-8' : 'min-h-11'} border border-ambra-scura bg-transparent text-ambra hover:border-ambra ${className}`}
       {...resto}
     />
   )
@@ -87,7 +89,8 @@ const LARGHEZZA_INFO = 256
 
 /**
  * ⓘ accanto a un valore calcolato: un tocco mostra la formula con i numeri
- * attuali e il valore esatto. Si chiude toccando fuori o con Esc.
+ * attuali e il valore esatto. Si chiude toccando fuori o con Esc. Col mouse
+ * si apre anche al passaggio, e un clic la tiene aperta.
  */
 export function Info({
   titolo,
@@ -101,10 +104,24 @@ export function Info({
   /** La pagina della wiki con la sezione Numeri. */
   wiki?: string
 }) {
-  const [aperta, setAperta] = useState<{ x: number; y: number } | null>(null)
+  const [aperta, setAperta] = useState<{ x: number; y: number; fissa: boolean } | null>(null)
   const id = useId()
   const dove = useRef<HTMLSpanElement>(null)
   const riquadro = useRef<HTMLSpanElement>(null)
+  const timer = useRef<number | undefined>(undefined)
+
+  // Il riquadro sta sopra tutto, anche fuori dalle finestre: sotto la ⓘ, dentro lo schermo.
+  const apri = (bottone: HTMLElement, fissa: boolean) => {
+    window.clearTimeout(timer.current)
+    const r = bottone.getBoundingClientRect()
+    const x = Math.max(8, Math.min(r.left + r.width / 2 - LARGHEZZA_INFO / 2, window.innerWidth - LARGHEZZA_INFO - 8))
+    setAperta({ x, y: r.bottom + 4, fissa })
+  }
+  // Al passaggio si chiude con un attimo di ritardo, per lasciare il tempo di entrare nel riquadro.
+  const lascia = (e: React.PointerEvent) => {
+    if (e.pointerType !== 'mouse') return
+    timer.current = window.setTimeout(() => setAperta((a) => (a?.fissa ? a : null)), 200)
+  }
 
   useEffect(() => {
     if (!aperta) return
@@ -113,7 +130,11 @@ export function Info({
       if (!dove.current?.contains(bersaglio) && !riquadro.current?.contains(bersaglio)) setAperta(null)
     }
     const tasto = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setAperta(null)
+      // Esc chiude il riquadro e basta: la finestra sotto resta (tastiera.ts guarda defaultPrevented).
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        setAperta(null)
+      }
     }
     // Il riquadro è fisso sullo schermo: se sotto si scorre, si chiude.
     const scorri = (e: Event) => {
@@ -138,12 +159,13 @@ export function Info({
         aria-controls={id}
         className="-m-2 p-2 text-[12px] leading-none text-ambra"
         onClick={(e) => {
-          if (aperta) return setAperta(null)
-          // Il riquadro sta sopra tutto, anche fuori dalle finestre: sotto la ⓘ, dentro lo schermo.
-          const r = e.currentTarget.getBoundingClientRect()
-          const x = Math.max(8, Math.min(r.left + r.width / 2 - LARGHEZZA_INFO / 2, window.innerWidth - LARGHEZZA_INFO - 8))
-          setAperta({ x, y: r.bottom + 4 })
+          if (aperta?.fissa) return setAperta(null)
+          apri(e.currentTarget, true)
         }}
+        onPointerEnter={(e) => {
+          if (e.pointerType === 'mouse' && !aperta) apri(e.currentTarget, false)
+        }}
+        onPointerLeave={lascia}
       >
         ⓘ
       </button>
@@ -154,6 +176,8 @@ export function Info({
             id={id}
             role="note"
             style={{ left: aperta.x, top: aperta.y, width: LARGHEZZA_INFO }}
+            onPointerEnter={() => window.clearTimeout(timer.current)}
+            onPointerLeave={lascia}
             className="fixed z-50 flex flex-col gap-1 rounded-plancia border border-linea bg-pannello p-2.5 text-left text-xs font-normal tracking-normal normal-case text-testo shadow-lg"
           >
             <span className="etichetta">{titolo}</span>

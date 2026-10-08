@@ -12,6 +12,7 @@ import { Rotta } from './Rotta'
 import { Scanner } from './Scanner'
 import { Scheda } from './Scheda'
 import { usePC } from './schermo'
+import { Scorciatoie, useTastiera } from './tastiera'
 import { useOra } from './useNave'
 
 const Scena = lazy(async () => ({ default: (await import('../grafica/Scena')).Scena }))
@@ -47,6 +48,7 @@ export function Ponte({ nave, viaggio, scarto, scoperte, scansioni, meta: metaSc
   const [meta, setMeta] = useState<Coordinate | null>(metaScelta ?? null)
   const pc = usePC()
   const disposizione = useDisposizione()
+  useTastiera(pc)
 
   const { x: mx, y: my, z: mz } = metaScelta ?? { x: null, y: null, z: null }
   useEffect(() => {
@@ -122,6 +124,7 @@ export function Ponte({ nave, viaggio, scarto, scoperte, scansioni, meta: metaSc
               {contenuti[id]!.contenuto}
             </Finestra>
           ))}
+        <Scorciatoie />
       </Cornice>
     )
   }

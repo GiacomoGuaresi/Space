@@ -79,7 +79,7 @@ Una finestra compare nel dock quando esiste la sua meccanica.
 - Un'azione che riguarda un'altra finestra la apre o la riporta su: scegliere una meta (scanner, mappa, Rete) apre la Rotta; "Numeri ›" di una ⓘ apre la Wiki su quella pagina.
 - In viaggio Scanner e Rotta restano aperte e mostrano "disponibile all'arrivo".
 - **Disposizione**: alla prima apertura Qui, Scanner e Rotta. Poi si ricordano **sul dispositivo** le finestre aperte e ridotte, la posizione e la dimensione. **↺ Riordina** torna alla disposizione iniziale.
-- **Tastiera**: la lettera della finestra la apre o la chiude, **Tab** scambia scena e mappa, **Esc** chiude la finestra in primo piano, **?** mostra l'elenco. Le lettere non valgono mentre si scrive in un campo.
+- **Tastiera**: la lettera della finestra la apre o la chiude, **Tab** scambia scena e mappa (se nessun comando ha il fuoco: altrimenti Tab passa al comando dopo, come sempre), **Esc** chiude la finestra in primo piano, **?** mostra l'elenco. Le lettere non valgono mentre si scrive in un campo.
 - **Indirizzo**: solo link diretti. `#/wiki/pulsar`, `#/rotta/x,y,z`, `#/diario` aprono la finestra, poi l'indirizzo si pulisce. La disposizione non va nell'URL.
 
 ## Telefono · pagine e barra

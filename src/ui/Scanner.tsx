@@ -1,10 +1,12 @@
-import { useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { Check } from 'lucide-react'
 import { CATALOGO } from '../dominio/catalogo'
 import { raggioScanner, scansione, tipiRilevabili } from '../dominio/navigazione'
 import { tipoSettore, type Coordinate } from '../dominio/settore'
 import { coordinate, settori } from './formato'
+import { MenuContesto, menuCorpo, type Menu } from './MenuContesto'
 import { SimboloRarita } from './plancia'
+import { usePC } from './schermo'
 
 interface Props {
   centro: Coordinate
@@ -24,6 +26,10 @@ export function Scanner({ centro, livello, scoperti, onScegli }: Props) {
   const raggio = raggioScanner(livello, tipoQui)
   const tipi = useMemo(() => tipiRilevabili(livello), [livello])
   const trovati = useMemo(() => scansione(centro, raggio, tipi), [centro, raggio, tipi])
+  // Su PC il tasto destro su un corpo apre il menu: Imposta rotta · Apri nella wiki.
+  const pc = usePC()
+  const [menu, setMenu] = useState<Menu | null>(null)
+  const chiudiMenu = useCallback(() => setMenu(null), [])
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -34,7 +40,9 @@ export function Scanner({ centro, livello, scoperti, onScegli }: Props) {
         {[...tipi].map((t) => CATALOGO[t].nome.toLowerCase()).join(', ')}
       </p>
       {trovati.length === 0 ? (
-        <p className="m-0 text-xs">Nessun corpo rilevato nel raggio. Prova a spostarti: gli altri tipi di corpo si scoprono solo arrivandoci.</p>
+        <p className="m-0 text-xs">
+          Nessun corpo rilevato nel raggio. Prova a spostarti: gli altri tipi di corpo si scoprono solo arrivandoci.
+        </p>
       ) : (
         <ul className="m-0 flex list-none flex-col gap-1 p-0">
           {trovati.map(({ coordinate: c, tipo, distanza }) => {
@@ -45,6 +53,11 @@ export function Scanner({ centro, livello, scoperti, onScegli }: Props) {
                   type="button"
                   className="flex w-full items-center gap-2 rounded-plancia border border-transparent px-2 py-1.5 text-left text-xs hover:border-linea hover:bg-fondo/50"
                   onClick={() => onScegli(c)}
+                  onContextMenu={(e) => {
+                    if (!pc) return
+                    e.preventDefault()
+                    setMenu(menuCorpo(e.clientX, e.clientY, tipo, c, () => onScegli(c)))
+                  }}
                 >
                   <SimboloRarita rarita={CATALOGO[tipo].rarita} className="w-3 shrink-0 text-center" />
                   <span className="flex-1">
@@ -59,6 +72,7 @@ export function Scanner({ centro, livello, scoperti, onScegli }: Props) {
           })}
         </ul>
       )}
+      <MenuContesto menu={menu} onChiudi={chiudiMenu} />
     </div>
   )
 }

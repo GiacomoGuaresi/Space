@@ -90,7 +90,7 @@ Porta l'interfaccia su PC nella [plancia a finestre](11-interfaccia.md#pc--planc
 - [x] **F.3 Archivio in finestra**: Diario, Wiki, Catalogo, Impostazioni come finestre; i link diretti (`#/wiki/…`, `#/rotta/…`, `#/diario`) aprono la finestra e l'indirizzo si pulisce; "Numeri ›" apre la Wiki. Pallini sulle voci del dock. (Su PC il `Ponte` ospita tutte le finestre; la Wiki in finestra ha l'indice a sinistra; dentro una finestra i pannelli perdono il bordo.)
 - [x] **F.4 Mappa come sfondo**: ⇆ scena/mappa, barretta dei filtri, clic su un corpo → Rotta. (`useSfondoMappa` in `Mappa.tsx`; `#/mappa` su PC mostra la mappa dietro le finestre.)
 - [x] **F.5 Memoria della disposizione** sul dispositivo, ↺ Riordina, finestre che rientrano quando lo schermo si restringe; nelle impostazioni si forza finestre o pagine. (`space_finestre` nella memoria locale, `leggiDisposizione` scarta i valori strani e aggiunge le finestre nuove.)
-- [ ] **F.6 Tastiera e densità**: lettere delle finestre, Tab, Esc, ? con l'elenco; bottoni compatti, tooltip al passaggio (anche ⓘ), menu col tasto destro sui corpi.
+- [x] **F.6 Tastiera e densità**: lettere delle finestre, Tab, Esc, ? con l'elenco; bottoni compatti, tooltip al passaggio (anche ⓘ), menu col tasto destro sui corpi (`tastiera.tsx`, `MenuContesto.tsx`). Tab scambia lo sfondo solo se nessun comando ha il fuoco, per non togliere la navigazione da tastiera.
 - [ ] **F.7 Barra di stato completa**: ultima voce del diario con le novità, ora del server. Attività in corso e stiva in breve arrivano con M4-M5.
 
 **Si consegna**: su PC la plancia a finestre, con tutto ciò che esiste oggi.

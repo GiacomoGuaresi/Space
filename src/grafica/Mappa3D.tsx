@@ -16,6 +16,8 @@ interface Props {
   centra: { su: Coordinate; volta: number } | null
   selezionato: Coordinate | null
   onSeleziona: (punto: Coordinate | null) => void
+  /** Tasto destro su un corpo (su PC): il menu, dove si è cliccato. */
+  onContesto?: (punto: Coordinate, x: number, y: number) => void
 }
 
 const COLORE_NAVE = '#ffb547'
@@ -134,11 +136,13 @@ const rgb = (esadecimale: string) => new THREE.Color(esadecimale).toArray() as n
  * bolle delle soste, la nave e la base madre. Si gira trascinando, si sposta
  * con due dita, si tocca un punto per sceglierlo.
  */
-export function Mappa3D({ punti, soste, nave, centra, selezionato, onSeleziona }: Props) {
+export function Mappa3D({ punti, soste, nave, centra, selezionato, onSeleziona, onContesto }: Props) {
   const contenitore = useRef<HTMLDivElement>(null)
   const motore = useRef<Motore | null>(null)
   const seleziona = useRef(onSeleziona)
   seleziona.current = onSeleziona
+  const contesto = useRef(onContesto)
+  contesto.current = onContesto
 
   useEffect(() => {
     const dove = contenitore.current
@@ -201,7 +205,13 @@ export function Mappa3D({ punti, soste, nave, centra, selezionato, onSeleziona }
       const colpi = raggio.intersectObject(m.bersagli)
       colpi.sort((a, b) => (a.distanceToRay ?? 0) - (b.distanceToRay ?? 0))
       const colpo = colpi[0]
-      seleziona.current(colpo?.index !== undefined ? m.elenco[colpo.index].coordinate : null)
+      const punto = colpo?.index !== undefined ? m.elenco[colpo.index].coordinate : null
+      // Il tasto destro fermo su un corpo apre il menu; trascinando sposta la vista, come sempre.
+      if (e.button === 2) {
+        if (punto) contesto.current?.(punto, e.clientX, e.clientY)
+        return
+      }
+      seleziona.current(punto)
     }
     renderer.domElement.addEventListener('pointerdown', premi)
     renderer.domElement.addEventListener('pointerup', rilascia)
