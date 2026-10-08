@@ -1,7 +1,8 @@
-import type { ReactNode } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 import type { Nave, Viaggio } from '../dominio/navigazione'
 import { Barra, sezioneDi } from './Barra'
 import { Dock } from './Dock'
+import { rientra } from './finestre'
 import { apriDiario, type Pagina } from './indirizzo'
 import { usePC } from './schermo'
 import { StrisciaStato } from './StrisciaStato'
@@ -41,7 +42,7 @@ export function Cornice({ pagina, nave, viaggio, scarto, fondo, finestre = false
             {barretta}
           </header>
           {finestre ? (
-            <div className="relative min-h-0 flex-1">{children}</div>
+            <AreaFinestre>{children}</AreaFinestre>
           ) : (
             <div className="flex min-h-0 w-[min(720px,50vw)] min-w-[420px] flex-1 flex-col justify-end gap-2 p-3 [&>*]:pointer-events-auto">
               {children}
@@ -69,5 +70,22 @@ export function Cornice({ pagina, nave, viaggio, scarto, fondo, finestre = false
         </div>
       </div>
     </main>
+  )
+}
+
+/** L'area delle finestre: quando si restringe (la finestra del browser), le finestre rientrano. */
+function AreaFinestre({ children }: { children: ReactNode }) {
+  const area = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const elemento = area.current
+    if (!elemento) return
+    const osserva = new ResizeObserver(([voce]) => rientra(voce.contentRect.width, voce.contentRect.height))
+    osserva.observe(elemento)
+    return () => osserva.disconnect()
+  }, [])
+  return (
+    <div ref={area} className="relative min-h-0 flex-1 overflow-hidden">
+      {children}
+    </div>
   )
 }

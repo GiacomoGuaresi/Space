@@ -1,5 +1,6 @@
 // Le finestre della plancia per PC (doc/11-interfaccia.md#regole-delle-finestre):
 // quali sono aperte, ridotte nel dock o chiuse, dove stanno e chi è in primo piano.
+// La disposizione si ricorda sul dispositivo; ↺ Riordina torna a quella iniziale.
 
 import { useSyncExternalStore } from 'react'
 
@@ -41,7 +42,7 @@ export const FINESTRE: Readonly<
   diario: { titolo: 'Diario di bordo', tasto: 'D', w: 420, h: 520, minW: 320, minH: 260, piena: true },
   wiki: { titolo: 'Wiki', tasto: 'W', w: 720, h: 560, minW: 420, minH: 300, piena: true },
   catalogo: { titolo: 'Catalogo', tasto: 'C', w: 640, h: 520, minW: 360, minH: 260, piena: true },
-  impostazioni: { titolo: 'Impostazioni', tasto: ',', w: 380, h: 360, minW: 320, minH: 240, piena: true },
+  impostazioni: { titolo: 'Impostazioni', tasto: ',', w: 380, h: 560, minW: 320, minH: 240, piena: true },
 }
 
 const MARGINE = 12
@@ -79,12 +80,84 @@ export function dentro(f: Finestra, id: IdFinestra, larghezza: number, altezza: 
   return { ...f, w, h, x: Math.max(0, Math.min(f.x, larghezza - w)), y: Math.max(0, Math.min(f.y, altezza - h)) }
 }
 
-let attuale: Disposizione = disposizioneIniziale(typeof window === 'undefined' ? 1440 : window.innerWidth)
+const CHIAVE = 'space_finestre'
+const ID = Object.keys(FINESTRE) as IdFinestra[]
+const STATI: readonly StatoFinestra[] = ['aperta', 'ridotta', 'chiusa']
+
+/**
+ * La disposizione salvata, completata con quella iniziale: una finestra nuova
+ * (arrivata con una meccanica) parte chiusa al suo posto, i valori strani si scartano.
+ */
+export function leggiDisposizione(salvata: unknown, iniziale: Disposizione): Disposizione {
+  if (!salvata || typeof salvata !== 'object') return iniziale
+  const d = salvata as Partial<Disposizione>
+  const finestre = { ...iniziale.finestre }
+  for (const id of ID) {
+    const f = d.finestre?.[id]
+    if (f && STATI.includes(f.stato) && [f.x, f.y, f.w, f.h].every((n) => Number.isFinite(n))) finestre[id] = { ...f }
+  }
+  const ordine = Array.isArray(d.ordine) ? d.ordine.filter((id): id is IdFinestra => ID.includes(id)) : []
+  return {
+    finestre,
+    ordine: [...ID.filter((id) => !ordine.includes(id)), ...new Set(ordine)],
+    sfondo: d.sfondo === 'mappa' ? 'mappa' : 'scena',
+  }
+}
+
+function larghezza() {
+  return typeof window === 'undefined' ? 1440 : window.innerWidth
+}
+
+function carica(): Disposizione {
+  const iniziale = disposizioneIniziale(larghezza())
+  try {
+    return leggiDisposizione(JSON.parse(localStorage.getItem(CHIAVE) ?? 'null'), iniziale)
+  } catch {
+    return iniziale
+  }
+}
+
+let attuale: Disposizione = carica()
 const ascoltatori = new Set<() => void>()
 
 function cambia(nuova: Disposizione) {
   attuale = nuova
+  try {
+    localStorage.setItem(CHIAVE, JSON.stringify(nuova))
+  } catch {
+    // Senza memoria locale la disposizione vale fino alla chiusura.
+  }
   for (const avvisa of ascoltatori) avvisa()
+}
+
+// L'ultima misura dell'area delle finestre, data da `rientra`.
+let area: { larghezza: number; altezza: number } | null = null
+
+/** ↺ Riordina: la disposizione iniziale, con lo sfondo di adesso, dentro l'area. */
+export function riordina() {
+  cambia({ ...disposizioneIniziale(area?.larghezza ?? larghezza()), sfondo: attuale.sfondo })
+  if (area) rientra(area.larghezza, area.altezza)
+}
+
+/** Le finestre rientrano in un'area `larghezza` × `altezza`, se lo schermo si è ristretto. */
+export function rientra(larghezza: number, altezza: number) {
+  if (larghezza <= 0 || altezza <= 0) return
+  area = { larghezza, altezza }
+  let cambiate = false
+  const finestre = { ...attuale.finestre }
+  for (const id of ID) {
+    const f = dentro(finestre[id], id, larghezza, altezza)
+    if (f.x !== finestre[id].x || f.y !== finestre[id].y || f.w !== finestre[id].w || f.h !== finestre[id].h) {
+      finestre[id] = f
+      cambiate = true
+    }
+  }
+  if (cambiate) cambia({ ...attuale, finestre })
+}
+
+/** La disposizione di adesso, fuori da React. */
+export function disposizione(): Disposizione {
+  return attuale
 }
 
 export function useDisposizione(): Disposizione {

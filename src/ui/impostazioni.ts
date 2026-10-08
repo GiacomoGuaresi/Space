@@ -5,14 +5,18 @@ import { useSyncExternalStore } from 'react'
 
 export type Movimento = 'sistema' | 'ridotto' | 'pieno'
 
+/** Finestre o pagine: "auto" sceglie dalla larghezza dello schermo (ui/schermo.ts). */
+export type Interfaccia = 'auto' | 'finestre' | 'pagine'
+
 export interface Impostazioni {
   suoni: boolean
   /** "sistema" segue la preferenza del telefono o del computer. */
   movimento: Movimento
+  interfaccia: Interfaccia
 }
 
 const CHIAVE = 'space_impostazioni'
-const PARTENZA: Impostazioni = { suoni: false, movimento: 'sistema' }
+const PARTENZA: Impostazioni = { suoni: false, movimento: 'sistema', interfaccia: 'auto' }
 
 let attuali: Impostazioni = leggi()
 const ascoltatori = new Set<() => void>()
@@ -42,13 +46,10 @@ export function cambiaImpostazioni(cambio: Partial<Impostazioni>) {
 }
 
 export function useImpostazioni(): Impostazioni {
-  return useSyncExternalStore(
-    (avvisa) => {
-      ascoltatori.add(avvisa)
-      return () => ascoltatori.delete(avvisa)
-    },
-    impostazioni,
-  )
+  return useSyncExternalStore((avvisa) => {
+    ascoltatori.add(avvisa)
+    return () => ascoltatori.delete(avvisa)
+  }, impostazioni)
 }
 
 /** Vero se le animazioni vanno spente: per scelta qui, o del sistema. */

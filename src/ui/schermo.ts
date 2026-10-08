@@ -2,6 +2,7 @@
 // su la plancia a finestre, sotto le pagine.
 
 import { useSyncExternalStore } from 'react'
+import { useImpostazioni } from './impostazioni'
 
 export const LARGHEZZA_PC = 1024
 
@@ -13,7 +14,9 @@ function iscriviti(avvisa: () => void) {
   return () => elenco.removeEventListener('change', avvisa)
 }
 
-/** Vero sugli schermi larghi, dove vale la plancia a finestre. */
+/** Vero dove vale la plancia a finestre: sugli schermi larghi, o se lo si è scelto nelle impostazioni. */
 export function usePC(): boolean {
-  return useSyncExternalStore(iscriviti, () => window.matchMedia(query).matches)
+  const largo = useSyncExternalStore(iscriviti, () => window.matchMedia(query).matches)
+  const { interfaccia } = useImpostazioni()
+  return interfaccia === 'auto' ? largo : interfaccia === 'finestre'
 }

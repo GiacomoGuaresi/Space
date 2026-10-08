@@ -1,6 +1,6 @@
 import { Fragment, useContext, type ReactNode } from 'react'
 import { Pallini } from './Barra'
-import { alterna, FINESTRE, mostra, useDisposizione, type IdFinestra, type StatoFinestra } from './finestre'
+import { alterna, FINESTRE, mostra, riordina, useDisposizione, type IdFinestra, type StatoFinestra } from './finestre'
 
 // Nave, Rete, Base, Ricerche e Traguardi arrivano con le loro meccaniche (doc/06-roadmap.md).
 const GRUPPI: readonly { nome: string; voci: readonly IdFinestra[] }[] = [
@@ -75,6 +75,17 @@ export function Dock() {
             <Tasto>⇆</Tasto>
             Mappa
             {!mappa && pallini.mappa && <span aria-hidden="true" className="absolute top-1.5 right-0.5 size-[6px] rounded-full bg-ambra" />}
+          </button>
+        </li>
+        <li className="flex">
+          <button
+            type="button"
+            title="Riordina le finestre"
+            aria-label="Riordina le finestre"
+            className={`${CLASSI} ${STILI.chiusa}`}
+            onClick={riordina}
+          >
+            <Tasto>↺</Tasto>
           </button>
         </li>
         <li className="flex">{voce('impostazioni', <span className="sr-only">Impostazioni</span>)}</li>
