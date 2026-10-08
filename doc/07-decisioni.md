@@ -81,3 +81,4 @@
 | 2026-10-08 | Macro step **MF · Plancia a finestre** prima di M4 | deciso |
 | 2026-10-08 | Stiva: una riga per risorsa con quantità e istante `dal`, calcolata alla lettura come il carburante; il livello in `nave.stiva` | deciso |
 | 2026-10-08 | Ricchezza, sottotipo e pianeti dei sistemi si portano in SQL, identici al TypeScript, perché raccolta e produzione si calcolano nel database | deciso |
+| 2026-10-08 | Raccolta a mano su un sistema planetario: la media dei mix dei suoi pianeti (la colonia invece segue un pianeta solo); in M4 solo le risorse comuni | deciso |

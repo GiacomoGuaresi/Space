@@ -8,6 +8,7 @@ import { Finestra } from './Finestra'
 import { apri, FINESTRE, inPrimoPiano, useDisposizione, type IdFinestra } from './finestre'
 import { useSfondoMappa } from './Mappa'
 import { Pannello } from './plancia'
+import { Raccolta } from './Raccolta'
 import { Rotta } from './Rotta'
 import { Scanner } from './Scanner'
 import { Scheda } from './Scheda'
@@ -92,7 +93,14 @@ export function Ponte({ nave, viaggio, scarto, scoperte, scansioni, meta: metaSc
 
   if (pc) {
     const contenuti: Partial<Record<IdFinestra, { contenuto: ReactNode; onChiudi?: () => void }>> = {
-      qui: { contenuto: <Scheda settore={settore} /> },
+      qui: {
+        contenuto: (
+          <>
+            <Scheda settore={settore} />
+            <Raccolta nave={nave} ora={ora} />
+          </>
+        ),
+      },
       scanner: {
         contenuto: volo ? inArrivo : <Scanner centro={nave.posizione} livello={nave.scanner} scoperti={scoperti} onScegli={scegli} />,
       },
@@ -156,7 +164,10 @@ export function Ponte({ nave, viaggio, scarto, scoperte, scansioni, meta: metaSc
           </div>
           <div className="min-h-0 overflow-y-auto p-3.5" role="tabpanel">
             {scheda === 'qui' ? (
-              <Scheda settore={settore} />
+              <>
+                <Scheda settore={settore} />
+                <Raccolta nave={nave} ora={ora} />
+              </>
             ) : scheda === 'scanner' ? (
               <Scanner centro={nave.posizione} livello={nave.scanner} scoperti={scoperti} onScegli={scegli} />
             ) : (

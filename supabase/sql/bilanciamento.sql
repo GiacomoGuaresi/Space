@@ -86,6 +86,62 @@ language sql immutable parallel safe set search_path = '' as $$
   "stiva": {
     "capacita": 25,
     "crescita": 1.5
+  },
+  "produzione": {
+    "ritmo": {
+      "comune": 7,
+      "terreRare": 3,
+      "materiaOscura": 1.2
+    },
+    "mano": 3
+  },
+  "mix": {
+    "asteroidi": {
+      "metallica": {
+        "metallo": 0.8,
+        "silicio": 0.2
+      },
+      "silicea": {
+        "metallo": 0.2,
+        "silicio": 0.8
+      },
+      "mista": {
+        "metallo": 0.5,
+        "silicio": 0.5
+      }
+    },
+    "nebulosa": {
+      "idrogeno": 1
+    },
+    "gigante": {
+      "senza": {
+        "idrogeno": 0.7,
+        "ghiaccio": 0.3
+      },
+      "anelli": {
+        "idrogeno": 0.5,
+        "ghiaccio": 0.5
+      }
+    },
+    "pianeti": {
+      "roccioso": {
+        "metallo": 0.5,
+        "silicio": 0.5
+      },
+      "oceanico": {
+        "metallo": 0.2,
+        "silicio": 0.2,
+        "ghiaccio": 0.6
+      },
+      "ghiacciato": {
+        "ghiaccio": 0.8,
+        "silicio": 0.2
+      },
+      "gassoso": {
+        "idrogeno": 0.7,
+        "ghiaccio": 0.3
+      }
+    }
   }
 }'::jsonb
 $$;

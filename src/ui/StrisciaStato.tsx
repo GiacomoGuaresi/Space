@@ -4,7 +4,8 @@ import { carburanteOra, inViaggio, pienoTra, ricaricaQui, tettoQui, type Nave, t
 import { BASE, settore, stessoSettore } from '../dominio/settore'
 import { coordinatePlancia, durata, numero, orario, rovescia } from './formato'
 import { NOMI_VOCI, UltimaVoce } from './diario'
-import { NOMI_RISORSE, RISORSE } from '../dominio/risorse'
+import { RISORSE, SIGLE_RISORSE } from '../dominio/risorse'
+import { NOMI_RISORSE } from '../dominio/catalogo'
 import { CaricoAttuale } from './SchedaNave'
 import { Etichetta, Info } from './plancia'
 
@@ -46,16 +47,16 @@ export function StrisciaStato({ nave, viaggio, ora, onApri, riga = false }: Prop
     <div className="flex min-w-0 items-center gap-2.5">
       {volo ? (
         <>
-          <Etichetta className="text-ambra!">▲ Verso</Etichetta>
-          <span className="cifre text-[13px]">{coordinatePlancia(nave.posizione)}</span>
+          <Etichetta className="shrink-0 whitespace-nowrap text-ambra!">▲ Verso</Etichetta>
+          <span className="cifre shrink-0 text-[13px] whitespace-nowrap">{coordinatePlancia(nave.posizione)}</span>
           <span className="cifre ml-auto text-[15px] font-medium text-ambra" aria-live="polite">
             {rovescia(nave.dal.getTime() - ora.getTime())}
           </span>
         </>
       ) : (
         <>
-          <Etichetta className="text-ambra!">◉ Ferma</Etichetta>
-          <span className="cifre text-[13px]">{coordinatePlancia(nave.posizione)}</span>
+          <Etichetta className="shrink-0 whitespace-nowrap text-ambra!">◉ Ferma</Etichetta>
+          <span className="cifre shrink-0 text-[13px] whitespace-nowrap">{coordinatePlancia(nave.posizione)}</span>
           <span className="ml-auto truncate text-[13px] font-semibold tracking-[0.12em] uppercase">{nome}</span>
         </>
       )}
@@ -115,8 +116,8 @@ export function StrisciaStato({ nave, viaggio, ora, onApri, riga = false }: Prop
             {RISORSE.map((r) => {
               const pieno = Math.min(1, bordo.carico.quantita[r] / bordo.capacita)
               return (
-                <span key={r} className="flex items-end gap-0.5" title={`${NOMI_RISORSE[r].nome}: ${Math.floor(bordo.carico.quantita[r])}`}>
-                  <span className="etichetta leading-none">{NOMI_RISORSE[r].sigla}</span>
+                <span key={r} className="flex items-end gap-0.5" title={`${NOMI_RISORSE[r]}: ${Math.floor(bordo.carico.quantita[r])}`}>
+                  <span className="etichetta leading-none">{SIGLE_RISORSE[r]}</span>
                   <span aria-hidden="true" className="relative h-3 w-1.5 bg-[#211a10]">
                     <span className="absolute inset-x-0 bottom-0 bg-ambra" style={{ height: `${pieno * 100}%` }} />
                   </span>

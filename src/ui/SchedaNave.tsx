@@ -1,18 +1,19 @@
 import { createContext, type ReactNode } from 'react'
 import { raggioScanner, type Nave } from '../dominio/navigazione'
-import { capacitaStiva, NOMI_RISORSE, RISORSE, type Carico } from '../dominio/risorse'
+import { capacitaStiva, RISORSE, type Carico, type Quantita } from '../dominio/risorse'
+import { NOMI_RISORSE } from '../dominio/catalogo'
 import { tipoSettore } from '../dominio/settore'
 import { numero } from './formato'
 import { Etichetta, Info, Numero, Pannello } from './plancia'
 
-/** Quello che c'è a bordo adesso, per la barra di stato del PC: lo dà l'App. */
-export const CaricoAttuale = createContext<{ carico: Carico; capacita: number } | null>(null)
+/** Quello che c'è a bordo adesso, raccolta a mano compresa: lo calcola l'App ogni secondo. */
+export const CaricoAttuale = createContext<{ carico: Carico; quantita: Quantita; capacita: number } | null>(null)
 
 /**
  * La Nave (doc/11-interfaccia.md#nave): le statistiche e la stiva, una barra
  * per risorsa. I potenziamenti arrivano col cantiere (M5).
  */
-export function SchedaNave({ nave, carico }: { nave: Nave; carico: Carico }) {
+export function SchedaNave({ nave, quantita }: { nave: Nave; quantita: Quantita }) {
   const capacita = capacitaStiva(nave.stiva)
   return (
     <Pannello className="flex min-h-0 flex-1 flex-col overflow-y-auto" etichetta="Nave">
@@ -48,12 +49,12 @@ export function SchedaNave({ nave, carico }: { nave: Nave; carico: Carico }) {
         <h2 className="etichetta m-0 mb-2">Stiva</h2>
         <ul className="m-0 flex list-none flex-col gap-2.5 p-0">
           {RISORSE.map((r) => {
-            const q = carico.quantita[r]
+            const q = quantita[r]
             const pieno = Math.min(1, q / capacita)
             return (
               <li key={r} className="flex flex-col gap-1">
                 <div className="flex items-baseline justify-between text-[13px]">
-                  <span>{NOMI_RISORSE[r].nome}</span>
+                  <span>{NOMI_RISORSE[r]}</span>
                   <span className="cifre text-testo-tenue">
                     <Numero valore={q} className="text-testo" /> / <Numero valore={capacita} />
                   </span>
@@ -61,7 +62,7 @@ export function SchedaNave({ nave, carico }: { nave: Nave; carico: Carico }) {
                 <div
                   className="h-1.5 bg-[#211a10]"
                   role="meter"
-                  aria-label={NOMI_RISORSE[r].nome}
+                  aria-label={NOMI_RISORSE[r]}
                   aria-valuemin={0}
                   aria-valuemax={capacita}
                   aria-valuenow={Math.round(q)}

@@ -3,12 +3,12 @@
 // arrivano con le loro meccaniche. Ogni pagina finisce con i Numeri, calcolati
 // con i valori attuali della nave.
 
-import { capacitaStiva } from '../dominio/risorse'
 import type { ReactNode } from 'react'
 import { BILANCIAMENTO } from '../dominio/bilanciamento'
 import { CATALOGO, NOMI_COLONIE, NOMI_RISORSE, PIENEZZA, pesi, ricchezzaMedia, TIPI, type TipoCorpo } from '../dominio/catalogo'
 import { raggioScanner, tipiRilevabili, type Nave } from '../dominio/navigazione'
 import { BASE, distanza } from '../dominio/settore'
+import { capacitaStiva, SIGLE_RISORSE, type Risorsa } from '../dominio/risorse'
 import { numero } from './formato'
 
 export type SezioneWiki = 'guida' | 'meccaniche' | 'corpi'
@@ -88,8 +88,8 @@ const GUIDA: PaginaWiki[] = [
       <>
         <P>Una sola, per sempre. Ha un motore (la velocità), un serbatoio, una ricarica, uno scanner e una stiva.</P>
         <P>
-          La stiva ha un posto per ognuna delle sei risorse, tutte con la stessa capacità. Non si scarica mai: le risorse si spendono
-          da lì, insieme al magazzino della base dove si costruisce.
+          La stiva ha un posto per ognuna delle sei risorse, tutte con la stessa capacità. Non si scarica mai: le risorse si spendono da lì,
+          insieme al magazzino della base dove si costruisce.
         </P>
         <P>Potenziarla sarà il cuore della progressione: arriverà con il cantiere.</P>
       </>
@@ -103,6 +103,43 @@ const GUIDA: PaginaWiki[] = [
     ],
   },
   {
+    id: 'risorse',
+    sezione: 'guida',
+    titolo: 'Risorse e raccolta',
+    sbloccata: sempre,
+    suggerimento: '',
+    testo: () => (
+      <>
+        <P>
+          Sei risorse: Metallo, Silicio, Ghiaccio, Idrogeno, Terre rare e Materia oscura. Le prime quattro sono comuni, le ultime due stanno
+          vicino a pulsar e buchi neri.
+        </P>
+        <P>
+          Ferma su un campo di asteroidi, una nebulosa, un gigante gassoso o un sistema planetario, la nave raccoglie da sola, lentamente,
+          finché la stiva di quella risorsa non è piena. Quanto e cosa dipende dal sottotipo del corpo e dalla sua ricchezza, che cresce
+          allontanandosi dalla base. Un sistema planetario dà la media dei suoi pianeti.
+        </P>
+        <P>Ripartendo, quello che hai raccolto resta a bordo.</P>
+      </>
+    ),
+    numeri: () => {
+      const { mano, ritmo } = BILANCIAMENTO.produzione
+      const mix = (m: Partial<Record<Risorsa, number>>) =>
+        (Object.entries(m) as [Risorsa, number][]).map(([r, p]) => `${SIGLE_RISORSE[r]} ${Math.round(p * 100)}`).join(' ')
+      const { asteroidi, gigante, pianeti } = BILANCIAMENTO.mix
+      return [
+        ['Raccolta a mano', `${mano} × ${ritmo.comune}/h × ricchezza × parte del mix`],
+        ['Asteroidi', `metallici ${mix(asteroidi.metallica)} · silicei ${mix(asteroidi.silicea)} · misti ${mix(asteroidi.mista)}`],
+        ['Nebulosa', 'H 100'],
+        ['Gigante gassoso', `senza anelli ${mix(gigante.senza)} · con anelli ${mix(gigante.anelli)}`],
+        [
+          'Pianeti',
+          `rocciosi ${mix(pianeti.roccioso)} · oceanici ${mix(pianeti.oceanico)} · ghiacciati ${mix(pianeti.ghiacciato)} · gassosi ${mix(pianeti.gassoso)}`,
+        ],
+      ]
+    },
+  },
+  {
     id: 'viaggio',
     sezione: 'guida',
     titolo: 'Viaggio e carburante',
@@ -111,13 +148,13 @@ const GUIDA: PaginaWiki[] = [
     testo: () => (
       <>
         <P>
-          La rotta è una linea retta. Il viaggio non si annulla: durante il volo la nave non fa altro. Ogni settore percorso costa
-          un'unità di carburante.
+          La rotta è una linea retta. Il viaggio non si annulla: durante il volo la nave non fa altro. Ogni settore percorso costa un'unità
+          di carburante.
         </P>
         <P>
-          Se il carburante non basta, la nave si ferma nel settore più vicino al punto in cui si svuota e aspetta. Da ferma si
-          ricarica: fuori dalla base solo fino a metà serbatoio, mentre in base o accanto a una stella si riempie del tutto, e
-          accanto a una stella anche più in fretta.
+          Se il carburante non basta, la nave si ferma nel settore più vicino al punto in cui si svuota e aspetta. Da ferma si ricarica:
+          fuori dalla base solo fino a metà serbatoio, mentre in base o accanto a una stella si riempie del tutto, e accanto a una stella
+          anche più in fretta.
         </P>
       </>
     ),
@@ -138,8 +175,8 @@ const GUIDA: PaginaWiki[] = [
     testo: () => (
       <>
         <P>
-          Lo scanner mostra i corpi attorno alla nave. Vede solo i tipi del suo livello: gli altri sono invisibili, e il settore
-          sembra vuoto finché non ci arrivi. Il nome di un corpo lo scopri solo arrivando.
+          Lo scanner mostra i corpi attorno alla nave. Vede solo i tipi del suo livello: gli altri sono invisibili, e il settore sembra
+          vuoto finché non ci arrivi. Il nome di un corpo lo scopri solo arrivando.
         </P>
         <P>Ogni sosta resta sulla mappa. Dentro una nebulosa il raggio si dimezza; in sosta presso una pulsar raddoppia.</P>
       </>
@@ -147,7 +184,10 @@ const GUIDA: PaginaWiki[] = [
     numeri: ({ nave }) => {
       const prossimo = scanner.livelli[nave.scanner]
       return [
-        ['Raggio', `${numero(scanner.raggio, 1)} × ${numero(scanner.crescita, 1)}ⁿ = ${numero(raggioScanner(nave.scanner, null), 2)} settori`],
+        [
+          'Raggio',
+          `${numero(scanner.raggio, 1)} × ${numero(scanner.crescita, 1)}ⁿ = ${numero(raggioScanner(nave.scanner, null), 2)} settori`,
+        ],
         ['Rileva', [...tipiRilevabili(nave.scanner)].map((t) => CATALOGO[t].nome.toLowerCase()).join(', ')],
         ['Prossimo livello', prossimo === undefined || prossimo === 'raggio' ? 'più raggio' : CATALOGO[prossimo].nome.toLowerCase()],
         ['Nebulosa · pulsar', `×${numero(scanner.nebulosa, 1)} · ×${numero(scanner.pulsar, 1)}`],
@@ -163,8 +203,8 @@ const GUIDA: PaginaWiki[] = [
     testo: () => (
       <>
         <P>
-          La prima volta che arrivi in un settore con un corpo, lo scopri: entra nel catalogo con nome, coordinate e data. Il
-          catalogo è l'album delle tue scoperte; questa wiki invece spiega come funzionano.
+          La prima volta che arrivi in un settore con un corpo, lo scopri: entra nel catalogo con nome, coordinate e data. Il catalogo è
+          l'album delle tue scoperte; questa wiki invece spiega come funzionano.
         </P>
         <P>I traguardi, medaglie con data, arriveranno più avanti.</P>
       </>
@@ -182,8 +222,8 @@ const MECCANICHE: PaginaWiki[] = [
     suggerimento: 'Parti da un buco nero.',
     testo: () => (
       <P>
-        Partendo da un buco nero la nave va più veloce, e una parte dei settori percorsi non consuma carburante. Conta la rotta
-        percorsa: se il carburante non basta, il tratto gratis non cresce allungando la meta.
+        Partendo da un buco nero la nave va più veloce, e una parte dei settori percorsi non consuma carburante. Conta la rotta percorsa: se
+        il carburante non basta, il tratto gratis non cresce allungando la meta.
       </P>
     ),
     numeri: () => [
@@ -259,5 +299,3 @@ export const PAGINE_WIKI: readonly PaginaWiki[] = [...GUIDA, ...MECCANICHE, ...C
 export function sbloccate(s: StatoWiki): string[] {
   return PAGINE_WIKI.filter((p) => p.sezione !== 'guida' && p.sbloccata(s)).map((p) => p.id)
 }
-
-

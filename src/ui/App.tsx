@@ -2,7 +2,7 @@ import { Suspense, lazy, useEffect, useMemo, useRef, useState, type ReactNode } 
 import { CATALOGO, TIPI, type TipoCorpo } from '../dominio/catalogo'
 import { corpiNoti } from '../dominio/mappa'
 import { inViaggio, type Nave } from '../dominio/navigazione'
-import { capacitaStiva } from '../dominio/risorse'
+import { caricoOra, capacitaStiva } from '../dominio/risorse'
 import { BASE, settore as calcolaSettore } from '../dominio/settore'
 import { sottotipo } from '../dominio/sottotipi'
 import { Altro } from './Altro'
@@ -69,7 +69,13 @@ export function App() {
   }, [pc, diarioAperto, scarto])
   const daLeggere = voci.filter((v) => novita(v, lettoAperto)).length
   const carico = stato.fase === 'pronta' ? stato.carico : null
-  const bordo = useMemo(() => (carico && nave ? { carico, capacita: capacitaStiva(nave.stiva) } : null), [carico, nave])
+  // Al secondo, come il carburante: la raccolta a mano si vede crescere.
+  const secondo = Math.floor(ora.getTime() / 1000)
+  const bordo = useMemo(
+    () =>
+      carico && nave ? { carico, quantita: caricoOra(carico, nave, new Date(secondo * 1000)), capacita: capacitaStiva(nave.stiva) } : null,
+    [carico, nave, secondo],
+  )
   const ultima = useMemo(() => ({ voce: voci[0] ?? null, nuove: daLeggere }), [voci, daLeggere])
 
   // Pallini: Ponte se la nave è arrivata da quando l'hai visto, Mappa se c'è un
@@ -190,7 +196,7 @@ export function App() {
             diario: { contenuto: <Diario voci={voci} letto={lettoAperto} ora={ora} /> },
             wiki: statoWiki ? { contenuto: <Wiki stato={statoWiki} voce={wikiPC.voce} numeri={wikiPC.numeri} affiancata /> } : undefined,
             catalogo: { contenuto: <ContenutoCatalogo scoperte={scoperte} /> },
-            nave: { contenuto: <SchedaNave nave={stato.nave} carico={stato.carico} /> },
+            nave: { contenuto: <SchedaNave nave={stato.nave} quantita={bordo?.quantita ?? stato.carico.quantita} /> },
             impostazioni: { contenuto: <Impostazioni /> },
           }}
         />
@@ -199,7 +205,7 @@ export function App() {
     if (pagina.pagina === 'nave') {
       return (
         <Cornice pagina="nave" nave={stato.nave} viaggio={viaggio} scarto={scarto} fondo={<FondoNave nave={stato.nave} scarto={scarto} />}>
-          <SchedaNave nave={stato.nave} carico={stato.carico} />
+          <SchedaNave nave={stato.nave} quantita={bordo?.quantita ?? stato.carico.quantita} />
         </Cornice>
       )
     }

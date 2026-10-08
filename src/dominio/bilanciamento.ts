@@ -113,4 +113,33 @@ export const BILANCIAMENTO = {
     /** …moltiplicata per tanto a ogni livello. */
     crescita: 1.5,
   },
+  produzione: {
+    /** Risorse all'ora di un estrattore di livello 1 su un corpo di ricchezza 1. */
+    ritmo: { comune: 7, terreRare: 3, materiaOscura: 1.2 },
+    /** La raccolta a mano, in sosta, vale tanti estrattori di livello 1 su quel corpo. */
+    mano: 3,
+  },
+  /**
+   * Come si divide la produzione di un corpo tra le risorse, per sottotipo
+   * (doc/09-bilanciamento.md#produzione). Un sistema planetario segue il
+   * pianeta: la raccolta a mano fa la media dei suoi pianeti.
+   */
+  mix: {
+    asteroidi: {
+      metallica: { metallo: 0.8, silicio: 0.2 },
+      silicea: { metallo: 0.2, silicio: 0.8 },
+      mista: { metallo: 0.5, silicio: 0.5 },
+    },
+    nebulosa: { idrogeno: 1 },
+    gigante: {
+      senza: { idrogeno: 0.7, ghiaccio: 0.3 },
+      anelli: { idrogeno: 0.5, ghiaccio: 0.5 },
+    },
+    pianeti: {
+      roccioso: { metallo: 0.5, silicio: 0.5 },
+      oceanico: { metallo: 0.2, silicio: 0.2, ghiaccio: 0.6 },
+      ghiacciato: { ghiaccio: 0.8, silicio: 0.2 },
+      gassoso: { idrogeno: 0.7, ghiaccio: 0.3 },
+    },
+  },
 } as const

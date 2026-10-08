@@ -117,7 +117,7 @@ Raggio iniziale **4 settori** (~27 corpi, di cui ~3 sistemi planetari). I livell
 - **Base madre**: 6/h in tutto, divisi in parti uguali tra Metallo, Silicio, Ghiaccio e Idrogeno; ×1,13 per livello di produzione.
 - **Insediamento**: `ritmo × ricchezza × 1,13^(livello − 1)`, diviso secondo il mix del sottotipo. Il ritmo vale **7/h** per le risorse comuni, **3/h** per le Terre rare e **1,2/h** per la Materia oscura.
 - **Tetto** del magazzino = **168 h** di produzione al livello 1, ×1,45 per livello di magazzino. Visto che la produzione cresce solo di ×1,13, alzare il magazzino allunga il tempo tra due visite.
-- **Raccolta a mano**: in sosta su un corpo con risorse, **3 volte** un estrattore di livello 1 su quel corpo.
+- **Raccolta a mano**: in sosta su un corpo con risorse, **3 volte** un estrattore di livello 1 su quel corpo. Su un sistema planetario il mix è la media dei suoi pianeti.
 
 | Corpo | Sottotipo | Mix |
 |---|---|---|

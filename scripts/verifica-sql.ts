@@ -1,7 +1,8 @@
 // Confronta con il database i valori del bilanciamento (bilanciamento.ts contro
 // `space.bilanciamento()`) e il campione fisso dell'universo
 // (src/dominio/campione.json): seed, tipi, rotte e raggi dello scanner devono
-// essere identici.
+// essere identici. In più ricchezza, sottotipo, pianeti e raccolta a mano su
+// un campione di corpi con risorse, calcolato qui.
 //
 //   SUPABASE_ACCESS_TOKEN=sbp_... npm run verifica-sql
 //
@@ -12,7 +13,9 @@
 import { readFileSync } from 'node:fs'
 import { BILANCIAMENTO } from '../src/dominio/bilanciamento.ts'
 import { raggioScanner } from '../src/dominio/navigazione.ts'
-import { capacitaStiva } from '../src/dominio/risorse.ts'
+import { capacitaStiva, ritmoMano } from '../src/dominio/risorse.ts'
+import { settore, tipoSettore } from '../src/dominio/settore.ts'
+import { sottotipo } from '../src/dominio/sottotipi.ts'
 
 const PROGETTO = 'fvsohjlrulwabvfvcfxo'
 const token = process.env.SUPABASE_ACCESS_TOKEN
@@ -73,17 +76,58 @@ const esitoStiva = await interroga(`
   select count(*) filter (where space.capacita_stiva(l) <> c) as capacita_diverse, count(*) as totale
   from (values ${capacita}) as v(l, c)`)
 
+// I primi 40 corpi di ogni tipo con risorse, lungo tre rette: abbastanza sistemi da provare i pianeti.
+const corpi: string[] = []
+for (const tipo of ['asteroidi', 'nebulosa', 'gigante', 'sistema', 'stella', 'cometa'] as const) {
+  let trovati = 0
+  for (let i = 1; trovati < 40 && i < 20000; i++) {
+    const c = i % 3 === 0 ? { x: i, y: 7, z: -3 } : i % 3 === 1 ? { x: -5, y: i, z: 11 } : { x: 2, y: -9, z: -i }
+    if (tipoSettore(c) !== tipo) continue
+    trovati++
+    const corpo = settore(c).corpo!
+    const d = corpo.dettagli
+    const sotto = d.tipo === 'asteroidi' || d.tipo === 'gigante' ? sottotipo(d) : null
+    const pianeti = d.tipo === 'sistema' ? `'{${d.pianeti.map((p) => p.tipo).join(',')}}'` : 'null'
+    const ritmo = ritmoMano(corpo)
+    corpi.push(
+      `(${c.x},${c.y},${c.z},${corpo.ricchezza},${sotto ? `'${sotto}'` : 'null'},${pianeti}::text[],${ritmo ? `'${JSON.stringify(ritmo)}'` : 'null'}::jsonb)`,
+    )
+  }
+}
+const esitoCorpi = await interroga(`
+  select
+    count(*) filter (where space.ricchezza(x, y, z) <> ricchezza) as ricchezze_diverse,
+    count(*) filter (where space.sottotipo(x, y, z) is distinct from sotto) as sottotipi_diversi,
+    count(*) filter (where space.pianeti(x, y, z) is distinct from pianeti) as pianeti_diversi,
+    -- jsonb tiene 15 cifre significative: i ritmi si confrontano a meno di un miliardesimo.
+    count(*) filter (
+      where (space.ritmo_mano(x, y, z) is null) <> (ritmo is null)
+        or (select array_agg(k order by k) from jsonb_object_keys(space.ritmo_mano(x, y, z)) k)
+          is distinct from (select array_agg(k order by k) from jsonb_object_keys(ritmo) k)
+        or exists (
+          select 1 from jsonb_each_text(ritmo) e
+          where abs((space.ritmo_mano(x, y, z) ->> e.key)::double precision - e.value::double precision) > 1e-9 * e.value::double precision
+        )
+    ) as ritmi_diversi,
+    count(*) as totale
+  from (values ${corpi.join(',')}) as c(x, y, z, ricchezza, sotto, pianeti, ritmo)`)
+
 console.log('Settori', esitoSettori)
 console.log('Rotte', esitoRotte)
 console.log('Raggi dello scanner', esitoRaggi)
 console.log('Capacità della stiva', esitoStiva)
+console.log('Corpi con risorse', esitoCorpi)
 if (
   !esitoValori.uguali ||
   esitoSettori.seed_diversi ||
   esitoSettori.tipi_diversi ||
   esitoRotte.rotte_diverse ||
   esitoRaggi.raggi_diversi ||
-  esitoStiva.capacita_diverse
+  esitoStiva.capacita_diverse ||
+  esitoCorpi.ricchezze_diverse ||
+  esitoCorpi.sottotipi_diversi ||
+  esitoCorpi.pianeti_diversi ||
+  esitoCorpi.ritmi_diversi
 ) {
   console.error('TypeScript e SQL non danno lo stesso universo')
   process.exit(1)
