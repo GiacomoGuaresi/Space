@@ -6,14 +6,16 @@ Schema `space`. Ogni tabella ha un riferimento al giocatore (`auth.users`) e la 
 
 | Tabella | Contenuto | Macro step |
 |---|---|---|
-| `nave` | una riga per giocatore: livelli dei potenziamenti, carburante all'ultimo aggiornamento con il suo istante | M2 |
-| `viaggio` | partenza (coordinate, istante), arrivo previsto (coordinate, istante), arrivo effettivo se si ferma prima per il carburante | M2 |
-| `scoperta` | coordinate, tipo di corpo, istante della prima visita | M2 |
+| `nave` ✅ | una riga per giocatore: dove si trova o arriverà (`x`, `y`, `z`), da quando (`dal`), il carburante a quell'istante, velocità, serbatoio e ricarica | M2 |
+| `viaggio` ✅ | da, meta, a (dove si arriva davvero), partenza, arrivo, consumo, fionda | M2 |
+| `scoperta` ✅ | coordinate, tipo di corpo, istante della prima visita (nascosta finché non arriva) | M2 |
 | `stiva` | quantità per risorsa a bordo | M3 |
 | `magazzino` | quantità per risorsa alla base | M3 |
 | `colonia` | coordinate, tipo (colonia, estrattore, raccoglitore), istante dell'ultima raccolta, livelli | M3 |
 | `esaurito` | settori a raccolta una tantum già svuotati (comete, relitti) | M3 |
 | `costruzione` | potenziamento in corso: cosa, dove, fine prevista | M4 |
+
+Le tabelle si leggono e basta; si scrive solo con le funzioni `space.stato()` (crea la nave alla prima chiamata) e `space.viaggia(x, y, z)`, che rifiuta con `in_viaggio`, `stesso_settore` o `carburante_insufficiente`.
 
 Regole:
 - La **posizione della nave** è l'arrivo dell'ultimo viaggio, se l'istante di arrivo è passato. Altrimenti la nave è in viaggio.

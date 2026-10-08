@@ -7,8 +7,8 @@
 ## Giro 2
 
 ### Valori
-1. Quanto dura un salto di 1 settore con la nave iniziale? (es. 5 minuti, e la durata cresce linearmente con la distanza?)
-2. Quanti settori si fanno con il serbatoio pieno iniziale? In quanto tempo si ricarica da vuoto?
+1. Quanto dura un salto di 1 settore con la nave iniziale? *Per ora (M2): 5 minuti, lineare con la distanza.*
+2. Quanti settori si fanno con il serbatoio pieno iniziale? In quanto tempo si ricarica da vuoto? *Per ora (M2): 20 settori, 8 ore da fermi (2h40 accanto a una stella).*
 3. Quanto è "vuoto" lo spazio vicino alla base? E quanto lontano bisogna andare per vedere i primi rari? *Per ora (M1): 1 settore su 10 ovunque, rari che compaiono allontanandosi e pesi pieni a 500 settori: si può provare nell'osservatorio e correggere.*
 
 ### Risorse
@@ -21,9 +21,9 @@
 8. Un sistema planetario dà più risorse insieme (dai diversi pianeti) o solo quelle del pianeta colonizzato?
 
 ### Navigazione
-9. Si può annullare un viaggio a metà? (la nave si ferma nel settore più vicino)
+9. Si può annullare un viaggio a metà? (la nave si ferma nel settore più vicino) *Per ora (M2): no.*
 10. Il wormhole funziona nei due sensi? Si deve scoprire l'uscita per poterlo usare?
-11. Lo scanner: mappa 3D navigabile dei dintorni o vista a strati/griglia?
+11. Lo scanner: mappa 3D navigabile dei dintorni o vista a strati/griglia? *Per ora (M2): elenco dal più vicino.*
 
 ### Obiettivi
 12. C'è un obiettivo a lungo termine (completare il catalogo, raggiungere una distanza, trovare tutti i wormhole) o il gioco è aperto?

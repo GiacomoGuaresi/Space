@@ -29,18 +29,20 @@ Lo sviluppo procede per **macro step stabili**: ognuno si chiude pubblicato e gi
 
 **Si consegna**: l'universo si esplora a vista.
 
-## M2 · Navigazione ← *prossimo*
-- [ ] Nave alla base, `space.viaggia()`, hash in SQL identico a quello in TypeScript
-- [ ] Durata, arrivo calcolato alla lettura, conto alla rovescia
-- [ ] Carburante: consumo, ricarica nel tempo, fermata forzata
-- [ ] Scanner dei dintorni
-- [ ] Catalogo delle scoperte
-- [ ] Effetti dei corpi sulla navigazione (stella, nebulosa, pulsar, buco nero)
-- [ ] Riepilogo all'apertura
+## M2 · Navigazione ✅
+- [x] Nave alla base, `space.stato()` e `space.viaggia()` (`supabase/sql/002_navigazione.sql`), funzioni dell'universo in SQL identiche a quelle in TypeScript, verificate su un campione fisso (`npm run verifica-sql`)
+- [x] Durata, arrivo calcolato alla lettura, conto alla rovescia corretto sull'orologio del database
+- [x] Carburante: consumo, ricarica da fermi, fermata forzata
+- [x] Scanner dei dintorni, come elenco dal più vicino (tipo e distanza; il nome si scopre arrivando)
+- [x] Catalogo delle scoperte (`#/catalogo`), con i conti per tipo
+- [x] Effetti dei corpi sulla navigazione: ricarica ×3 accanto alle stelle, scanner ridotto nelle nebulose e doppio presso le pulsar, fionda ×2 dai buchi neri
+- [x] Riepilogo all'apertura e al ritorno sull'app
+- [x] Scie di stelle durante il viaggio
+- [x] Osservatorio solo in sviluppo (`#/osservatorio`)
 
 **Si consegna**: il gioco di esplorazione in tempo reale.
 
-## M3 · Risorse e colonie
+## M3 · Risorse e colonie ← *prossimo*
 - [ ] Stiva, raccolta dai corpi, scarico alla base, magazzino
 - [ ] Corpi a raccolta una tantum (comete)
 - [ ] Fondazione delle colonie, produzione fino al tetto, raccolta sul posto

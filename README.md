@@ -4,7 +4,7 @@ Piccolo gioco di esplorazione spaziale in tempo reale, nello spirito di OGame, c
 
 Si esplora, si raccolgono risorse, si fondano colonie che producono fino a riempire il magazzino (poi bisogna tornare a svuotarle) e si potenziano nave e base.
 
-> **Stato: M1 completato.** Online su [giacomoguaresi.github.io/Space](https://giacomoguaresi.github.io/Space/): l'**osservatorio** permette di guardare qualsiasi settore dell'universo, senza nave né viaggi (arrivano con M2). Domande aperte in [Q&A.md](Q&A.md).
+> **Stato: M2 completato.** Online su [giacomoguaresi.github.io/Space](https://giacomoguaresi.github.io/Space/): dal **ponte di comando** si scelgono le mete con lo scanner, si parte e si aspetta in tempo reale; il **catalogo** raccoglie le scoperte. Risorse e colonie arrivano con M3. Domande aperte in [Q&A.md](Q&A.md).
 
 ## Per iniziare
 
@@ -19,7 +19,7 @@ npm test
 npm run build
 ```
 
-`npm run icone` rigenera le icone della PWA da `public/icona.svg`; il risultato è versionato. A ogni push su `main` il workflow [`pubblica.yml`](.github/workflows/pubblica.yml) esegue i test e pubblica su GitHub Pages.
+`npm run icone` rigenera le icone della PWA da `public/icona.svg`; il risultato è versionato. `npm run verifica-sql` controlla che il database calcoli l'universo come il browser (doc/08). In sviluppo c'è anche l'osservatorio libero, su `#/osservatorio`. A ogni push su `main` il workflow [`pubblica.yml`](.github/workflows/pubblica.yml) esegue i test e pubblica su GitHub Pages.
 
 ## In breve
 

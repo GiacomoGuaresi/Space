@@ -1,6 +1,6 @@
 # 02 · Meccaniche
 
-I valori numerici (durate, capacità, tassi) sono ancora da fissare ([Q&A](../Q&A.md)); qui c'è come funzionano le cose.
+I valori numerici sono provvisori ([Q&A](../Q&A.md)): quelli della navigazione stanno in `src/dominio/navigazione.ts` e nei default di `space.nave`, e vanno cambiati in entrambi i posti.
 
 ## Ciclo di gioco
 
@@ -16,21 +16,21 @@ esplora → scopri → raccogli → colonizza → torna a raccogliere → potenz
 ## Viaggio
 
 - Si sceglie un settore di arrivo e si parte. Durante il viaggio la nave non può fare altro.
-- **Durata** in funzione della distanza e della velocità: i salti vicini durano minuti, quelli lunghi ore. La scelta è del giocatore.
+- **Durata** = distanza / velocità. La nave iniziale fa **12 settori all'ora** (5 minuti a settore): i salti vicini durano minuti, quelli lunghi ore.
 - **Distanza** euclidea tra le coordinate. La rotta è un segmento.
-- **Carburante** consumato in proporzione alla distanza.
-- **Carburante insufficiente**: si può partire lo stesso, ma la nave si ferma nel settore più vicino al punto della rotta in cui il serbatoio si svuota, e lì aspetta.
-- **Ricarica**: il carburante si ricarica da solo nel tempo, fino al serbatoio pieno, anche durante la sosta.
-- Annullare un viaggio a metà: da decidere ([Q&A](../Q&A.md)).
+- **Carburante** consumato in proporzione alla distanza: un'unità per settore. Il **serbatoio** iniziale ne contiene **20**.
+- **Carburante insufficiente**: si può partire lo stesso, ma la nave si ferma nel settore della rotta più vicino al punto in cui il serbatoio si svuota (senza superarlo), e lì aspetta. Se non basta nemmeno per un settore, non si parte.
+- **Ricarica**: solo da fermi, **2,5 unità all'ora** (da vuoto a pieno in 8 ore).
+- Durante il viaggio lo scanner e la rotta non sono disponibili; la meta non si cambia e il viaggio non si annulla ([Q&A](../Q&A.md), domanda 9).
 
 ## Scanner
 
-- Mostra il tipo dei corpi nei settori entro un certo raggio dalla nave.
+- Mostra il tipo dei corpi entro **3 settori** dalla nave (distanza euclidea), dal più vicino; il nome si scopre solo arrivando.
 - Il raggio dipende dal potenziamento e da alcuni corpi (ridotto nelle nebulose, doppio presso le pulsar).
 
 ## Scoperte
 
-- La prima volta che la nave arriva in un settore non vuoto, il corpo entra nel **catalogo personale**.
+- La prima volta che la nave arriva in un settore non vuoto, il corpo entra nel **catalogo personale**. Il database la registra alla partenza con l'istante d'arrivo, e la mostra solo da quel momento.
 - Il catalogo è la parte collezionabile: corpi scoperti per tipo e rarità, con nome, coordinate e data.
 
 ## Risorse
