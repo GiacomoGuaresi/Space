@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { nave as datiNave, type Raccolto, type Scansione, type Scoperta } from '../dati'
 import type { Nave, Viaggio } from '../dominio/navigazione'
 import type { Carico } from '../dominio/risorse'
+import type { Insediamento } from '../dominio/insediamenti'
 import type { Coordinate } from '../dominio/settore'
 import { tipoSettore } from '../dominio/settore'
 import { suona } from './suoni'
@@ -37,6 +38,7 @@ export function useNave() {
   const [scansioni, setScansioni] = useState<Scansione[]>([])
   const [viaggi, setViaggi] = useState<Viaggio[]>([])
   const [raccolti, setRaccolti] = useState<Raccolto[]>([])
+  const [insediamenti, setInsediamenti] = useState<Insediamento[]>([])
   /** Cresce ogni volta che il diario va aperto da solo: all'apertura con delle novità. */
   const [aperturaDiario, setAperturaDiario] = useState(0)
 
@@ -47,11 +49,12 @@ export function useNave() {
       const remoto = await datiNave().stato()
       const dopo = Date.now()
       const dal = new Date(remoto.ora.getTime() - GIORNI_DIARIO * 24 * 3_600_000)
-      const [elenco, soste, recenti, presi] = await Promise.all([
+      const [elenco, soste, recenti, presi, basi] = await Promise.all([
         datiNave().scoperte(),
         datiNave().scansioni(),
         datiNave().viaggiDal(dal),
         datiNave().raccolti(),
+        datiNave().insediamenti(),
       ])
       // Lo scarto si misura a metà della richiesta: la risposta ha viaggiato.
       const scartoNuovo = remoto.ora.getTime() - (prima + dopo) / 2
@@ -61,6 +64,7 @@ export function useNave() {
       setScansioni(soste)
       setViaggi(recenti)
       setRaccolti(presi)
+      setInsediamenti(basi)
 
       if (apriDiario) {
         const voci = vociDiario({
@@ -128,5 +132,5 @@ export function useNave() {
     [ricarica],
   )
 
-  return { stato, scarto, scoperte, scansioni, viaggi, raccolti, aperturaDiario, parti, ricarica }
+  return { stato, scarto, scoperte, scansioni, viaggi, raccolti, insediamenti, aperturaDiario, parti, ricarica }
 }

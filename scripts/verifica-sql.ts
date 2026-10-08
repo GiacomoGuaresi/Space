@@ -13,6 +13,7 @@
 import { readFileSync } from 'node:fs'
 import { BILANCIAMENTO } from '../src/dominio/bilanciamento.ts'
 import { raggioScanner } from '../src/dominio/navigazione.ts'
+import { aLivello } from '../src/dominio/insediamenti.ts'
 import { bottinoCometa, capacitaStiva, ritmoMano } from '../src/dominio/risorse.ts'
 import { settore, tipoSettore } from '../src/dominio/settore.ts'
 import { sottotipo } from '../src/dominio/sottotipi.ts'
@@ -72,6 +73,14 @@ const esitoRaggi = await interroga(`
   from (values ${raggi}) as c(l, t, r)`)
 
 const capacita = Array.from({ length: 40 }, (_, i) => `(${i + 1},${capacitaStiva(i + 1)})`).join(',')
+const livelli = [
+  [1.5, 1.13],
+  [252, 1.45],
+  [60, 1.45],
+].flatMap(([base, crescita]) => Array.from({ length: 30 }, (_, i) => `(${base},${crescita},${i + 1},${aLivello(base, crescita, i + 1)})`))
+const esitoLivelli = await interroga(`
+  select count(*) filter (where space.a_livello(b, c, l) <> v) as livelli_diversi, count(*) as totale
+  from (values ${livelli.join(',')}) as t(b, c, l, v)`)
 const esitoStiva = await interroga(`
   select count(*) filter (where space.capacita_stiva(l) <> c) as capacita_diverse, count(*) as totale
   from (values ${capacita}) as v(l, c)`)
@@ -117,6 +126,7 @@ console.log('Settori', esitoSettori)
 console.log('Rotte', esitoRotte)
 console.log('Raggi dello scanner', esitoRaggi)
 console.log('Capacità della stiva', esitoStiva)
+console.log('Crescita per livello', esitoLivelli)
 console.log('Corpi con risorse', esitoCorpi)
 if (
   !esitoValori.uguali ||
@@ -125,6 +135,7 @@ if (
   esitoRotte.rotte_diverse ||
   esitoRaggi.raggi_diversi ||
   esitoStiva.capacita_diverse ||
+  esitoLivelli.livelli_diversi ||
   esitoCorpi.ricchezze_diverse ||
   esitoCorpi.sottotipi_diversi ||
   esitoCorpi.pianeti_diversi ||

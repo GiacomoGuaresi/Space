@@ -7,6 +7,7 @@ import type { TipoCorpo } from '../dominio/catalogo'
 import type { Nave, Viaggio } from '../dominio/navigazione'
 import { nessuna, RISORSE, type Carico, type Risorsa } from '../dominio/risorse'
 import type { Coordinate } from '../dominio/settore'
+import type { Insediamento, TipoInsediamento } from '../dominio/insediamenti'
 import { fallita } from './errore'
 
 export interface StatoRemoto {
@@ -162,6 +163,40 @@ export class NaveSupabase {
       coordinate: { x: r.x, y: r.y, z: r.z },
       tipo: r.tipo,
       scoperta: new Date(r.scoperta),
+    }))
+  }
+
+  /** Gli insediamenti del giocatore: la base madre per prima. */
+  async insediamenti(): Promise<Insediamento[]> {
+    const { data, error } = await this.client
+      .from('insediamento')
+      .select('id, x, y, z, tipo, pianeta, fondazione, ultima, scorte, produzione, magazzino')
+      .order('id')
+    if (error) throw fallita('Insediamenti non letti', error)
+    return (
+      data as {
+        id: number
+        x: number
+        y: number
+        z: number
+        tipo: TipoInsediamento
+        pianeta: number | null
+        fondazione: string
+        ultima: string
+        scorte: Partial<Record<Risorsa, number>>
+        produzione: number
+        magazzino: number
+      }[]
+    ).map((r) => ({
+      id: r.id,
+      coordinate: { x: r.x, y: r.y, z: r.z },
+      tipo: r.tipo,
+      pianeta: r.pianeta,
+      fondazione: new Date(r.fondazione),
+      ultima: new Date(r.ultima),
+      scorte: r.scorte,
+      produzione: r.produzione,
+      magazzino: r.magazzino,
     }))
   }
 

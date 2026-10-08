@@ -39,7 +39,7 @@ const Scena = lazy(async () => ({ default: (await import('../grafica/Scena')).Sc
 /** Le pagine dell'app (ui/indirizzo.ts): ponte, mappa, altro, diario, catalogo e l'osservatorio in sviluppo. */
 export function App() {
   const pagina = usePagina()
-  const { stato, scarto, scoperte, scansioni, viaggi, raccolti, aperturaDiario, parti, ricarica } = useNave()
+  const { stato, scarto, scoperte, scansioni, viaggi, raccolti, insediamenti, aperturaDiario, parti, ricarica } = useNave()
   const ora = useOra(scarto)
 
   // Il diario si ricalcola al minuto: le voci nuove (un arrivo, una ricarica) compaiono da sole.
@@ -74,9 +74,15 @@ export function App() {
   const bordo = useMemo(
     () =>
       carico && nave
-        ? { carico, quantita: caricoOra(carico, nave, new Date(secondo * 1000)), capacita: capacitaStiva(nave.stiva), raccolti }
+        ? {
+            carico,
+            quantita: caricoOra(carico, nave, new Date(secondo * 1000)),
+            capacita: capacitaStiva(nave.stiva),
+            raccolti,
+            insediamenti,
+          }
         : null,
-    [carico, nave, secondo, raccolti],
+    [carico, nave, secondo, raccolti, insediamenti],
   )
   const ultima = useMemo(() => ({ voce: voci[0] ?? null, nuove: daLeggere }), [voci, daLeggere])
 

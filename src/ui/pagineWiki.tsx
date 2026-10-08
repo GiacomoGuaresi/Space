@@ -145,6 +145,31 @@ const GUIDA: PaginaWiki[] = [
     },
   },
   {
+    id: 'insediamenti',
+    sezione: 'guida',
+    titolo: 'Insediamenti',
+    sbloccata: sempre,
+    suggerimento: '',
+    testo: () => (
+      <>
+        <P>
+          La base madre, in 0 · 0 · 0, produce da sola un po' delle quattro risorse comuni. Quello che produce va nel suo
+          magazzino, finché non arriva al tetto: lì si ferma, e la produzione persa non torna.
+        </P>
+        <P>Il tetto vale una settimana di produzione: passando a raccogliere almeno una volta a settimana non si perde nulla.</P>
+      </>
+    ),
+    numeri: () => {
+      const { madre, crescita } = BILANCIAMENTO.produzione
+      const { ore, crescita: crescitaMagazzino } = BILANCIAMENTO.magazzino
+      return [
+        ['Base madre', `${madre}/h in tutto, ${numero(madre / 4, 1)}/h di Metallo, Silicio, Ghiaccio e Idrogeno`],
+        ['Livello di produzione', `ritmo × ${crescita}^(livello − 1)`],
+        ['Tetto del magazzino', `${ore} h della produzione di livello 1 × ${crescitaMagazzino}^(livello − 1)`],
+      ]
+    },
+  },
+  {
     id: 'viaggio',
     sezione: 'guida',
     titolo: 'Viaggio e carburante',

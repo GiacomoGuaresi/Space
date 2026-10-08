@@ -118,6 +118,16 @@ export const BILANCIAMENTO = {
     ritmo: { comune: 7, terreRare: 3, materiaOscura: 1.2 },
     /** La raccolta a mano, in sosta, vale tanti estrattori di livello 1 su quel corpo. */
     mano: 3,
+    /** La base madre produce tanto all'ora, diviso in parti uguali tra le quattro comuni. */
+    madre: 6,
+    /** Ogni livello di produzione moltiplica il ritmo per tanto. */
+    crescita: 1.13,
+  },
+  magazzino: {
+    /** Il tetto di un magazzino: tante ore della produzione di livello 1… */
+    ore: 168,
+    /** …moltiplicate per tanto a ogni livello del magazzino. */
+    crescita: 1.45,
   },
   cometa: {
     /** Arrivando su una cometa, una volta sola: tanto Ghiaccio per la ricchezza… */
