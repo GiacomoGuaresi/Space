@@ -2,8 +2,7 @@ import { useContext, useState } from 'react'
 import { Flag } from 'lucide-react'
 import { ViaggioRifiutato } from '../dati'
 import { NOMI_RISORSE } from '../dominio/catalogo'
-import { BILANCIAMENTO } from '../dominio/bilanciamento'
-import { costoFondazione, ritmoInsediamento } from '../dominio/insediamenti'
+import { basiFondabili, costoFondazione, ritmoInsediamento } from '../dominio/insediamenti'
 import type { Nave } from '../dominio/navigazione'
 import { RISORSE } from '../dominio/risorse'
 import { settore, stessoSettore } from '../dominio/settore'
@@ -30,7 +29,7 @@ export function Fondazione({ nave, ora }: { nave: Nave; ora: Date }) {
   if (bordo.insediamenti.some((i) => stessoSettore(i.coordinate, nave.posizione))) return null
   const { pianeti } = corpo.dettagli
   const basi = bordo.insediamenti.filter((i) => i.tipo === 'base').length
-  const limite: number = BILANCIAMENTO.fondazione.basi
+  const limite = basiFondabili(bordo.fatte)
   const costo = costoFondazione(basi)
   const voci = RISORSE.filter((r) => costo[r])
   const manca = voci.some((r) => bordo.quantita[r] < costo[r]!)

@@ -65,6 +65,8 @@ interface Fonti {
   insediamenti: readonly Insediamento[]
   costruzioni?: readonly Costruzione[]
   ricerche?: readonly RicercaAvviata[]
+  /** Le ricerche completate: cambiano i tetti dei magazzini. */
+  fatte?: ReadonlySet<string>
   nave: Nave
   ora: Date
 }
@@ -201,7 +203,7 @@ function vociPrelievi(prelievi: readonly Prelievo[], insediamenti: readonly Inse
 }
 
 /** Le fondazioni delle basi e i magazzini arrivati al tetto. */
-function vociInsediamenti(insediamenti: readonly Insediamento[]): Voce[] {
+function vociInsediamenti(insediamenti: readonly Insediamento[], fatte: ReadonlySet<string>): Voce[] {
   return insediamenti.flatMap((i) => {
     const dove = luogo(i.coordinate)
     const voci: Voce[] = []
@@ -218,7 +220,7 @@ function vociInsediamenti(insediamenti: readonly Insediamento[]): Voce[] {
     // Senza produzione (un pianeta che non c'è) non si riempie mai.
     if (Object.keys(ritmoInsediamento(i)).length === 0) return voci
     voci.push({
-      quando: pienoIl(i),
+      quando: pienoIl(i, fatte),
       tipo: 'pieno',
       testo: `Magazzino pieno: ${i.tipo === 'madre' ? 'base madre' : dove.breve}. La produzione è ferma finché non passi a raccogliere.`,
       breve: i.tipo === 'madre' ? 'base madre' : dove.breve,
@@ -266,6 +268,7 @@ export function vociDiario({
   insediamenti,
   costruzioni = [],
   ricerche = [],
+  fatte = new Set(),
   nave,
   ora,
 }: Fonti): Voce[] {
@@ -277,7 +280,7 @@ export function vociDiario({
     ...vociRilevamenti(scansioni),
     ...vociRaccolti(raccolti),
     ...vociPrelievi(prelievi, insediamenti),
-    ...vociInsediamenti(insediamenti),
+    ...vociInsediamenti(insediamenti, fatte),
     ...vociLaboratorio(costruzioni, ricerche, insediamenti),
   ]
     .filter((v) => v.quando.getTime() >= dal && v.quando <= ora)

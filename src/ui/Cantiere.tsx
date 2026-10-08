@@ -91,7 +91,7 @@ export function Potenziamenti({ nave, ora, lavori, base }: Props) {
   const qui = bordo.insediamenti.find((i) => stessoSettore(i.coordinate, nave.posizione))
   const dove = base ?? qui
   const attraccata = !volo && qui !== undefined && (base === undefined || qui.id === base.id)
-  const magazzino: Partial<Quantita> = attraccata && qui ? magazzinoOra(qui, ora) : {}
+  const magazzino: Partial<Quantita> = attraccata && qui ? magazzinoOra(qui, ora, bordo.fatte) : {}
   const pendenti = inCoda(costruzioni, ora)
 
   const avvia = async (lavoro: Lavoro) => {

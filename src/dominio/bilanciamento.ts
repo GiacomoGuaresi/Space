@@ -219,7 +219,7 @@ export const BILANCIAMENTO = {
       I10: { gradino: 10, richiede: ['I9'] },
     },
     /** I nodi che si possono già ricercare: gli altri arrivano con le loro meccaniche (doc/06-roadmap.md). */
-    attive: ['I1', 'I2', 'I3', 'I4'] as string[],
+    attive: ['I1', 'I2', 'I3', 'I4', 'C1', 'C2', 'C3', 'C4'] as string[],
     /** Gli effetti, con i loro numeri. */
     effetti: {
       /** Automazione: tempi di costruzione −10 %. */
@@ -228,6 +228,10 @@ export const BILANCIAMENTO = {
       I2: 0.15,
       /** Leghe: Metallo e Silicio nelle ricette −10 %. */
       I4: 0.1,
+      /** Astrofisica I: basi fondabili in più. */
+      C1: 2,
+      /** Magazzini modulari: tetto +20 %. */
+      C4: 0.2,
     },
   },
   deposito: {

@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { magazzinoOra, pienoTra, tettoMagazzino, type Insediamento } from '../dominio/insediamenti'
 import { inViaggio, type Nave } from '../dominio/navigazione'
-import { RISORSE } from '../dominio/risorse'
+import { RISORSE, type Fatte } from '../dominio/risorse'
+import { CaricoAttuale } from './SchedaNave'
 import { distanza, settore, stessoSettore } from '../dominio/settore'
 import { coordinatePlancia, numero } from './formato'
 import { vaiA } from './indirizzo'
@@ -11,9 +12,9 @@ import { BottoneSecondario, Etichetta, Pannello } from './plancia'
 type Ordine = 'riempimento' | 'distanza'
 
 /** Quanto è pieno il magazzino, da 0 a 1: la risorsa più vicina al tetto. */
-function riempimento(i: Insediamento, ora: Date): number {
-  const tetti = tettoMagazzino(i)
-  const adesso = magazzinoOra(i, ora)
+function riempimento(i: Insediamento, ora: Date, fatte?: Fatte): number {
+  const tetti = tettoMagazzino(i, fatte)
+  const adesso = magazzinoOra(i, ora, fatte)
   return Math.max(0, ...RISORSE.filter((r) => tetti[r]).map((r) => (adesso[r] ?? 0) / tetti[r]!))
 }
 
@@ -23,10 +24,11 @@ function riempimento(i: Insediamento, ora: Date): number {
  */
 export function Rete({ nave, insediamenti, ora }: { nave: Nave; insediamenti: readonly Insediamento[]; ora: Date }) {
   const [ordine, setOrdine] = useState<Ordine>('riempimento')
+  const fatte = useContext(CaricoAttuale)?.fatte
   const volo = inViaggio(nave, ora)
   const elenco = [...insediamenti].sort((a, b) =>
     ordine === 'riempimento'
-      ? riempimento(b, ora) - riempimento(a, ora)
+      ? riempimento(b, ora, fatte) - riempimento(a, ora, fatte)
       : distanza(nave.posizione, a.coordinate) - distanza(nave.posizione, b.coordinate),
   )
   return (
@@ -51,7 +53,7 @@ export function Rete({ nave, insediamenti, ora }: { nave: Nave; insediamenti: re
         {elenco.map((i) => {
           const qui = stessoSettore(i.coordinate, nave.posizione)
           const nome = i.tipo === 'madre' ? 'Base madre' : (settore(i.coordinate).corpo?.nome ?? coordinatePlancia(i.coordinate))
-          const tra = pienoTra(i, ora)
+          const tra = pienoTra(i, ora, fatte)
           return (
             <li key={i.id} className="flex flex-col gap-2 border-b border-separatore p-3.5">
               <div className="flex items-start justify-between gap-3">

@@ -66,6 +66,12 @@ export function App() {
 
   // Il diario si ricalcola al minuto: le voci nuove (un arrivo, una ricarica) compaiono da sole.
   const minuto = Math.floor(ora.getTime() / 60_000)
+  // Le ricerche completate, che cambiano alcuni numeri: si ricalcolano al minuto.
+  const chiaveFatte = ricerche
+    .filter((r) => r.fine.getTime() <= minuto * 60_000)
+    .map((r) => r.nodo)
+    .join(',')
+  const fatte = useMemo(() => new Set(chiaveFatte ? chiaveFatte.split(',') : []), [chiaveFatte])
   const nave = stato.fase === 'pronta' ? stato.nave : null
   const voci = useMemo(
     () =>
@@ -79,11 +85,12 @@ export function App() {
             insediamenti,
             costruzioni,
             ricerche,
+            fatte,
             nave,
             ora: new Date(minuto * 60_000),
           })
         : [],
-    [viaggi, scoperte, scansioni, raccolti, prelievi, insediamenti, costruzioni, ricerche, nave, minuto],
+    [viaggi, scoperte, scansioni, raccolti, prelievi, insediamenti, costruzioni, ricerche, fatte, nave, minuto],
   )
   // Su PC (doc/11-interfaccia.md#pc--plancia-a-finestre) le pagine sono finestre.
   const pc = usePC()
@@ -105,12 +112,6 @@ export function App() {
   }, [pc, diarioAperto, scarto])
   const daLeggere = voci.filter((v) => novita(v, lettoAperto)).length
   const carico = stato.fase === 'pronta' ? stato.carico : null
-  // Le ricerche completate, che cambiano alcuni numeri: si ricalcolano al minuto.
-  const chiaveFatte = ricerche
-    .filter((r) => r.fine.getTime() <= minuto * 60_000)
-    .map((r) => r.nodo)
-    .join(',')
-  const fatte = useMemo(() => new Set(chiaveFatte ? chiaveFatte.split(',') : []), [chiaveFatte])
   // Al secondo, come il carburante: la raccolta a mano si vede crescere.
   const secondo = Math.floor(ora.getTime() / 1000)
   const bordo = useMemo(
@@ -171,7 +172,7 @@ export function App() {
 
   // Rete: un magazzino arrivato al tetto da quando l'hai vista. Raccogliendolo si spegne da solo.
   const pieni = insediamenti.filter((i) => {
-    const pieno = pienoIl(i)
+    const pieno = pienoIl(i, fatte)
     return Object.keys(ritmoInsediamento(i)).length > 0 && pieno <= ora && (!visti.rete || pieno > new Date(visti.rete))
   }).length
   const reteAperta = pc ? disposizione.finestre.rete.stato === 'aperta' : pagina.pagina === 'rete'

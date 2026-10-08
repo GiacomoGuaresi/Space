@@ -14,9 +14,10 @@ export const NOMI_INSEDIAMENTI = { madre: 'Base madre', base: 'Base', estrattore
 /** Le barre del magazzino di un insediamento, con ritmo, tetto e quando sarà pieno. */
 export function BarreMagazzino({ insediamento, ora }: { insediamento: Insediamento; ora: Date }) {
   const ritmi = ritmoInsediamento(insediamento)
-  const tetti = tettoMagazzino(insediamento)
-  const adesso = magazzinoOra(insediamento, ora)
-  const tra = pienoTra(insediamento, ora)
+  const fatte = useContext(CaricoAttuale)?.fatte
+  const tetti = tettoMagazzino(insediamento, fatte)
+  const adesso = magazzinoOra(insediamento, ora, fatte)
+  const tra = pienoTra(insediamento, ora, fatte)
   const { ore, crescita } = BILANCIAMENTO.magazzino
   return (
     <div className="flex flex-col gap-2">

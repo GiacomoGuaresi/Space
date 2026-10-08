@@ -3,7 +3,7 @@
 // raccolgono di persona. Tutto alla lettura, come in `supabase/sql/011_insediamenti.sql`.
 
 import { BILANCIAMENTO } from './bilanciamento'
-import { RISORSE, type Quantita } from './risorse'
+import { RISORSE, type Fatte, type Quantita } from './risorse'
 import { settore, type Coordinate } from './settore'
 
 export type TipoInsediamento = 'madre' | 'base' | 'estrattore'
@@ -60,21 +60,22 @@ export function ritmoInsediamento(i: Produttore, livello = i.produzione): Partia
 }
 
 /** Il tetto del magazzino per risorsa: 168 h della produzione di livello 1, ×1,45 per livello di magazzino. */
-export function tettoMagazzino(i: Produttore & Pick<Insediamento, 'magazzino'>): Partial<Quantita> {
+export function tettoMagazzino(i: Produttore & Pick<Insediamento, 'magazzino'>, fatte: Fatte = new Set()): Partial<Quantita> {
   const { ore, crescita } = BILANCIAMENTO.magazzino
   const tetti: Partial<Quantita> = {}
   const base = ritmoInsediamento(i, 1)
   for (const r of RISORSE) {
     const ritmo = base[r]
-    if (ritmo) tetti[r] = aLivello(ritmo * ore, crescita, i.magazzino)
+    // *Magazzini modulari* (C4) alzano il tetto del 20 %.
+    if (ritmo) tetti[r] = aLivello(ritmo * ore, crescita, i.magazzino) * (fatte.has('C4') ? 1 + BILANCIAMENTO.ricerche.effetti.C4 : 1)
   }
   return tetti
 }
 
 /** Il magazzino a `ora`: le scorte più la produzione da `ultima`, fino al tetto (oltre non si toglie nulla). */
-export function magazzinoOra(i: Insediamento, ora: Date): Partial<Quantita> {
+export function magazzinoOra(i: Insediamento, ora: Date, fatte: Fatte = new Set()): Partial<Quantita> {
   const ritmi = ritmoInsediamento(i)
-  const tetti = tettoMagazzino(i)
+  const tetti = tettoMagazzino(i, fatte)
   const ore = Math.max(0, ora.getTime() - i.ultima.getTime()) / 3_600_000
   const quantita: Partial<Quantita> = {}
   for (const r of RISORSE) {
@@ -88,10 +89,10 @@ export function magazzinoOra(i: Insediamento, ora: Date): Partial<Quantita> {
 }
 
 /** Tra quante ore il magazzino è pieno per tutte le risorse che produce (0 se lo è già). */
-export function pienoTra(i: Insediamento, ora: Date): number {
+export function pienoTra(i: Insediamento, ora: Date, fatte: Fatte = new Set()): number {
   const ritmi = ritmoInsediamento(i)
-  const tetti = tettoMagazzino(i)
-  const adesso = magazzinoOra(i, ora)
+  const tetti = tettoMagazzino(i, fatte)
+  const adesso = magazzinoOra(i, ora, fatte)
   let ore = 0
   for (const r of RISORSE) {
     const ritmo = ritmi[r]
@@ -112,6 +113,11 @@ export function costoFondazione(fondate: number): Partial<Quantita> {
 }
 
 /** Quando il magazzino si riempie, per tutte le risorse che produce: da lì la produzione è ferma. */
-export function pienoIl(i: Insediamento): Date {
-  return new Date(i.ultima.getTime() + pienoTra(i, i.ultima) * 3_600_000)
+export function pienoIl(i: Insediamento, fatte: Fatte = new Set()): Date {
+  return new Date(i.ultima.getTime() + pienoTra(i, i.ultima, fatte) * 3_600_000)
+}
+
+/** Quante basi si possono fondare: 2, più quelle di *Astrofisica I* (C1). Come `space.basi_fondabili`. */
+export function basiFondabili(fatte: Fatte = new Set()): number {
+  return BILANCIAMENTO.fondazione.basi + (fatte.has('C1') ? BILANCIAMENTO.ricerche.effetti.C1 : 0)
 }

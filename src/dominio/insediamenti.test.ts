@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  basiFondabili,
   costoFondazione,
   magazzinoOra,
   pienoIl,
@@ -75,5 +76,13 @@ describe('fondazione', () => {
     expect(costoFondazione(0)).toEqual({})
     expect(costoFondazione(1)).toEqual({ metallo: 50, silicio: 50, ghiaccio: 50 })
     expect(costoFondazione(2).metallo).toBeCloseTo(80, 10)
+  })
+})
+
+describe('ricerche di Colonizzazione', () => {
+  it('Magazzini modulari alzano il tetto del 20 %, Astrofisica I dà 2 basi', () => {
+    expect(tettoMagazzino(madre(), new Set(['C4'])).metallo).toBeCloseTo(302.4, 10)
+    expect(basiFondabili()).toBe(2)
+    expect(basiFondabili(new Set(['C1']))).toBe(4)
   })
 })
