@@ -121,17 +121,17 @@ Porta l'interfaccia su PC nella [plancia a finestre](11-interfaccia.md#pc--planc
 
 **Si consegna**: la progressione della nave.
 
-## M6 · Laboratorio e ricerche ← *prossimo*
+## M6 · Laboratorio e ricerche ✅
 
 - [x] **6.1 Motore delle ricerche** (tabella `ricerca`): una alla volta, nave ferma ≤ 1 h, gradino ≤ livello del laboratorio; laboratorio a livelli. Interfaccia dell'albero (finestra T su PC). (`017_ricerche.sql`: `space.ricerca(nodo)`, nodi in `bilanciamento.ricerche` con l'elenco `attive`; `AlberoRicerche.tsx`, voce Ricerche in Altro; laboratorio nella Base; ricerche e lavori finiti nel diario.)
 - [x] **6.2 Ingegneria 1-4**: Automazione, Stiva modulare, Cantiere orbitale, Leghe. (`018_ingegneria.sql`: `space.capacita_di`, `space.con_leghe`; in TypeScript le funzioni ricevono le ricerche completate.)
 - [x] **6.3 Colonizzazione 1-4**: Astrofisica I (+2 basi), Estrattori minerari, Raccoglitori di gas, Magazzini modulari. (`019_colonizzazione.sql`; Estrattori minerari e Raccoglitori di gas si ricercano già, l'effetto arriva con gli estrattori in M7.)
 - [x] **6.4 Sensori 1-4**: Scansione in volo, Spettrometria, Radar (solo lo sblocco), Telemetria. (`020_sensori.sql`: con S1 `viaggia` scansiona lungo la rotta, un punto per raggio dello scanner, all'istante del passaggio.)
-- [ ] **6.5 Propulsione 1-2**: Raffinazione I, Iniettori.
+- [x] **6.5 Propulsione 1-2**: Raffinazione I, Iniettori. (`021_propulsione.sql`: `space.costo_pieno_di`, consumo con `quotaConsumo` in TypeScript e in `viaggia`.)
 
 **Si consegna**: le prime scelte nell'albero.
 
-## M7 · Rete di basi ed estrattori
+## M7 · Rete di basi ed estrattori ← *prossimo*
 
 - [ ] **7.1 Estrattori** su asteroidi, nebulose e giganti, con il loro limite. *Si gioca: la rete di raccolta.*
 - [ ] **7.2 Strutture nelle colonie**: magazzino e laboratorio subito, cantiere (I3) e deposito (I5) dopo la ricerca.

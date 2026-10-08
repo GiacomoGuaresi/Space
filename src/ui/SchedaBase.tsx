@@ -78,7 +78,7 @@ function Deposito({ nave, ora, base }: { nave: Nave; ora: Date; base: Insediamen
   const [inCorso, setInCorso] = useState(false)
   const [errore, setErrore] = useState<string | null>(null)
   const mancano = nave.serbatoio - carburanteOra(nave, ora)
-  const costo = costoPieno(mancano, base.deposito)
+  const costo = costoPieno(mancano, base.deposito, bordo?.fatte)
   const disponibile = (bordo?.quantita.idrogeno ?? 0) + (magazzinoOra(base, ora, bordo?.fatte).idrogeno ?? 0)
   const fai = async () => {
     setInCorso(true)

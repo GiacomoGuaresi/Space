@@ -126,9 +126,9 @@ export interface Anteprima extends Rotta {
 }
 
 /** Cosa succederebbe partendo adesso verso `meta`. */
-export function anteprima(nave: Nave, meta: Coordinate, ora: Date): Anteprima {
+export function anteprima(nave: Nave, meta: Coordinate, ora: Date, fatte: ReadonlySet<string> = new Set()): Anteprima {
   const fionda = tipoSettore(nave.posizione) === 'buconero'
-  const r = rotta(nave.posizione, meta, carburanteOra(nave, ora), fionda ? 1 - FIONDA.gratis : 1)
+  const r = rotta(nave.posizione, meta, carburanteOra(nave, ora), quotaConsumo(fionda, fatte))
   const velocita = nave.velocita * (fionda ? FIONDA.velocita : 1)
   return {
     ...r,
@@ -136,6 +136,14 @@ export function anteprima(nave: Nave, meta: Coordinate, ora: Date): Anteprima {
     fionda,
     possibile: !stessoSettore(r.a, nave.posizione),
   }
+}
+
+/**
+ * La parte dei settori percorsi che consuma carburante: meno con la fionda e
+ * con *Iniettori* (P2). Come in `space.viaggia`, moltiplicando nello stesso ordine.
+ */
+export function quotaConsumo(fionda: boolean, fatte: ReadonlySet<string>): number {
+  return (fionda ? 1 - FIONDA.gratis : 1) * (fatte.has('P2') ? 1 - BILANCIAMENTO.ricerche.effetti.P2 : 1)
 }
 
 const LIVELLI_SCANNER: readonly (TipoCorpo | 'raggio')[] = SCANNER.livelli
@@ -147,9 +155,7 @@ export function tipiRilevabili(livello: number): ReadonlySet<TipoCorpo> {
 
 /** Il raggio dello scanner al livello dato, in settori, fermi nel settore di tipo `tipoQui`. */
 export function raggioScanner(livello: number, tipoQui: TipoCorpo | null): number {
-  const aumenti =
-    LIVELLI_SCANNER.slice(0, livello).filter((v) => v === 'raggio').length +
-    Math.max(0, livello - LIVELLI_SCANNER.length)
+  const aumenti = LIVELLI_SCANNER.slice(0, livello).filter((v) => v === 'raggio').length + Math.max(0, livello - LIVELLI_SCANNER.length)
   // Moltiplicazioni ripetute, non `**`: in SQL (`space.raggio_scanner`) danno
   // lo stesso numero fino all'ultima cifra.
   let raggio: number = SCANNER.raggio

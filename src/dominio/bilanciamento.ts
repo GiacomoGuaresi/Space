@@ -219,7 +219,7 @@ export const BILANCIAMENTO = {
       I10: { gradino: 10, richiede: ['I9'] },
     },
     /** I nodi che si possono già ricercare: gli altri arrivano con le loro meccaniche (doc/06-roadmap.md). */
-    attive: ['I1', 'I2', 'I3', 'I4', 'C1', 'C2', 'C3', 'C4', 'S1', 'S2', 'S3', 'S4'] as string[],
+    attive: ['I1', 'I2', 'I3', 'I4', 'C1', 'C2', 'C3', 'C4', 'S1', 'S2', 'S3', 'S4', 'P1', 'P2'] as string[],
     /** Gli effetti, con i loro numeri. */
     effetti: {
       /** Automazione: tempi di costruzione −10 %. */
@@ -232,6 +232,10 @@ export const BILANCIAMENTO = {
       C1: 2,
       /** Magazzini modulari: tetto +20 %. */
       C4: 0.2,
+      /** Raffinazione I: Idrogeno per unità di carburante in meno al deposito. */
+      P1: 1,
+      /** Iniettori: consumo −10 %. */
+      P2: 0.1,
     },
   },
   deposito: {

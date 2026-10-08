@@ -33,7 +33,8 @@ interface Props {
  */
 export function Mappa({ nave, viaggio, scarto, scoperte, scansioni }: Props) {
   const ora = useOra(scarto)
-  const spettrometria = useContext(CaricoAttuale)?.fatte.has('S2') ?? false
+  const fatte = useContext(CaricoAttuale)?.fatte
+  const spettrometria = fatte?.has('S2') ?? false
   const tutti = useMemo(() => corpiNoti(scansioni, scoperte), [scansioni, scoperte])
   const [filtro, setFiltro] = useState<Filtro>('tutti')
   const punti = useMemo(() => tutti.filter(FILTRI[filtro].tiene), [tutti, filtro])
@@ -48,7 +49,7 @@ export function Mappa({ nave, viaggio, scarto, scoperte, scansioni }: Props) {
   }, [punto])
   const scoperta = scelto && scoperte.find((s) => stessoSettore(s.coordinate, scelto))
   const volo = inViaggio(nave, ora)
-  const prova = punto && !volo && !stessoSettore(punto.coordinate, nave.posizione) ? anteprima(nave, punto.coordinate, ora) : null
+  const prova = punto && !volo && !stessoSettore(punto.coordinate, nave.posizione) ? anteprima(nave, punto.coordinate, ora, fatte) : null
 
   return (
     <Cornice

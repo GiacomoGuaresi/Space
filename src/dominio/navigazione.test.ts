@@ -6,6 +6,7 @@ import {
   carburanteOra,
   inViaggio,
   pienoTra,
+  quotaConsumo,
   raggioScanner,
   rotta,
   scansione,
@@ -171,5 +172,13 @@ describe('scanner', () => {
       expect(tipoSettore(trovati[i].coordinate)).toBe(trovati[i].tipo)
       if (i > 0) expect(trovati[i].distanza).toBeGreaterThanOrEqual(trovati[i - 1].distanza)
     }
+  })
+})
+
+describe('Iniettori', () => {
+  it('tolgono il 10 % del consumo, anche con la fionda', () => {
+    expect(quotaConsumo(false, new Set(['P2']))).toBeCloseTo(0.9, 12)
+    expect(quotaConsumo(true, new Set(['P2']))).toBeCloseTo(0.72, 12)
+    expect(quotaConsumo(false, new Set())).toBe(1)
   })
 })

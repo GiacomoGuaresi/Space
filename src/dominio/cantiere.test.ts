@@ -60,3 +60,9 @@ describe('ricerche di Ingegneria', () => {
     expect(c.ghiaccio).toBe(base.ghiaccio)
   })
 })
+
+describe('ricerche di Propulsione', () => {
+  it('Raffinazione I: 4 Idrogeno per unità', () => {
+    expect(costoPieno(2, 1, new Set(['P1']))).toBe(8)
+  })
+})
