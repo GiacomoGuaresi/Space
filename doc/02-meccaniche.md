@@ -117,7 +117,7 @@ Serve alle funzioni avanzate:
 | Stella solitaria | ricarica fino al 100 % e più veloce |
 | Nebulosa | scanner dimezzato all'interno |
 | Pulsar | scanner doppio in sosta |
-| Buco nero | **fionda**: il viaggio che parte da qui è più veloce e il primo tratto non consuma carburante |
+| Buco nero | **fionda**: il viaggio che parte da qui è più veloce e una parte dei settori percorsi non consuma carburante |
 | Cometa | si raccoglie **una volta per giocatore** |
 | Relitto alieno | si saccheggia **una volta per giocatore**: Materia oscura, risorse, a volte un progetto (ricerca scontata) |
 | Wormhole | **senso unico** verso un settore lontano 300-1500 settori, in una direzione qualsiasi; costa Materia oscura |

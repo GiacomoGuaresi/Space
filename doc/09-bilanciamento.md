@@ -43,7 +43,7 @@ Ogni statistica vale `base × crescita^(livello − 1)`.
 - Ricarica da fermi, alla velocità della statistica Ricarica, fino a un tetto: **50 %** del serbatoio fuori dalle basi, **100 %** in base o accanto a una **stella**, dove la ricarica è anche **×2** (×3 con *Vele solari*).
 - **Deposito**: pieno istantaneo a **5 Idrogeno per unità**, che le ricerche Raffinazione I-IV portano a 4, 3, 2, 1. Ogni livello del deposito lo moltiplica per 0,9.
 - **Ponte di curvatura**: velocità ×3 e carburante ×1/3 (×4 e ×1/4 con *Ponte risonante*).
-- **Fionda** (partendo da un buco nero): velocità ×1,5 e il primo **20 %** della rotta senza consumo (×2 e 30 % con *Fionda gravitazionale*).
+- **Fionda** (partendo da un buco nero): velocità ×1,5 e il **20 %** dei settori percorsi senza consumo (×2 e 30 % con *Fionda gravitazionale*). Conta la rotta percorsa, non quella chiesta: se il carburante non basta, il tratto gratis non cresce allungando la meta.
 
 ## Distribuzione dei corpi
 

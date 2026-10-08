@@ -109,11 +109,23 @@ describe('anteprima', () => {
     expect(a.fionda).toBe(false)
   })
 
-  it('da un buco nero si va più veloci', () => {
+  it('da un buco nero si va più veloci e si consuma meno', () => {
     const buco = piuVicino({ x: 2000, y: 0, z: 0 }, 'buconero', 40)!
     const a = anteprima(nave({ posizione: buco }), { x: buco.x + 2, y: buco.y, z: buco.z }, t0)
     expect(a.fionda).toBe(true)
     expect(a.durata).toBe((2 / (NAVE_INIZIALE.velocita * BILANCIAMENTO.fionda.velocita)) * ORA)
+    expect(a.percorsa).toBe(2)
+    expect(a.consumo).toBeCloseTo(2 * (1 - BILANCIAMENTO.fionda.gratis))
+  })
+
+  it('con la fionda il carburante porta più lontano, ma il tratto gratis non cresce con la meta', () => {
+    const buco = piuVicino({ x: 2000, y: 0, z: 0 }, 'buconero', 40)!
+    const lontano = { x: buco.x + 1000, y: buco.y, z: buco.z }
+    const a = anteprima(nave({ posizione: buco, carburante: 2.5 }), lontano, t0)
+    expect(a.fermata).toBe(true)
+    expect(a.consumo).toBeLessThanOrEqual(2.5)
+    expect(a.percorsa).toBeGreaterThan(2.5)
+    expect(a.percorsa).toBeLessThanOrEqual(2.5 / (1 - BILANCIAMENTO.fionda.gratis))
   })
 
   it('non è possibile con il serbatoio quasi vuoto', () => {

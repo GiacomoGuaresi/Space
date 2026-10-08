@@ -52,9 +52,13 @@ export const BILANCIAMENTO = {
   },
   fionda: {
     /** Partendo da un buco nero la nave va più veloce… */
-    velocita: 2,
-    /** …e questa parte della rotta non consuma carburante. */
-    gratis: 0,
+    velocita: 1.5,
+    /**
+     * …e questa parte dei settori percorsi non consuma carburante. Dei
+     * percorsi, non della rotta chiesta: con una meta lontanissima la nave si
+     * ferma prima, e il tratto gratis non cresce.
+     */
+    gratis: 0.2,
   },
   scanner: {
     /** Il raggio al livello 1, in settori. */

@@ -97,7 +97,10 @@ export function Rotta({ nave, ora, meta, onMeta, onParti }: Props) {
             {prova.fionda ? ` · fionda ×${numero(BILANCIAMENTO.fionda.velocita, 1)}` : ''}
           </dd>
           <dt className="text-testo-tenue">Consumo</dt>
-          <dd className="m-0">{numero(prova.consumo, 1)} di carburante</dd>
+          <dd className="m-0">
+            {numero(prova.consumo, 1)} di carburante
+            {prova.fionda ? ` · il ${numero(BILANCIAMENTO.fionda.gratis * 100)} % gratis` : ''}
+          </dd>
         </dl>
       )}
 
