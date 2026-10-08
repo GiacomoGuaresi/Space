@@ -91,7 +91,7 @@ const GUIDA: PaginaWiki[] = [
           La stiva ha un posto per ognuna delle sei risorse, tutte con la stessa capacità. Non si scarica mai: le risorse si spendono da lì,
           insieme al magazzino della base dove si costruisce.
         </P>
-        <P>Potenziarla sarà il cuore della progressione: arriverà con il cantiere.</P>
+        <P>Potenziarla è il cuore della progressione: si fa nel cantiere di una base (vedi Cantiere e potenziamenti).</P>
       </>
     ),
     numeri: ({ nave }) => [

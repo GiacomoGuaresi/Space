@@ -2,7 +2,7 @@ import { useContext, useState } from 'react'
 import { Wrench } from 'lucide-react'
 import { ViaggioRifiutato, type Costruzione } from '../dati'
 import { BILANCIAMENTO } from '../dominio/bilanciamento'
-import { NOMI_RISORSE } from '../dominio/catalogo'
+import { CATALOGO, NOMI_RISORSE, type TipoCorpo } from '../dominio/catalogo'
 import { costoLavoro, durataLavoro, eDellaNave, mancante, NOMI_LAVORI, valoreNave, type Lavoro, type Statistica } from '../dominio/cantiere'
 import { magazzinoOra, type Insediamento } from '../dominio/insediamenti'
 import { inViaggio, raggioScanner, type Nave } from '../dominio/navigazione'
@@ -15,7 +15,7 @@ import { RIFIUTI } from './rifiuti'
 import { CaricoAttuale } from './SchedaNave'
 
 /** Le statistiche che oggi si potenziano (le altre arrivano con i loro step, doc/06-roadmap.md). */
-export const STATISTICHE_ATTIVE: readonly Statistica[] = ['motore', 'serbatoio', 'ricarica', 'stiva']
+export const STATISTICHE_ATTIVE: readonly Statistica[] = ['motore', 'serbatoio', 'ricarica', 'scanner', 'stiva']
 
 /** Il livello attuale di un lavoro: della nave, o della base `base`. */
 export function livelloAttuale(lavoro: Lavoro, nave: Nave, base: Insediamento | undefined): number {
@@ -53,8 +53,13 @@ function valore(lavoro: Statistica, livello: number): string {
       return `${numero(valoreNave('serbatoio', livello), 1)} unità`
     case 'ricarica':
       return `${numero(valoreNave('ricarica', livello), 2)}/h`
-    case 'scanner':
-      return `raggio ${numero(raggioScanner(livello, null), 1)}`
+    case 'scanner': {
+      // I livelli alternano un tipo rilevabile e più raggio (doc/02-meccaniche.md#scanner).
+      const novita = BILANCIAMENTO.scanner.livelli[livello - 1] ?? 'raggio'
+      return novita === 'raggio'
+        ? `raggio ${numero(raggioScanner(livello, null), 1)}`
+        : `rileva ${CATALOGO[novita as TipoCorpo].nome.toLowerCase()}`
+    }
     case 'stiva':
       return `${numero(capacitaStiva(livello), 0)} per risorsa`
   }
@@ -129,7 +134,7 @@ export function Potenziamenti({ nave, ora, lavori, base }: Props) {
             <li key={lavoro} className="flex flex-col gap-1 border-b border-separatore py-2.5 last:border-b-0">
               <div className="flex items-baseline gap-2 text-[13px]">
                 <span className="flex-1">
-                  {NOMI_LAVORI[lavoro]} <span className="cifre text-testo-tenue">· liv. {attuale}</span>
+                  {NOMI_LAVORI[lavoro]} <span className="text-testo-tenue">· liv. {attuale}</span>
                   {inAttesa.length > 0 && <span className="text-ambra"> · in coda {inAttesa.map((c) => c.livello).join(', ')}</span>}
                 </span>
                 {eDellaNave(lavoro) && <span className="cifre text-xs text-testo-tenue">→ {valore(lavoro, livello)}</span>}
