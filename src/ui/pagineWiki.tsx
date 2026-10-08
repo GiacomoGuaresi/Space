@@ -238,6 +238,10 @@ const GUIDA: PaginaWiki[] = [
       ['Ricarica', `${numero(nave.ricarica, 2)}/h · ×${carburante.ricaricaStella} accanto a una stella`],
       ['Tetto fuori', `${numero(carburante.tettoFuori * 100)} % = ${numero(nave.serbatoio * carburante.tettoFuori, 1)} unità`],
       ['Tetto in base', `100 % = ${numero(nave.serbatoio, 1)} unità`],
+      [
+        'Deposito',
+        `pieno subito in una base col deposito: ${BILANCIAMENTO.deposito.idrogeno} Idrogeno per unità × ${BILANCIAMENTO.deposito.crescita}^(livello − 1)`,
+      ],
     ],
   },
   {

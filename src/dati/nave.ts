@@ -76,6 +76,8 @@ export type MotivoRifiuto =
   | 'serve_cantiere'
   | 'tetto_cantiere'
   | 'non_disponibile'
+  | 'serve_deposito'
+  | 'gia_pieno'
 
 export class ViaggioRifiutato extends Error {
   constructor(readonly motivo: MotivoRifiuto) {
@@ -168,6 +170,8 @@ const MOTIVI: readonly MotivoRifiuto[] = [
   'serve_cantiere',
   'tetto_cantiere',
   'non_disponibile',
+  'serve_deposito',
+  'gia_pieno',
 ]
 
 export class NaveSupabase {
@@ -212,6 +216,16 @@ export class NaveSupabase {
       const motivo = MOTIVI.find((m) => m === error.message)
       if (motivo) throw new ViaggioRifiutato(motivo)
       throw fallita('Lavoro non avviato', error)
+    }
+  }
+
+  /** Il pieno al deposito della base dove sta la nave, pagato in Idrogeno. */
+  async pieno(): Promise<void> {
+    const { error } = await this.client.rpc('pieno')
+    if (error) {
+      const motivo = MOTIVI.find((m) => m === error.message)
+      if (motivo) throw new ViaggioRifiutato(motivo)
+      throw fallita('Pieno non riuscito', error)
     }
   }
 

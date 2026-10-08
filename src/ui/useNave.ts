@@ -173,7 +173,14 @@ export function useNave() {
     [ricarica],
   )
 
+  const pieno = useCallback(async () => {
+    await datiNave().pieno()
+    suona('clic')
+    await ricarica()
+  }, [ricarica])
+
   return {
+    pieno,
     stato,
     scarto,
     scoperte,

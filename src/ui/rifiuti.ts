@@ -16,4 +16,6 @@ export const RIFIUTI: Readonly<Record<MotivoRifiuto, string>> = {
   serve_cantiere: 'Questa base non ha un cantiere.',
   tetto_cantiere: 'Il cantiere non basta: la nave non supera il doppio del suo livello.',
   non_disponibile: 'Qui non si può: arriva con le ricerche.',
+  serve_deposito: 'Questa base non ha un deposito carburante.',
+  gia_pieno: 'Il serbatoio è già pieno.',
 }

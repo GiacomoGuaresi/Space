@@ -56,6 +56,7 @@ export function App() {
     fonda,
     potenzia,
     costruzioni,
+    pieno,
     ricarica,
   } = useNave()
   const ora = useOra(scarto)
@@ -102,7 +103,7 @@ export function App() {
         : null,
     [carico, nave, secondo, raccolti, insediamenti],
   )
-  const azioni = useMemo(() => ({ fonda, potenzia, costruzioni }), [fonda, potenzia, costruzioni])
+  const azioni = useMemo(() => ({ fonda, potenzia, pieno, costruzioni }), [fonda, potenzia, pieno, costruzioni])
   const ultima = useMemo(() => ({ voce: voci[0] ?? null, nuove: daLeggere }), [voci, daLeggere])
 
   // Pallini: Ponte se la nave è arrivata da quando l'hai visto, Mappa se c'è un

@@ -10,6 +10,8 @@ export interface Azioni {
   fonda: (pianeta: number) => Promise<void>
   /** Avvia un lavoro nel cantiere della base dove sta la nave. */
   potenzia: (lavoro: Lavoro) => Promise<void>
+  /** Il pieno al deposito della base dove sta la nave. */
+  pieno: () => Promise<void>
   /** I lavori del cantiere degli ultimi 30 giorni, in corso e in coda. */
   costruzioni: readonly Costruzione[]
 }
@@ -19,6 +21,9 @@ export const AzioniNave = createContext<Azioni>({
     throw new Error('azioni non disponibili')
   },
   potenzia: async () => {
+    throw new Error('azioni non disponibili')
+  },
+  pieno: async () => {
     throw new Error('azioni non disponibili')
   },
   costruzioni: [],

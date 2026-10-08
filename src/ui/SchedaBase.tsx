@@ -1,12 +1,18 @@
-import { createContext, useContext } from 'react'
+import { createContext, useContext, useState } from 'react'
+import { Fuel } from 'lucide-react'
+import { ViaggioRifiutato } from '../dati'
+import { BILANCIAMENTO } from '../dominio/bilanciamento'
+import { costoPieno } from '../dominio/cantiere'
 import type { Struttura } from '../dominio/cantiere'
-import type { Insediamento } from '../dominio/insediamenti'
-import { inViaggio, type Nave } from '../dominio/navigazione'
+import { magazzinoOra, type Insediamento } from '../dominio/insediamenti'
+import { carburanteOra, inViaggio, type Nave } from '../dominio/navigazione'
 import { settore, stessoSettore } from '../dominio/settore'
 import { Coda, Potenziamenti } from './Cantiere'
-import { coordinatePlancia } from './formato'
+import { AzioniNave } from './azioni'
+import { coordinatePlancia, numero } from './formato'
 import { BarreMagazzino, NOMI_INSEDIAMENTI } from './Magazzino'
-import { Etichetta, Pannello } from './plancia'
+import { BottoneSecondario, Etichetta, Info, Pannello } from './plancia'
+import { RIFIUTI } from './rifiuti'
 import { CaricoAttuale } from './SchedaNave'
 
 /**
@@ -15,7 +21,7 @@ import { CaricoAttuale } from './SchedaNave'
  * con i loro step (doc/06-roadmap.md).
  */
 export function struttureAttive(base: Insediamento): Struttura[] {
-  const tutte: Struttura[] = ['produzione', 'magazzino', 'cantiere']
+  const tutte: Struttura[] = ['produzione', 'magazzino', 'cantiere', 'deposito']
   return base.tipo === 'madre' ? tutte : tutte.filter((s) => s !== 'cantiere' && s !== 'deposito')
 }
 
@@ -50,10 +56,66 @@ export function SchedaBase({ nave, ora, base }: { nave: Nave; ora: Date; base: I
         <h3 className="etichetta m-0 mt-3 mb-2">Coda della base</h3>
         <Coda coda="base" base={base} ora={ora} />
       </section>
+      {base.deposito > 0 && <Deposito nave={nave} ora={ora} base={base} />}
       <section aria-label="Magazzino" className="p-3.5">
         <h2 className="etichetta m-0 mb-2">Magazzino</h2>
         <BarreMagazzino insediamento={base} ora={ora} />
       </section>
     </Pannello>
+  )
+}
+
+/** Il deposito carburante: il pieno subito, pagato in Idrogeno (doc/02-meccaniche.md#viaggio). */
+function Deposito({ nave, ora, base }: { nave: Nave; ora: Date; base: Insediamento }) {
+  const bordo = useContext(CaricoAttuale)
+  const { pieno } = useContext(AzioniNave)
+  const [inCorso, setInCorso] = useState(false)
+  const [errore, setErrore] = useState<string | null>(null)
+  const mancano = nave.serbatoio - carburanteOra(nave, ora)
+  const costo = costoPieno(mancano, base.deposito)
+  const disponibile = (bordo?.quantita.idrogeno ?? 0) + (magazzinoOra(base, ora).idrogeno ?? 0)
+  const fai = async () => {
+    setInCorso(true)
+    setErrore(null)
+    try {
+      await pieno()
+    } catch (e) {
+      setErrore(e instanceof ViaggioRifiutato ? RIFIUTI[e.motivo] : 'Pieno non riuscito: controlla la connessione e riprova.')
+    } finally {
+      setInCorso(false)
+    }
+  }
+  return (
+    <section aria-label="Deposito carburante" className="flex flex-col gap-2 border-b border-separatore p-3.5">
+      <h2 className="etichetta m-0">Deposito carburante · liv. {base.deposito}</h2>
+      {costo <= 0.005 ? (
+        <p className="m-0 text-xs text-testo-tenue">Il serbatoio è pieno.</p>
+      ) : (
+        <>
+          <p className="m-0 flex items-center gap-1 text-[13px]">
+            Mancano {numero(mancano, 1)} unità:{' '}
+            <span className={costo > disponibile ? 'text-ambra' : ''}>{numero(Math.ceil(costo), 0)} Idrogeno</span>
+            <Info
+              titolo="Pieno"
+              wiki="viaggio"
+              formula={`${numero(mancano, 2)} unità × ${BILANCIAMENTO.deposito.idrogeno} × ${BILANCIAMENTO.deposito.crescita}^${base.deposito - 1}`}
+              esatto={numero(costo, 2)}
+            />
+          </p>
+          {errore && (
+            <p className="m-0 text-xs text-pericolo" role="alert">
+              {errore}
+            </p>
+          )}
+          <BottoneSecondario disabled={inCorso || costo > disponibile} onClick={() => void fai()}>
+            <Fuel className="size-4" aria-hidden="true" />
+            Pieno
+          </BottoneSecondario>
+          {costo > disponibile && (
+            <span className="text-xs text-testo-tenue">Tra stiva e magazzino ci sono {numero(disponibile, 0)} Idrogeno.</span>
+          )}
+        </>
+      )}
+    </section>
   )
 }

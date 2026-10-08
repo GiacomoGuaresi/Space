@@ -79,3 +79,12 @@ export function mancante(costo: Partial<Quantita>, stiva: Quantita, magazzino: P
   }
   return manca
 }
+
+/**
+ * L'Idrogeno per il pieno al deposito di livello `deposito` (doc/09-bilanciamento.md#carburante):
+ * `5 × 0,9^(livello − 1)` per ogni unità che manca. Come `space.costo_pieno`.
+ */
+export function costoPieno(mancano: number, deposito: number): number {
+  const { idrogeno, crescita } = BILANCIAMENTO.deposito
+  return Math.max(0, mancano) * aLivello(idrogeno, crescita, deposito)
+}

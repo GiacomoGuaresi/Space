@@ -108,7 +108,7 @@ Porta l'interfaccia su PC nella [plancia a finestre](11-interfaccia.md#pc--planc
 
 **Si consegna**: il ciclo esplora → fonda → raccogli.
 
-## M5 · Cantiere e potenziamenti ← *prossimo*
+## M5 · Cantiere e potenziamenti ✅
 
 - [x] **5.1 Coda di costruzione** (tabella `costruzione`), con le ricette a gradini e il pagamento da stiva + magazzino della base. (`015_cantiere.sql`: `space.potenzia(lavoro)`, una coda per la nave e una per base, lavori applicati alla lettura in `assesta`; costi e tempi verificati da `verifica-sql`.)
 - [x] **5.2 Motore, serbatoio, ricarica** nel cantiere della base madre; la nave resta ferma. *Si gioca: il primo potenziamento.*
@@ -117,11 +117,11 @@ Porta l'interfaccia su PC nella [plancia a finestre](11-interfaccia.md#pc--planc
 - [x] **5.5 Livelli di produzione** degli insediamenti, nella coda della base. (La **Base**: finestra B su PC, nel dock solo da attraccati e aperta da sola all'arrivo; scheda BASE nel Ponte sul telefono. `SchedaBase.tsx`.)
 - [x] **5.6 Magazzino a livelli.** (Il magazzino si chiude all'istante in cui il lavoro finisce, poi il tetto sale.)
 - [x] **5.7 Cantiere a livelli**: tempi più brevi e tetto della nave a 2 × livello. (Solo nella base madre: nelle colonie arriva con la ricerca, M7.)
-- [ ] **5.8 Deposito carburante**: pieno istantaneo a 5 Idrogeno/unità, a livelli.
+- [x] **5.8 Deposito carburante**: pieno istantaneo a 5 Idrogeno/unità, a livelli. (`016_deposito.sql`: `space.pieno()`, sempre fino al 100 %, Idrogeno prima dal magazzino.)
 
 **Si consegna**: la progressione della nave.
 
-## M6 · Laboratorio e ricerche
+## M6 · Laboratorio e ricerche ← *prossimo*
 
 - [ ] **6.1 Motore delle ricerche** (tabella `ricerca`): una alla volta, nave ferma ≤ 1 h, gradino ≤ livello del laboratorio; laboratorio a livelli. Interfaccia dell'albero (finestra T su PC).
 - [ ] **6.2 Ingegneria 1-4**: Automazione, Stiva modulare, Cantiere orbitale, Leghe.

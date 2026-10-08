@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { costoLavoro, durataLavoro, mancante, ricetta, valoreNave } from './cantiere'
+import { costoLavoro, costoPieno, durataLavoro, mancante, ricetta, valoreNave } from './cantiere'
 import { nessuna } from './risorse'
 
 describe('cantiere', () => {
@@ -36,5 +36,13 @@ describe('cantiere', () => {
     const stiva = { ...nessuna(), metallo: 20, silicio: 40 }
     expect(mancante({ metallo: 50, silicio: 30 }, stiva, { metallo: 40 })).toEqual({})
     expect(mancante({ metallo: 50, silicio: 30 }, stiva, {})).toEqual({ metallo: 30 })
+  })
+})
+
+describe('deposito', () => {
+  it('5 Idrogeno per unità, ×0,9 a livello', () => {
+    expect(costoPieno(2, 1)).toBe(10)
+    expect(costoPieno(2, 2)).toBeCloseTo(9, 10)
+    expect(costoPieno(-1, 1)).toBe(0)
   })
 })

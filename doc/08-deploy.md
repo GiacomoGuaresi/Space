@@ -38,7 +38,7 @@ Fatte il 2026-10-08 con la Management API:
 2. `space` aggiunto agli *Exposed schemas* (`PATCH /v1/projects/{ref}/postgrest`). La lista `db_schema` si manda sempre intera, con gli schemi delle altre app
 3. `https://giacomoguaresi.github.io/Space/` aggiunto agli URL di redirect di Auth (`PATCH /v1/projects/{ref}/config/auth`, `uri_allow_list`). Anche questa lista si manda intera
 
-Gli script successivi si applicano allo stesso modo, oppure dal SQL Editor. Applicati il 2026-10-08: `002_navigazione.sql`, `003_bilanciamento.sql`, `004_nave_v1.sql`, `005_soglie_rari.sql`, `006_scanner.sql`, `007_scansione.sql`, `008_stiva.sql`, `009_raccolta.sql`, `010_comete.sql`, `011_insediamenti.sql`, `012_raccolta_di_persona.sql`, `013_colonie.sql`, `014_altre_basi.sql`, `015_cantiere.sql`, e `bilanciamento.sql` con i valori v1 (riapplicato dopo ogni modifica di `bilanciamento.ts`).
+Gli script successivi si applicano allo stesso modo, oppure dal SQL Editor. Applicati il 2026-10-08: `002_navigazione.sql`, `003_bilanciamento.sql`, `004_nave_v1.sql`, `005_soglie_rari.sql`, `006_scanner.sql`, `007_scansione.sql`, `008_stiva.sql`, `009_raccolta.sql`, `010_comete.sql`, `011_insediamenti.sql`, `012_raccolta_di_persona.sql`, `013_colonie.sql`, `014_altre_basi.sql`, `015_cantiere.sql`, `016_deposito.sql`, e `bilanciamento.sql` con i valori v1 (riapplicato dopo ogni modifica di `bilanciamento.ts`).
 
 ### Cambiare un valore del bilanciamento
 
