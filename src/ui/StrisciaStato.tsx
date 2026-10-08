@@ -10,6 +10,8 @@ interface Props {
   ora: Date
   /** Un tocco sulla striscia apre il diario di bordo. */
   onApri?: () => void
+  /** Su PC: la barra di stato su una riga, a tutta larghezza. */
+  riga?: boolean
 }
 
 const SEGMENTI = 10
@@ -19,7 +21,7 @@ const SEGMENTI = 10
  * in sosta il luogo, in viaggio la meta e il conto alla rovescia; sotto il
  * carburante, con il tetto fin dove si ricarica qui.
  */
-export function StrisciaStato({ nave, viaggio, ora, onApri }: Props) {
+export function StrisciaStato({ nave, viaggio, ora, onApri, riga = false }: Props) {
   const volo = inViaggio(nave, ora)
   const carburante = carburanteOra(nave, ora)
   const tetto = tettoQui(nave, nave.posizione)
@@ -34,67 +36,90 @@ export function StrisciaStato({ nave, viaggio, ora, onApri }: Props) {
     return soglia <= carburante ? 'bg-ambra' : !volo && soglia <= tetto ? 'bg-linea' : 'bg-[#211a10]'
   })
 
-  const contenuto = (
-    <>
-      <div className="flex items-center gap-2.5">
+  const luogo = (
+    <div className="flex min-w-0 items-center gap-2.5">
+      {volo ? (
+        <>
+          <Etichetta className="text-ambra!">▲ Verso</Etichetta>
+          <span className="cifre text-[13px]">{coordinatePlancia(nave.posizione)}</span>
+          <span className="cifre ml-auto text-[15px] font-medium text-ambra" aria-live="polite">
+            {rovescia(nave.dal.getTime() - ora.getTime())}
+          </span>
+        </>
+      ) : (
+        <>
+          <Etichetta className="text-ambra!">◉ Ferma</Etichetta>
+          <span className="cifre text-[13px]">{coordinatePlancia(nave.posizione)}</span>
+          <span className="ml-auto truncate text-[13px] font-semibold tracking-[0.12em] uppercase">{nome}</span>
+        </>
+      )}
+    </div>
+  )
+  const serbatoio = (
+    <div className="flex min-w-0 items-center gap-2">
+      <Etichetta>Carb</Etichetta>
+      <div
+        className="flex max-w-[130px] min-w-[60px] flex-1 gap-0.5"
+        role="meter"
+        aria-label="Carburante"
+        aria-valuemin={0}
+        aria-valuemax={nave.serbatoio}
+        aria-valuenow={Math.round(carburante * 10) / 10}
+      >
+        {segmenti.map((colore, i) => (
+          <span key={i} className={`h-1.5 flex-1 ${colore}`} />
+        ))}
+      </div>
+      <span className="cifre shrink-0 text-[12px]">
+        {numero(carburante, 1)}/{numero(nave.serbatoio, 1)}
+      </span>
+      <span className="relative z-10 ml-auto flex items-center gap-1 text-right whitespace-nowrap">
         {volo ? (
-          <>
-            <Etichetta className="text-ambra!">▲ Verso</Etichetta>
-            <span className="cifre text-[13px]">{coordinatePlancia(nave.posizione)}</span>
-            <span className="cifre ml-auto text-[15px] font-medium text-ambra" aria-live="polite">
-              {rovescia(nave.dal.getTime() - ora.getTime())}
-            </span>
-          </>
+          <Etichetta>Arrivo {orario(nave.dal, ora)}</Etichetta>
         ) : (
           <>
-            <Etichetta className="text-ambra!">◉ Ferma</Etichetta>
-            <span className="cifre text-[13px]">{coordinatePlancia(nave.posizione)}</span>
-            <span className="ml-auto truncate text-[13px] font-semibold tracking-[0.12em] uppercase">{nome}</span>
+            <Etichetta>
+              Tetto {percentoTetto}%{pieno > 0 ? ` · ${durata(pieno)}` : ''}
+            </Etichetta>
+            <Info
+              titolo="Ricarica"
+              wiki="viaggio"
+              formula={`${numero(nave.ricarica, 2)}/h${stellare ? ` × ${BILANCIAMENTO.carburante.ricaricaStella} (stella)` : ''} fino a ${numero(nave.serbatoio, 1)} × ${percentoTetto}%`}
+              esatto={`${numero(ricaricaQui(nave, nave.posizione), 2)}/h, tetto ${numero(tetto, 2)}`}
+            />
           </>
         )}
-      </div>
-      <div className="flex items-center gap-2">
-        <Etichetta>Carb</Etichetta>
-        <div
-          className="flex max-w-[130px] min-w-[60px] flex-1 gap-0.5"
-          role="meter"
-          aria-label="Carburante"
-          aria-valuemin={0}
-          aria-valuemax={nave.serbatoio}
-          aria-valuenow={Math.round(carburante * 10) / 10}
-        >
-          {segmenti.map((colore, i) => (
-            <span key={i} className={`h-1.5 flex-1 ${colore}`} />
-          ))}
-        </div>
-        <span className="cifre shrink-0 text-[12px]">
-          {numero(carburante, 1)}/{numero(nave.serbatoio, 1)}
-        </span>
-        <span className="relative z-10 ml-auto flex items-center gap-1 text-right whitespace-nowrap">
-          {volo ? (
-            <Etichetta>Arrivo {orario(nave.dal, ora)}</Etichetta>
-          ) : (
-            <>
-              <Etichetta>
-                Tetto {percentoTetto}%{pieno > 0 ? ` · ${durata(pieno)}` : ''}
-              </Etichetta>
-              <Info
-                titolo="Ricarica"
-                wiki="viaggio"
-                formula={`${numero(nave.ricarica, 2)}/h${stellare ? ` × ${BILANCIAMENTO.carburante.ricaricaStella} (stella)` : ''} fino a ${numero(nave.serbatoio, 1)} × ${percentoTetto}%`}
-                esatto={`${numero(ricaricaQui(nave, nave.posizione), 2)}/h, tetto ${numero(tetto, 2)}`}
-              />
-            </>
-          )}
-        </span>
-      </div>
-      {volo && viaggio && !stessoSettore(viaggio.a, viaggio.meta) && (
-        <p className="m-0 text-xs text-ambra">Carburante insufficiente: sosta forzata prima della meta {coordinatePlancia(viaggio.meta)}.</p>
+      </span>
+    </div>
+  )
+  const avviso = volo && viaggio && !stessoSettore(viaggio.a, viaggio.meta) && (
+    <p className="m-0 text-xs text-ambra">Carburante insufficiente: sosta forzata prima della meta {coordinatePlancia(viaggio.meta)}.</p>
+  )
+
+  // Su PC i pezzi stanno in fila, separati da una linea; sul telefono uno sotto l'altro.
+  const contenuto = riga ? (
+    <>
+      <div className="w-[360px] shrink-0">{luogo}</div>
+      <span aria-hidden="true" className="h-5 w-px shrink-0 bg-separatore" />
+      <div className="w-[380px] shrink-0">{serbatoio}</div>
+      {avviso && (
+        <>
+          <span aria-hidden="true" className="h-5 w-px shrink-0 bg-separatore" />
+          <div className="min-w-0 truncate">{avviso}</div>
+        </>
       )}
+    </>
+  ) : (
+    <>
+      {luogo}
+      {serbatoio}
+      {avviso}
     </>
   )
 
-  const classi = 'relative flex w-full flex-col gap-2 rounded-plancia border border-linea bg-pannello/85 px-3 py-2.5 text-left backdrop-blur'
+  const classi = riga
+    ? 'relative flex h-11 w-full items-center gap-4 border-b border-linea bg-barra/90 px-4 text-left backdrop-blur'
+    : 'relative flex w-full flex-col gap-2 rounded-plancia border border-linea bg-pannello/85 px-3 py-2.5 text-left backdrop-blur'
   return onApri ? (
     <div className={classi}>
       <button type="button" className="absolute inset-0 rounded-plancia" aria-label="Apri il diario di bordo" onClick={onApri} />

@@ -85,7 +85,7 @@ Porta l'interfaccia di M2-M3 nella struttura di [11](11-interfaccia.md), senza m
 
 Porta l'interfaccia su PC nella [plancia a finestre](11-interfaccia.md#pc--plancia-a-finestre). Sotto i 1024 px di larghezza il telefono resta com'è, a ogni step.
 
-- [ ] **F.1 Cornice PC**: da 1024 px in su barra di stato su una riga, niente colonna centrale, dock in basso al posto della barra a schede (le voci aprono ancora le pagine di oggi). *Si vede: lo schermo intero usato.*
+- [x] **F.1 Cornice PC**: da 1024 px in su barra di stato su una riga, niente colonna centrale, dock in basso al posto della barra a schede (le voci aprono ancora le pagine di oggi). *Si vede: lo schermo intero usato.* (`schermo.ts`, `Dock.tsx`, `StrisciaStato` con `riga`)
 - [ ] **F.2 Finestre**: componente `Finestra` con react-rnd (titolo, trascina, ridimensiona, _ riduci nel dock, × chiudi, primo piano, dentro lo schermo). **Qui, Scanner, Rotta** diventano tre finestre; un clic nello scanner riempie la Rotta. *Si gioca: navigazione a colpo d'occhio.*
 - [ ] **F.3 Archivio in finestra**: Diario, Wiki, Catalogo, Impostazioni come finestre; i link diretti (`#/wiki/…`, `#/rotta/…`, `#/diario`) aprono la finestra e l'indirizzo si pulisce; "Numeri ›" apre la Wiki. Pallini sulle voci del dock.
 - [ ] **F.4 Mappa come sfondo**: ⇆ scena/mappa, barretta dei filtri, clic su un corpo → Rotta.
