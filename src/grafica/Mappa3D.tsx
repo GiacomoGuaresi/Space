@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
-import { CATALOGO } from '../dominio/catalogo'
+import { CATALOGO, type Rarita } from '../dominio/catalogo'
 import type { PuntoMappa, Sosta } from '../dominio/mappa'
 import { stessoSettore, type Coordinate } from '../dominio/settore'
 import { COLORI_RARITA } from '../ui/colori'
@@ -12,8 +12,8 @@ interface Props {
   soste: readonly Sosta[]
   /** Dove si trova la nave, o dove arriverà: il centro della mappa. */
   nave: Coordinate
-  /** Il viaggio in corso, da dove a dove. */
-  rotta: { da: Coordinate; a: Coordinate } | null
+  /** Dove portare il centro della vista; `volta` cambia a ogni richiesta, anche verso lo stesso punto. */
+  centra: { su: Coordinate; volta: number } | null
   selezionato: Coordinate | null
   onSeleziona: (punto: Coordinate | null) => void
 }
@@ -21,9 +21,14 @@ interface Props {
 const COLORE_NAVE = '#ffb547'
 const COLORE_BASE = '#f2e6cc'
 
-/** Forme dei punti, disegnate dal fragment shader. */
-const PIENO = 0
-const ANELLO = 1
+/** Forme dei punti, disegnate dal fragment shader: la rarità si legge dalla forma e dal colore. */
+const FORMA = { cerchio: 0, rombo: 1, stella: 2, scintilla: 3, anello: 4, triangolo: 5 } as const
+const FORME_RARITA: Readonly<Record<Rarita, number>> = {
+  comune: FORMA.cerchio,
+  'non comune': FORMA.rombo,
+  rara: FORMA.stella,
+  leggendaria: FORMA.scintilla,
+}
 
 interface Motore {
   renderer: THREE.WebGLRenderer
@@ -39,16 +44,23 @@ interface Motore {
 }
 
 /**
- * Punti rotondi con dimensione e forma per vertice. Le coordinate sono
- * relative alla nave: lontano dalla base gli interi a 32 bit non entrano in
- * un float della GPU senza perdere i settori.
+ * Punti con dimensione, forma e riempimento per vertice: pieni o solo il
+ * contorno. Le coordinate sono relative alla nave: lontano dalla base gli
+ * interi a 32 bit non entrano in un float della GPU senza perdere i settori.
  */
-function creaPunti(posizioni: number[], colori: number[], dimensioni: number[], forme: number[]): THREE.Points {
+function creaPunti(
+  posizioni: number[],
+  colori: number[],
+  dimensioni: number[],
+  forme: number[],
+  pieni: number[] = forme.map(() => 1),
+): THREE.Points {
   const geometria = new THREE.BufferGeometry()
   geometria.setAttribute('position', new THREE.Float32BufferAttribute(posizioni, 3))
   geometria.setAttribute('aColore', new THREE.Float32BufferAttribute(colori, 3))
   geometria.setAttribute('aDimensione', new THREE.Float32BufferAttribute(dimensioni, 1))
   geometria.setAttribute('aForma', new THREE.Float32BufferAttribute(forme, 1))
+  geometria.setAttribute('aPieno', new THREE.Float32BufferAttribute(pieni, 1))
   const materiale = new THREE.ShaderMaterial({
     transparent: true,
     depthWrite: false,
@@ -59,25 +71,44 @@ function creaPunti(posizioni: number[], colori: number[], dimensioni: number[], 
       attribute vec3 aColore;
       attribute float aDimensione;
       attribute float aForma;
+      attribute float aPieno;
       uniform float uScala;
       varying vec3 vColore;
       varying float vForma;
+      varying float vPieno;
       void main() {
         vColore = aColore;
         vForma = aForma;
+        vPieno = aPieno;
         vec4 vista = modelViewMatrix * vec4(position, 1.0);
-        gl_PointSize = clamp(aDimensione * uScala / -vista.z, 3.0, 64.0);
+        gl_PointSize = clamp(aDimensione * uScala / -vista.z, 9.0, 64.0);
         gl_Position = projectionMatrix * vista;
       }
     `,
     fragmentShader: /* glsl */ `
       varying vec3 vColore;
       varying float vForma;
+      varying float vPieno;
+      // Quanto si è fuori dal bordo della forma: negativo dentro.
+      float bordo(vec2 p, float forma) {
+        float r = length(p);
+        float a = atan(p.y, p.x);
+        if (forma < 0.5) return r - 0.62;
+        if (forma < 1.5) return (abs(p.x) + abs(p.y)) - 0.8;
+        if (forma < 2.5) return r - 0.9 * (0.42 + 0.58 * pow(abs(cos(2.5 * (a - 1.5708))), 2.0));
+        if (forma < 3.5) return r - 0.95 * (0.22 + 0.78 * pow(abs(cos(2.0 * a)), 5.0));
+        if (forma < 4.5) return abs(r - 0.78) - 0.1;
+        return max(abs(p.x) * 0.866 + p.y * 0.5, -p.y) - 0.42;
+      }
       void main() {
-        float r = length(gl_PointCoord - 0.5) * 2.0;
-        float alfa = vForma < 0.5
-          ? 1.0 - smoothstep(0.55, 1.0, r)
-          : smoothstep(0.55, 0.7, r) * (1.0 - smoothstep(0.85, 1.0, r));
+        vec2 p = (gl_PointCoord - 0.5) * 2.0;
+        p.y = -p.y;
+        float d = bordo(p, vForma);
+        float morbido = 0.09;
+        // Vuoti: solo un contorno sottile appena dentro il bordo.
+        float alfa = vPieno > 0.5
+          ? 1.0 - smoothstep(-morbido, morbido, d)
+          : 1.0 - smoothstep(0.0, morbido, abs(d + 0.11) - 0.07);
         if (alfa < 0.01) discard;
         gl_FragColor = vec4(vColore, alfa);
       }
@@ -98,11 +129,12 @@ const relativa = (c: Coordinate, centro: Coordinate): [number, number, number] =
 const rgb = (esadecimale: string) => new THREE.Color(esadecimale).toArray() as number[]
 
 /**
- * La mappa dei settori scansionati in 3D: i corpi noti come punti colorati per
- * rarità (pieni se scoperti), le bolle delle soste, la nave e la base. Si
- * gira trascinando, si sposta con due dita, si tocca un punto per sceglierlo.
+ * La mappa dei settori scansionati in 3D (doc/11-interfaccia.md#mappa): i
+ * corpi noti con la forma e il colore della rarità (pieni se visitati), le
+ * bolle delle soste, la nave e la base madre. Si gira trascinando, si sposta
+ * con due dita, si tocca un punto per sceglierlo.
  */
-export function Mappa3D({ punti, soste, nave, rotta, selezionato, onSeleziona }: Props) {
+export function Mappa3D({ punti, soste, nave, centra, selezionato, onSeleziona }: Props) {
   const contenitore = useRef<HTMLDivElement>(null)
   const motore = useRef<Motore | null>(null)
   const seleziona = useRef(onSeleziona)
@@ -216,41 +248,31 @@ export function Mappa3D({ punti, soste, nave, rotta, selezionato, onSeleziona }:
     ;(griglia.material as THREE.Material).opacity = 0.6
     gruppo.add(griglia)
 
-    // I corpi: pieni e più grandi se scoperti.
+    // I corpi: la forma dice la rarità, pieni se visitati.
     const posizioni: number[] = []
     const colori: number[] = []
     const dimensioni: number[] = []
     const forme: number[] = []
+    const pieni: number[] = []
     for (const p of punti) {
+      const rarita = CATALOGO[p.tipo].rarita
       posizioni.push(...relativa(p.coordinate, nave))
-      colori.push(...rgb(COLORI_RARITA[CATALOGO[p.tipo].rarita].esadecimale).map((v) => (p.scoperto ? v : v * 0.75)))
-      dimensioni.push(p.scoperto ? 0.55 : 0.4)
-      forme.push(p.scoperto ? PIENO : ANELLO)
+      colori.push(...rgb(COLORI_RARITA[rarita].esadecimale))
+      dimensioni.push(rarita === 'comune' ? 0.5 : 0.6)
+      forme.push(FORME_RARITA[rarita])
+      pieni.push(p.scoperto ? 1 : 0)
     }
-    const corpi = creaPunti(posizioni, colori, dimensioni, forme)
+    const corpi = creaPunti(posizioni, colori, dimensioni, forme, pieni)
     gruppo.add(corpi)
 
-    // Nave e base.
+    // La nave e la base madre.
     const segni = creaPunti(
       [...relativa(nave, nave), ...relativa({ x: 0, y: 0, z: 0 }, nave)],
       [...rgb(COLORE_NAVE), ...rgb(COLORE_BASE)],
-      [0.8, 1.2],
-      [PIENO, ANELLO],
+      [0.75, 1.2],
+      [FORMA.triangolo, FORMA.anello],
     )
     gruppo.add(segni)
-
-    // Il viaggio in corso, dalla partenza all'arrivo.
-    if (rotta) {
-      const linea = new THREE.Line(
-        new THREE.BufferGeometry().setFromPoints([
-          new THREE.Vector3(...relativa(rotta.da, nave)),
-          new THREE.Vector3(...relativa(rotta.a, nave)),
-        ]),
-        new THREE.LineDashedMaterial({ color: COLORE_NAVE, dashSize: 0.3, gapSize: 0.2 }),
-      )
-      linea.computeLineDistances()
-      gruppo.add(linea)
-    }
 
     m.scena.add(gruppo)
     m.contenuto = gruppo
@@ -258,9 +280,19 @@ export function Mappa3D({ punti, soste, nave, rotta, selezionato, onSeleziona }:
     m.elenco = punti
     if (!stessoSettore(m.centro, nave)) {
       m.centro = nave
+      m.camera.position.sub(m.controlli.target)
       m.controlli.target.set(0, 0, 0)
     }
-  }, [punti, soste, nave, rotta])
+  }, [punti, soste, nave])
+
+  // Ricentra la vista su un punto, spostando la camera con lo stesso scarto.
+  useEffect(() => {
+    const m = motore.current
+    if (!m || !centra) return
+    const nuovo = new THREE.Vector3(...relativa(centra.su, m.centro))
+    m.camera.position.add(nuovo.clone().sub(m.controlli.target))
+    m.controlli.target.copy(nuovo)
+  }, [centra])
 
   // Il punto scelto: un anello più grande attorno.
   useEffect(() => {
@@ -272,7 +304,7 @@ export function Mappa3D({ punti, soste, nave, rotta, selezionato, onSeleziona }:
       m.selezione = null
     }
     if (!selezionato) return
-    m.selezione = creaPunti([...relativa(selezionato, nave)], rgb('#ffffff'), [1.3], [ANELLO])
+    m.selezione = creaPunti([...relativa(selezionato, nave)], rgb('#ffffff'), [1.3], [FORMA.anello])
     m.scena.add(m.selezione)
   }, [selezionato, nave])
 

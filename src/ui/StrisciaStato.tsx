@@ -56,7 +56,7 @@ export function StrisciaStato({ nave, viaggio, ora, onApri }: Props) {
       <div className="flex items-center gap-2">
         <Etichetta>Carb</Etichetta>
         <div
-          className="flex gap-0.5"
+          className="flex max-w-[130px] min-w-[60px] flex-1 gap-0.5"
           role="meter"
           aria-label="Carburante"
           aria-valuemin={0}
@@ -64,19 +64,19 @@ export function StrisciaStato({ nave, viaggio, ora, onApri }: Props) {
           aria-valuenow={Math.round(carburante * 10) / 10}
         >
           {segmenti.map((colore, i) => (
-            <span key={i} className={`h-1.5 w-[11px] ${colore}`} />
+            <span key={i} className={`h-1.5 flex-1 ${colore}`} />
           ))}
         </div>
-        <span className="cifre text-[12px]">
+        <span className="cifre shrink-0 text-[12px]">
           {numero(carburante, 1)}/{numero(nave.serbatoio, 1)}
         </span>
-        <span className="relative z-10 ml-auto flex items-center gap-1 text-right">
+        <span className="relative z-10 ml-auto flex items-center gap-1 text-right whitespace-nowrap">
           {volo ? (
             <Etichetta>Arrivo {orario(nave.dal, ora)}</Etichetta>
           ) : (
             <>
               <Etichetta>
-                Tetto {percentoTetto}%{pieno > 0 ? ` · ${numero(tetto, 1)} tra ${durata(pieno)}` : ''}
+                Tetto {percentoTetto}%{pieno > 0 ? ` · ${durata(pieno)}` : ''}
               </Etichetta>
               <Info
                 titolo="Ricarica"

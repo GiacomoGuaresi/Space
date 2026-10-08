@@ -1,5 +1,6 @@
 // Le pagine nell'indirizzo: `#/` il ponte (`#/rotta/x,y,z` con una meta già
-// scelta), `#/mappa` i settori scansionati, `#/catalogo` le scoperte,
+// scelta), `#/mappa` i settori scansionati, `#/altro` l'elenco delle altre
+// pagine, `#/catalogo` le scoperte,
 // `#/osservatorio/x,y,z` l'osservatorio libero (solo in sviluppo, doc/06).
 
 import { useSyncExternalStore } from 'react'
@@ -8,6 +9,7 @@ import { BASE, type Coordinate } from '../dominio/settore'
 export type Pagina =
   | { pagina: 'ponte'; meta?: Coordinate }
   | { pagina: 'mappa' }
+  | { pagina: 'altro' }
   | { pagina: 'catalogo' }
   | { pagina: 'osservatorio'; coordinate: Coordinate }
 
@@ -26,6 +28,7 @@ export function leggiPagina(hash: string): Pagina {
   const percorso = hash.replace(/^#\/?/, '')
   if (percorso === 'catalogo') return { pagina: 'catalogo' }
   if (percorso === 'mappa') return { pagina: 'mappa' }
+  if (percorso === 'altro') return { pagina: 'altro' }
   if (percorso.startsWith('rotta/')) {
     const meta = leggiCoordinate(percorso.slice('rotta/'.length))
     return meta ? { pagina: 'ponte', meta } : { pagina: 'ponte' }
@@ -45,6 +48,8 @@ export function indirizzo(pagina: Pagina): string {
     }
     case 'mappa':
       return '#/mappa'
+    case 'altro':
+      return '#/altro'
     case 'catalogo':
       return '#/catalogo'
     case 'osservatorio': {

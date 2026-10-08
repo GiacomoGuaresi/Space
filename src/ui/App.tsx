@@ -1,9 +1,11 @@
 import { Suspense, lazy, useMemo } from 'react'
-import { settore as calcolaSettore } from '../dominio/settore'
+import { TIPI } from '../dominio/catalogo'
+import { BASE, settore as calcolaSettore } from '../dominio/settore'
 import { Catalogo } from './Catalogo'
-import { usePagina, type Pagina } from './indirizzo'
+import { indirizzo, usePagina, type Pagina } from './indirizzo'
 import { Mappa } from './Mappa'
-import { Menu } from './Menu'
+import { Altro } from './Altro'
+import { Cornice } from './Cornice'
 import { Osservatorio } from './Osservatorio'
 import { Ponte } from './Ponte'
 import { Scheda } from './Scheda'
@@ -42,6 +44,25 @@ export function App() {
   if (pagina.pagina === 'catalogo') {
     return <Catalogo nave={nave} viaggio={viaggio} scarto={scarto} scoperte={scoperte} fondo={<FondoNave nave={nave} scarto={scarto} />} />
   }
+  if (pagina.pagina === 'altro') {
+    const tipi = new Set(scoperte.map((s) => s.tipo)).size
+    return (
+      <Cornice pagina="altro" nave={nave} viaggio={viaggio} scarto={scarto} fondo={<FondoNave nave={nave} scarto={scarto} />}>
+        <Altro
+          voci={[
+            {
+              titolo: 'Catalogo',
+              sottotitolo: `${scoperte.length} ${scoperte.length === 1 ? 'corpo' : 'corpi'} · ${tipi} tipi su ${TIPI.length}`,
+              pagina: { pagina: 'catalogo' },
+            },
+            ...(import.meta.env.DEV
+              ? [{ titolo: 'Osservatorio', sottotitolo: 'Solo in sviluppo: qualsiasi settore, senza nave', pagina: { pagina: 'osservatorio', coordinate: BASE } as const }]
+              : []),
+          ]}
+        />
+      </Cornice>
+    )
+  }
   if (pagina.pagina === 'mappa') {
     return <Mappa nave={nave} viaggio={viaggio} scarto={scarto} scoperte={scoperte} scansioni={scansioni} />
   }
@@ -78,7 +99,9 @@ function PaginaOsservatorio({ pagina }: { pagina: Extract<Pagina, { pagina: 'oss
             <h1 className="m-0 text-xs font-semibold tracking-[0.3em] text-testo-tenue">SPACE · OSSERVATORIO</h1>
             <Osservatorio settore={settore} />
           </div>
-          <Menu attuale="osservatorio" />
+          <a href={indirizzo({ pagina: 'altro' })} className="etichetta rounded-plancia border border-linea bg-pannello/85 px-3 py-2.5 no-underline">
+            Esci
+          </a>
         </header>
         <Pannello className="pointer-events-auto w-full max-w-sm self-start p-3.5">
           <Scheda settore={settore} />
