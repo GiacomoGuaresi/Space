@@ -35,6 +35,11 @@ export function coordinate({ x, y, z }: Coordinate): string {
   return `(${x}, ${y}, ${z})`
 }
 
+/** Le coordinate della plancia: "12 · −3 · 4", con il segno meno vero. */
+export function coordinatePlancia({ x, y, z }: Coordinate): string {
+  return [x, y, z].map((v) => String(v).replace('-', '−')).join(' · ')
+}
+
 export function numero(n: number, cifre = 0): string {
   return n.toLocaleString('it-IT', { maximumFractionDigits: cifre })
 }

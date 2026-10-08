@@ -72,7 +72,7 @@ Porta la navigazione di M2 sui valori v1 ([09](09-bilanciamento.md)).
 Porta l'interfaccia di M2-M3 nella struttura di [11](11-interfaccia.md), senza meccaniche nuove.
 
 - [x] **I.1 Stile plancia**: colori ambra come variabili (`src/index.css`), IBM Plex Sans e Mono nel pacchetto (funzionano offline), componenti di base in `src/ui/plancia.tsx` (pannello, etichetta, numero abbreviato, simbolo di rarità, bottoni, ⓘ con formula). *Si vede: la plancia ambra.*
-- [ ] **I.2 Striscia di stato** al posto di StatoNave: luogo o rotta, conto alla rovescia, carburante con il tetto di ricarica.
+- [x] **I.2 Striscia di stato** al posto di StatoNave: luogo o rotta, conto alla rovescia, carburante con il tetto di ricarica (`StrisciaStato.tsx`), dentro la cornice comune delle pagine (`Cornice.tsx`).
 - [ ] **I.3 Barra in basso**: Ponte (schede Qui, Scanner, Rotta), Mappa (`#/mappa`), Altro (Catalogo, Impostazioni). Rete e Nave compaiono con le loro meccaniche in M4.
 - [ ] **I.4 Diario di bordo** al posto del riepilogo: novità evidenziate, "Già visti", 30 giorni, raggruppamento; si apre dalla striscia, da Altro e da solo all'apertura se ci sono novità.
 - [ ] **I.5 Pallini** su Ponte, Mappa e Altro; **Impostazioni** con suoni e riduci movimento.

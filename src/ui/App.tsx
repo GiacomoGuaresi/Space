@@ -7,7 +7,9 @@ import { Menu } from './Menu'
 import { Osservatorio } from './Osservatorio'
 import { Ponte } from './Ponte'
 import { Scheda } from './Scheda'
-import { useNave } from './useNave'
+import { useNave, useOra } from './useNave'
+import { Pannello } from './plancia'
+import { inViaggio, type Nave } from '../dominio/navigazione'
 
 // three.js pesa: si carica a parte, così i comandi compaiono subito.
 const Scena = lazy(async () => ({ default: (await import('../grafica/Scena')).Scena }))
@@ -36,9 +38,12 @@ export function App() {
       </main>
     )
   }
-  if (pagina.pagina === 'catalogo') return <Catalogo scoperte={scoperte} />
+  const { nave, viaggio } = stato
+  if (pagina.pagina === 'catalogo') {
+    return <Catalogo nave={nave} viaggio={viaggio} scarto={scarto} scoperte={scoperte} fondo={<FondoNave nave={nave} scarto={scarto} />} />
+  }
   if (pagina.pagina === 'mappa') {
-    return <Mappa nave={stato.nave} viaggio={stato.viaggio} scoperte={scoperte} scansioni={scansioni} />
+    return <Mappa nave={nave} viaggio={viaggio} scarto={scarto} scoperte={scoperte} scansioni={scansioni} />
   }
   return (
     <Ponte
@@ -75,10 +80,22 @@ function PaginaOsservatorio({ pagina }: { pagina: Extract<Pagina, { pagina: 'oss
           </div>
           <Menu attuale="osservatorio" />
         </header>
-        <div className="pointer-events-auto w-full max-w-sm self-start">
+        <Pannello className="pointer-events-auto w-full max-w-sm self-start p-3.5">
           <Scheda settore={settore} />
-        </div>
+        </Pannello>
       </div>
     </main>
+  )
+}
+
+/** La scena del settore dove sta la nave, di fondo alle pagine che non ne hanno una propria. */
+function FondoNave({ nave, scarto }: { nave: Nave; scarto: number }) {
+  const volo = inViaggio(nave, useOra(scarto))
+  const { x, y, z } = nave.posizione
+  const settore = useMemo(() => calcolaSettore({ x, y, z }), [x, y, z])
+  return (
+    <Suspense fallback={null}>
+      <Scena settore={settore} inViaggio={volo} />
+    </Suspense>
   )
 }

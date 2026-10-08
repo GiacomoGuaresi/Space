@@ -1,7 +1,10 @@
 import { CATALOGO, NOMI_COLONIE, NOMI_RISORSE } from '../dominio/catalogo'
 import { NOMI_CLASSI, NOMI_GENERI_NEBULOSA, type Dettagli, type Settore } from '../dominio/settore'
+import type { ReactNode } from 'react'
+import { ricchezzaMedia } from '../dominio/catalogo'
 import { COLORI_RARITA } from './colori'
-import { coordinate } from './formato'
+import { coordinate, coordinatePlancia } from './formato'
+import { Etichetta, Info, SimboloRarita } from './plancia'
 
 
 const numero = (n: number, cifre = 0) => n.toLocaleString('it-IT', { maximumFractionDigits: cifre })
@@ -42,45 +45,60 @@ function righeDettagli(d: Dettagli): [string, string][] {
 /** La scheda del settore: cosa c'è, quanto vale, cosa ci si può fare. */
 export function Scheda({ settore }: { settore: Settore }) {
   const { corpo, coordinate, distanzaBase } = settore
-  const dove = `(${coordinate.x}, ${coordinate.y}, ${coordinate.z})`
-  const lontano = `${numero(distanzaBase, 1)} settori dalla base`
+  const dove = coordinatePlancia(coordinate)
+  const lontano = `${numero(distanzaBase, 1)} sett. dalla base madre`
 
   if (!corpo) {
     return (
-      <section className="rounded-plancia border border-linea/70 bg-pannello/75 p-3 backdrop-blur">
-        <h2 className="m-0 text-base font-semibold">{settore.base ? 'Base' : 'Spazio vuoto'}</h2>
-        <p className="m-0 mt-0.5 text-xs text-testo-tenue">
-          {dove} · {settore.base ? 'il punto di partenza' : lontano}
+      <div className="flex flex-col gap-1">
+        <Etichetta>{settore.base ? 'Base madre' : 'Nessun corpo'}</Etichetta>
+        <h2 className="m-0 text-xl font-semibold tracking-[0.1em] uppercase">{settore.base ? 'Base madre' : 'Spazio vuoto'}</h2>
+        <p className="m-0 text-[13px] text-testo-tenue">
+          <span className="cifre">{dove}</span> · {settore.base ? 'il punto di partenza' : lontano}
         </p>
-      </section>
+      </div>
     )
   }
 
-  const righe: [string, string][] = [
+  const media = ricchezzaMedia(distanzaBase)
+  const righe: [string, ReactNode][] = [
     ...righeDettagli(corpo.dettagli),
     ['Risorse', corpo.risorse.length ? corpo.risorse.map((r) => NOMI_RISORSE[r]).join(', ') : '—'],
-    ['Ricchezza', `×${numero(corpo.ricchezza, 2)}`],
+    [
+      'Ricchezza',
+      <span className="inline-flex items-center gap-1">
+        <span className="cifre">×{numero(corpo.ricchezza, 2)}</span>
+        <Info
+          titolo="Ricchezza"
+          formula={`media 1 + √(${numero(distanzaBase, 1)} / 100) = ${numero(media, 2)}, × ${numero(corpo.ricchezza / media, 2)} per questo corpo`}
+          esatto={numero(corpo.ricchezza, 4)}
+        />
+      </span>,
+    ],
     ['Colonia', corpo.colonia ? NOMI_COLONIE[corpo.colonia] : '—'],
   ]
   if (corpo.effetto) righe.push(['Effetto', corpo.effetto])
+  const { testo } = COLORI_RARITA[corpo.rarita]
 
   return (
-    <section className="rounded-plancia border border-linea/70 bg-pannello/75 p-3 backdrop-blur">
-      <div className="flex items-baseline justify-between gap-3">
-        <h2 className="m-0 text-base font-semibold">{corpo.nome}</h2>
-        <span className={`shrink-0 text-xs ${COLORI_RARITA[corpo.rarita].testo}`}>{corpo.rarita}</span>
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-1">
+        <Etichetta className={testo}>
+          <SimboloRarita rarita={corpo.rarita} /> {CATALOGO[corpo.tipo].nome} · {corpo.rarita}
+        </Etichetta>
+        <h2 className="m-0 text-xl font-semibold tracking-[0.1em] uppercase">{corpo.nome}</h2>
+        <p className="m-0 text-[13px] text-testo-tenue">
+          <span className="cifre">{dove}</span> · {lontano}
+        </p>
       </div>
-      <p className="m-0 mt-0.5 text-xs text-testo-tenue">
-        {CATALOGO[corpo.tipo].nome} · {dove} · {lontano}
-      </p>
-      <dl className="m-0 mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
+      <dl className="m-0 grid grid-cols-2 gap-x-3.5 gap-y-2.5 border-y border-separatore py-2.5">
         {righe.map(([voce, valore]) => (
-          <div key={voce} className="contents">
-            <dt className="text-testo-tenue">{voce}</dt>
-            <dd className="m-0">{valore}</dd>
+          <div key={voce} className="flex min-w-0 flex-col gap-0.5">
+            <dt className="etichetta">{voce}</dt>
+            <dd className="m-0 text-[13px]">{valore}</dd>
           </div>
         ))}
       </dl>
-    </section>
+    </div>
   )
 }

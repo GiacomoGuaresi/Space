@@ -1,14 +1,16 @@
-import { Suspense, lazy, useMemo, useState } from 'react'
+import { Suspense, lazy, useMemo, useState, type ReactNode } from 'react'
 import { Navigation } from 'lucide-react'
 import type { Scansione, Scoperta } from '../dati'
 import { CATALOGO } from '../dominio/catalogo'
 import { corpiNoti } from '../dominio/mappa'
-import { inViaggio, type Nave, type Viaggio } from '../dominio/navigazione'
+import { anteprima, inViaggio, type Nave, type Viaggio } from '../dominio/navigazione'
 import { distanza, settore, stessoSettore, type Coordinate } from '../dominio/settore'
-import { coordinate, orario, settori } from './formato'
-import { SimboloRarita } from './plancia'
+import { COLORI_RARITA } from './colori'
+import { Cornice } from './Cornice'
+import { coordinatePlancia, durata, numero, orario } from './formato'
 import { vaiA } from './indirizzo'
-import { Menu } from './Menu'
+import { BottonePrimario, Etichetta, Pannello, SimboloRarita } from './plancia'
+import { useOra } from './useNave'
 
 // three.js pesa: si carica a parte, come la scena del ponte.
 const Mappa3D = lazy(async () => ({ default: (await import('../grafica/Mappa3D')).Mappa3D }))
@@ -16,6 +18,7 @@ const Mappa3D = lazy(async () => ({ default: (await import('../grafica/Mappa3D')
 interface Props {
   nave: Nave
   viaggio: Viaggio | null
+  scarto: number
   scoperte: Scoperta[]
   scansioni: Scansione[]
 }
@@ -25,68 +28,74 @@ interface Props {
  * che lo scanner ha visto nelle soste, più le scoperte. Toccando un corpo se
  * ne vede la scheda e si può impostare la rotta.
  */
-export function Mappa({ nave, viaggio, scoperte, scansioni }: Props) {
-  const ora = new Date()
+export function Mappa({ nave, viaggio, scarto, scoperte, scansioni }: Props) {
+  const ora = useOra(scarto)
   const punti = useMemo(() => corpiNoti(scansioni, scoperte), [scansioni, scoperte])
   const [scelto, setScelto] = useState<Coordinate | null>(null)
   const punto = scelto && punti.find((p) => stessoSettore(p.coordinate, scelto))
   const scoperta = scelto && scoperte.find((s) => stessoSettore(s.coordinate, scelto))
   const volo = inViaggio(nave, ora)
   const rotta = useMemo(() => (viaggio ? { da: viaggio.da, a: viaggio.a } : null), [viaggio])
+  const prova = punto && !volo && !stessoSettore(punto.coordinate, nave.posizione) ? anteprima(nave, punto.coordinate, ora) : null
 
   return (
-    <main className="relative h-dvh overflow-hidden bg-black">
-      <Suspense fallback={null}>
-        <Mappa3D punti={punti} soste={scansioni} nave={nave.posizione} rotta={rotta} selezionato={scelto} onSeleziona={setScelto} />
-      </Suspense>
-      <div className="pointer-events-none absolute inset-0 flex flex-col justify-between gap-3 p-3 pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-        <header className="pointer-events-auto flex items-start justify-between gap-2">
-          <div className="rounded-plancia border border-linea/70 bg-pannello/75 px-3 py-2 backdrop-blur">
-            <h1 className="m-0 text-sm font-semibold">Mappa</h1>
-            <p className="m-0 text-[11px] text-testo-tenue">
-              {punti.length} {punti.length === 1 ? 'corpo noto' : 'corpi noti'} · {scansioni.length}{' '}
-              {scansioni.length === 1 ? 'sosta' : 'soste'}
-            </p>
+    <Cornice
+      pagina="mappa"
+      nave={nave}
+      viaggio={viaggio}
+      scarto={scarto}
+      fondo={
+        <Suspense fallback={null}>
+          <Mappa3D punti={punti} soste={scansioni} nave={nave.posizione} rotta={rotta} selezionato={scelto} onSeleziona={setScelto} />
+        </Suspense>
+      }
+    >
+      {punto ? (
+        <Pannello className="flex flex-col gap-2.5 p-3.5" etichetta="Corpo scelto">
+          <div className="flex items-baseline justify-between gap-2">
+            <Etichetta className={COLORI_RARITA[CATALOGO[punto.tipo].rarita].testo}>
+              <SimboloRarita rarita={CATALOGO[punto.tipo].rarita} /> {CATALOGO[punto.tipo].nome} · {CATALOGO[punto.tipo].rarita} ·{' '}
+              {scoperta ? 'visitato' : 'non visitato'}
+            </Etichetta>
+            <span className="cifre shrink-0 text-xs text-testo-tenue">{coordinatePlancia(punto.coordinate)}</span>
           </div>
-          <Menu attuale="mappa" />
-        </header>
-
-        <section className="pointer-events-auto w-full max-w-md self-start">
-          {punto ? (
-            <div className="flex flex-col gap-2 rounded-plancia border border-linea/70 bg-pannello/80 p-3 text-xs backdrop-blur">
-              <div className="flex items-start gap-2">
-                <SimboloRarita rarita={CATALOGO[punto.tipo].rarita} className="w-3 shrink-0 text-center" />
-                <div className="flex-1">
-                  <p className="m-0 text-sm">{scoperta ? settore(punto.coordinate).corpo?.nome : CATALOGO[punto.tipo].nome}</p>
-                  <p className="m-0 text-testo-tenue">
-                    {scoperta ? `${CATALOGO[punto.tipo].nome} · ` : ''}
-                    {coordinate(punto.coordinate)} · a {settori(distanza(nave.posizione, punto.coordinate))}
-                  </p>
-                  <p className="m-0 text-testo-tenue">
-                    {scoperta ? `Scoperto ${orario(scoperta.scoperta, ora)}` : 'Rilevato dallo scanner: il nome si scopre arrivando'}
-                  </p>
-                </div>
-              </div>
-              {!stessoSettore(punto.coordinate, nave.posizione) && (
-                <button
-                  type="button"
-                  disabled={volo}
-                  className="flex items-center justify-center gap-1.5 rounded-plancia bg-ambra px-3 py-2 text-sm font-medium text-su-ambra disabled:opacity-40"
-                  onClick={() => vaiA({ pagina: 'ponte', meta: punto.coordinate })}
-                >
-                  <Navigation className="size-4" aria-hidden="true" />
-                  {volo ? 'In viaggio: la rotta si sceglie all’arrivo' : 'Imposta la rotta'}
-                </button>
-              )}
-            </div>
-          ) : (
-            <p className="m-0 rounded-plancia border border-linea/70 bg-pannello/75 p-3 text-xs text-testo-tenue backdrop-blur">
-              Tocca un corpo per vederne la scheda. Pieni i corpi scoperti, ad anello quelli solo rilevati; la nave è blu,
-              la base bianca. Un quadretto della griglia è un settore.
-            </p>
+          {scoperta && (
+            <p className="m-0 text-base font-semibold tracking-[0.1em] uppercase">{settore(punto.coordinate).corpo?.nome}</p>
           )}
-        </section>
-      </div>
-    </main>
+          <div className="flex gap-5">
+            <Valore etichetta="Distanza">{numero(distanza(nave.posizione, punto.coordinate), 1)} sett.</Valore>
+            {prova && <Valore etichetta="Durata">{durata(prova.durata)}</Valore>}
+            {prova && <Valore etichetta="Carb">{numero(prova.consumo, 1)}</Valore>}
+          </div>
+          {prova?.fermata && prova.possibile && (
+            <p className="m-0 text-xs text-ambra">Il carburante non basta: ci si fermerà in {coordinatePlancia(prova.a)}.</p>
+          )}
+          <p className="m-0 text-xs text-testo-tenue">
+            {scoperta ? `Scoperto ${orario(scoperta.scoperta, ora)}` : 'Rilevato dallo scanner: il nome si scopre arrivando.'}
+          </p>
+          {!stessoSettore(punto.coordinate, nave.posizione) && (
+            <BottonePrimario disabled={volo} onClick={() => vaiA({ pagina: 'ponte', meta: punto.coordinate })}>
+              <Navigation className="size-4" aria-hidden="true" />
+              {volo ? 'In viaggio' : 'Imposta rotta'}
+            </BottonePrimario>
+          )}
+        </Pannello>
+      ) : (
+        <Pannello className="p-3 text-xs text-testo-tenue">
+          <span className="cifre text-testo">{punti.length}</span> {punti.length === 1 ? 'corpo noto' : 'corpi noti'} ·{' '}
+          <span className="cifre text-testo">{scansioni.length}</span> {scansioni.length === 1 ? 'sosta' : 'soste'}. Tocca un
+          corpo per la sua scheda: pieni i visitati, vuoti quelli solo rilevati. Un quadretto è un settore.
+        </Pannello>
+      )}
+    </Cornice>
+  )
+}
+
+function Valore({ etichetta, children }: { etichetta: string; children: ReactNode }) {
+  return (
+    <div className="flex flex-col gap-0.5">
+      <Etichetta>{etichetta}</Etichetta>
+      <span className="cifre text-[15px]">{children}</span>
+    </div>
   )
 }

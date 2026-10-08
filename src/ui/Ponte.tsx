@@ -3,12 +3,12 @@ import type { Scoperta } from '../dati'
 import { inViaggio, type Nave, type Viaggio } from '../dominio/navigazione'
 import { settore as calcolaSettore, type Coordinate } from '../dominio/settore'
 import { vaiA } from './indirizzo'
-import { Menu } from './Menu'
+import { Cornice } from './Cornice'
+import { Pannello } from './plancia'
 import { Riepilogo } from './Riepilogo'
 import { Rotta } from './Rotta'
 import { Scanner } from './Scanner'
 import { Scheda } from './Scheda'
-import { StatoNave } from './StatoNave'
 import type { Evento } from './riepilogo'
 import { useOra } from './useNave'
 
@@ -59,7 +59,7 @@ export function Ponte({ nave, viaggio, scarto, scoperte, meta: metaScelta, riepi
       type="button"
       role="tab"
       aria-selected={scheda === valore}
-      className="flex-1 rounded-plancia px-2 py-1.5 text-xs text-testo-tenue aria-selected:bg-fondo/70 aria-selected:text-testo"
+      className="etichetta border-b-2 border-transparent py-3 text-center aria-selected:border-ambra aria-selected:text-ambra"
       onClick={() => setScheda(valore)}
     >
       {testo}
@@ -67,57 +67,53 @@ export function Ponte({ nave, viaggio, scarto, scoperte, meta: metaScelta, riepi
   )
 
   return (
-    <main className="relative h-dvh overflow-hidden bg-black">
-      <Suspense fallback={null}>
-        <Scena settore={settore} inViaggio={volo} />
-      </Suspense>
-      <div className="pointer-events-none absolute inset-0 flex flex-col justify-between gap-3 p-3 pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-        <header className="pointer-events-auto flex items-start justify-between gap-2">
-          <StatoNave nave={nave} viaggio={viaggio} ora={ora} />
-          <Menu attuale="ponte" />
-        </header>
-
-        <section className="pointer-events-auto w-full max-w-md self-start">
-          {volo ? (
-            <div className="rounded-plancia border border-linea/70 bg-pannello/75 p-3 text-xs text-testo-tenue backdrop-blur">
-              Lo scanner e la rotta tornano disponibili all'arrivo. Il nome di quello che c'è laggiù lo scoprirai arrivando.
-            </div>
-          ) : (
-            <div className="flex flex-col gap-2">
-              <div className="flex gap-1 rounded-plancia border border-linea/70 bg-pannello/75 p-1 backdrop-blur" role="tablist">
-                {linguetta('qui', 'Qui')}
-                {linguetta('scanner', 'Scanner')}
-                {linguetta('rotta', 'Rotta')}
-              </div>
-              {scheda === 'qui' ? (
-                <Scheda settore={settore} />
-              ) : (
-                <div className="max-h-[42dvh] overflow-y-auto rounded-plancia border border-linea/70 bg-pannello/75 p-3 backdrop-blur">
-                  {scheda === 'scanner' ? (
-                    <Scanner centro={nave.posizione} livello={nave.scanner} scoperti={scoperti} onScegli={scegli} />
-                  ) : (
-                    <Rotta
-                      nave={nave}
-                      ora={ora}
-                      meta={meta}
-                      scoperti={scoperti}
-                      onMeta={setMeta}
-                      onParti={async (m) => {
-                        await onParti(m)
-                        setMeta(null)
-                        setScheda('qui')
-                        // La meta della mappa non serve più: l'indirizzo torna quello del ponte.
-                        if (metaScelta) vaiA({ pagina: 'ponte' })
-                      }}
-                    />
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-        </section>
-      </div>
+    <Cornice
+      pagina="ponte"
+      nave={nave}
+      viaggio={viaggio}
+      scarto={scarto}
+      fondo={
+        <Suspense fallback={null}>
+          <Scena settore={settore} inViaggio={volo} />
+        </Suspense>
+      }
+    >
+      {volo ? (
+        <Pannello className="p-3 text-xs text-testo-tenue">
+          Lo scanner e la rotta tornano disponibili all'arrivo. Il nome di quello che c'è laggiù lo scoprirai arrivando.
+        </Pannello>
+      ) : (
+        <Pannello className="flex max-h-[58dvh] flex-col">
+          <div className="grid grid-cols-3 border-b border-linea" role="tablist">
+            {linguetta('qui', 'Qui')}
+            {linguetta('scanner', 'Scanner')}
+            {linguetta('rotta', 'Rotta')}
+          </div>
+          <div className="min-h-0 overflow-y-auto p-3.5" role="tabpanel">
+            {scheda === 'qui' ? (
+              <Scheda settore={settore} />
+            ) : scheda === 'scanner' ? (
+              <Scanner centro={nave.posizione} livello={nave.scanner} scoperti={scoperti} onScegli={scegli} />
+            ) : (
+              <Rotta
+                nave={nave}
+                ora={ora}
+                meta={meta}
+                scoperti={scoperti}
+                onMeta={setMeta}
+                onParti={async (m) => {
+                  await onParti(m)
+                  setMeta(null)
+                  setScheda('qui')
+                  // La meta della mappa non serve più: l'indirizzo torna quello del ponte.
+                  if (metaScelta) vaiA({ pagina: 'ponte' })
+                }}
+              />
+            )}
+          </div>
+        </Pannello>
+      )}
       {riepilogo.length > 0 && <Riepilogo eventi={riepilogo} ora={ora} onChiudi={onChiudiRiepilogo} />}
-    </main>
+    </Cornice>
   )
 }
