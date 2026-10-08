@@ -15,7 +15,7 @@ import { CaricoAttuale } from './SchedaNave'
  * con i loro step (doc/06-roadmap.md).
  */
 export function struttureAttive(base: Insediamento): Struttura[] {
-  const tutte: Struttura[] = ['produzione', 'magazzino']
+  const tutte: Struttura[] = ['produzione', 'magazzino', 'cantiere']
   return base.tipo === 'madre' ? tutte : tutte.filter((s) => s !== 'cantiere' && s !== 'deposito')
 }
 
