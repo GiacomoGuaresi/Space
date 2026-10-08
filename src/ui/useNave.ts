@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { nave as datiNave, type Scansione, type Scoperta } from '../dati'
+import { nave as datiNave, type Raccolto, type Scansione, type Scoperta } from '../dati'
 import type { Nave, Viaggio } from '../dominio/navigazione'
 import type { Carico } from '../dominio/risorse'
 import type { Coordinate } from '../dominio/settore'
@@ -8,9 +8,7 @@ import { suona } from './suoni'
 import { GIORNI_DIARIO, letto, novita, segnaLetto, vociDiario } from './diario'
 
 export type StatoNave =
-  | { fase: 'carico' }
-  | { fase: 'errore'; messaggio: string }
-  | { fase: 'pronta'; nave: Nave; viaggio: Viaggio | null; carico: Carico }
+  { fase: 'carico' } | { fase: 'errore'; messaggio: string } | { fase: 'pronta'; nave: Nave; viaggio: Viaggio | null; carico: Carico }
 
 /**
  * L'ora del database vista dal dispositivo: l'orologio del telefono può essere
@@ -38,6 +36,7 @@ export function useNave() {
   const [scoperte, setScoperte] = useState<Scoperta[]>([])
   const [scansioni, setScansioni] = useState<Scansione[]>([])
   const [viaggi, setViaggi] = useState<Viaggio[]>([])
+  const [raccolti, setRaccolti] = useState<Raccolto[]>([])
   /** Cresce ogni volta che il diario va aperto da solo: all'apertura con delle novità. */
   const [aperturaDiario, setAperturaDiario] = useState(0)
 
@@ -48,10 +47,11 @@ export function useNave() {
       const remoto = await datiNave().stato()
       const dopo = Date.now()
       const dal = new Date(remoto.ora.getTime() - GIORNI_DIARIO * 24 * 3_600_000)
-      const [elenco, soste, recenti] = await Promise.all([
+      const [elenco, soste, recenti, presi] = await Promise.all([
         datiNave().scoperte(),
         datiNave().scansioni(),
         datiNave().viaggiDal(dal),
+        datiNave().raccolti(),
       ])
       // Lo scarto si misura a metà della richiesta: la risposta ha viaggiato.
       const scartoNuovo = remoto.ora.getTime() - (prima + dopo) / 2
@@ -60,9 +60,17 @@ export function useNave() {
       setScoperte(elenco)
       setScansioni(soste)
       setViaggi(recenti)
+      setRaccolti(presi)
 
       if (apriDiario) {
-        const voci = vociDiario({ viaggi: recenti, scoperte: elenco, scansioni: soste, nave: remoto.nave, ora: remoto.ora })
+        const voci = vociDiario({
+          viaggi: recenti,
+          scoperte: elenco,
+          scansioni: soste,
+          raccolti: presi,
+          nave: remoto.nave,
+          ora: remoto.ora,
+        })
         const fino = letto()
         // Alla primissima apertura non c'è nulla da raccontare: si parte da qui.
         if (!fino) segnaLetto(remoto.ora)
@@ -120,5 +128,5 @@ export function useNave() {
     [ricarica],
   )
 
-  return { stato, scarto, scoperte, scansioni, viaggi, aperturaDiario, parti, ricarica }
+  return { stato, scarto, scoperte, scansioni, viaggi, raccolti, aperturaDiario, parti, ricarica }
 }

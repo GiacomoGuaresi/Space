@@ -123,3 +123,27 @@ export function stivaPienaTra(carico: Carico, nave: Nave, ora: Date): Partial<Qu
   }
   return tra
 }
+
+/**
+ * Il bottino di una cometa (doc/09-bilanciamento.md#comete-e-relitti), preso
+ * all'arrivo una volta sola: Ghiaccio e, con la coda lunga, Idrogeno. Quello
+ * che non entra nella stiva si perde. Come `space.bottino_cometa` in SQL.
+ */
+export function bottinoCometa(corpo: Corpo | null): Partial<Quantita> | null {
+  if (corpo?.dettagli.tipo !== 'cometa') return null
+  const { ghiaccio, codaLunga, idrogeno } = BILANCIAMENTO.cometa
+  return {
+    ghiaccio: ghiaccio * corpo.ricchezza,
+    ...(corpo.dettagli.coda >= codaLunga ? { idrogeno: idrogeno * corpo.ricchezza } : {}),
+  }
+}
+
+/** Quanto di `bottino` entra davvero nella stiva, che ha già `quantita`. */
+export function inStiva(bottino: Partial<Quantita>, quantita: Quantita, capacita: number): Partial<Quantita> {
+  const preso: Partial<Quantita> = {}
+  for (const r of RISORSE) {
+    const q = bottino[r]
+    if (q) preso[r] = Math.max(0, Math.min(q, capacita - quantita[r]))
+  }
+  return preso
+}

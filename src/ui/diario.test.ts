@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { Scansione, Scoperta } from '../dati'
+import type { Raccolto, Scansione, Scoperta } from '../dati'
 import { NAVE_INIZIALE, type Nave, type Viaggio } from '../dominio/navigazione'
 import { piuVicino } from '../dominio/ricerca'
 import { BASE } from '../dominio/settore'
@@ -30,10 +30,18 @@ const viaggio = (parziale: Partial<Viaggio>): Viaggio => ({
   ...parziale,
 })
 
-const fonti = (p: { viaggi?: Viaggio[]; scoperte?: Scoperta[]; scansioni?: Scansione[]; nave?: Nave; ora: Date }) => ({
+const fonti = (p: {
+  viaggi?: Viaggio[]
+  scoperte?: Scoperta[]
+  scansioni?: Scansione[]
+  raccolti?: Raccolto[]
+  nave?: Nave
+  ora: Date
+}) => ({
   viaggi: [],
   scoperte: [],
   scansioni: [],
+  raccolti: [],
   nave: nave(),
   ...p,
 })
@@ -64,7 +72,9 @@ describe('vociDiario', () => {
   })
 
   it('dei rilevamenti tiene il primo di ogni tipo e i rari', () => {
-    const voci = vociDiario(fonti({ scansioni: [{ centro: { x: 1000, y: 0, z: 0 }, raggio: 6, livello: 21, istante: dopo(1) }], ora: dopo(2) }))
+    const voci = vociDiario(
+      fonti({ scansioni: [{ centro: { x: 1000, y: 0, z: 0 }, raggio: 6, livello: 21, istante: dopo(1) }], ora: dopo(2) }),
+    )
     const rilevati = voci.filter((v) => v.tipo === 'rilevato')
     expect(rilevati.length).toBeGreaterThan(0)
     const comuni = rilevati.filter((v) => /comune\)/.test(v.testo) && !/non comune/.test(v.testo))
@@ -101,8 +111,22 @@ describe('novità e gruppi', () => {
     const viaggi = [viaggio({}), viaggio({ partenza: dopo(6), arrivo: dopo(8), a: BASE, meta: BASE })]
     const gruppi = raggruppa(vociDiario(fonti({ viaggi, ora: dopo(9) })))
     expect(gruppi.map((g) => g.map((v) => v.tipo))).toEqual([['arrivo'], ['partenza'], ['arrivo'], ['partenza']])
-    const doppi = raggruppa([...vociDiario(fonti({ viaggi: [viaggio({})], ora: dopo(6) })).slice(0, 1), ...vociDiario(fonti({ viaggi: [viaggio({})], ora: dopo(6) })).slice(0, 1)])
+    const doppi = raggruppa([
+      ...vociDiario(fonti({ viaggi: [viaggio({})], ora: dopo(6) })).slice(0, 1),
+      ...vociDiario(fonti({ viaggi: [viaggio({})], ora: dopo(6) })).slice(0, 1),
+    ])
     expect(doppi).toHaveLength(1)
     expect(doppi[0]).toHaveLength(2)
+  })
+})
+
+describe('raccolti', () => {
+  it('raccontano il bottino entrato nella stiva', () => {
+    const voci = vociDiario(
+      fonti({ raccolti: [{ coordinate: { x: 3, y: 0, z: 0 }, istante: dopo(1), bottino: { ghiaccio: 15, idrogeno: 0 } }], ora: dopo(2) }),
+    )
+    expect(voci.map((v) => v.tipo)).toEqual(['raccolto'])
+    expect(voci[0].testo).toContain('+15 Ghiaccio')
+    expect(voci[0].testo).not.toContain('Idrogeno')
   })
 })

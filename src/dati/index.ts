@@ -8,7 +8,15 @@ import { NaveSupabase } from './nave'
 import { fetchPaziente } from './orologio'
 
 export type { Accesso, EsitoAccesso } from './accesso'
-export { ViaggioRifiutato, type MotivoRifiuto, type NaveSupabase, type Scansione, type Scoperta, type StatoRemoto } from './nave'
+export {
+  ViaggioRifiutato,
+  type MotivoRifiuto,
+  type NaveSupabase,
+  type Raccolto,
+  type Scansione,
+  type Scoperta,
+  type StatoRemoto,
+} from './nave'
 
 let connessione: { accesso: Accesso; nave: NaveSupabase } | null = null
 

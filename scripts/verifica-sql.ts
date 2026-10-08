@@ -13,7 +13,7 @@
 import { readFileSync } from 'node:fs'
 import { BILANCIAMENTO } from '../src/dominio/bilanciamento.ts'
 import { raggioScanner } from '../src/dominio/navigazione.ts'
-import { capacitaStiva, ritmoMano } from '../src/dominio/risorse.ts'
+import { bottinoCometa, capacitaStiva, ritmoMano } from '../src/dominio/risorse.ts'
 import { settore, tipoSettore } from '../src/dominio/settore.ts'
 import { sottotipo } from '../src/dominio/sottotipi.ts'
 
@@ -88,7 +88,7 @@ for (const tipo of ['asteroidi', 'nebulosa', 'gigante', 'sistema', 'stella', 'co
     const d = corpo.dettagli
     const sotto = d.tipo === 'asteroidi' || d.tipo === 'gigante' ? sottotipo(d) : null
     const pianeti = d.tipo === 'sistema' ? `'{${d.pianeti.map((p) => p.tipo).join(',')}}'` : 'null'
-    const ritmo = ritmoMano(corpo)
+    const ritmo = ritmoMano(corpo) ?? bottinoCometa(corpo)
     corpi.push(
       `(${c.x},${c.y},${c.z},${corpo.ricchezza},${sotto ? `'${sotto}'` : 'null'},${pianeti}::text[],${ritmo ? `'${JSON.stringify(ritmo)}'` : 'null'}::jsonb)`,
     )
@@ -99,14 +99,15 @@ const esitoCorpi = await interroga(`
     count(*) filter (where space.ricchezza(x, y, z) <> ricchezza) as ricchezze_diverse,
     count(*) filter (where space.sottotipo(x, y, z) is distinct from sotto) as sottotipi_diversi,
     count(*) filter (where space.pianeti(x, y, z) is distinct from pianeti) as pianeti_diversi,
-    -- jsonb tiene 15 cifre significative: i ritmi si confrontano a meno di un miliardesimo.
+    -- Ritmi della raccolta a mano, o bottino delle comete. jsonb tiene 15 cifre
+    -- significative: si confrontano a meno di un miliardesimo.
     count(*) filter (
-      where (space.ritmo_mano(x, y, z) is null) <> (ritmo is null)
-        or (select array_agg(k order by k) from jsonb_object_keys(space.ritmo_mano(x, y, z)) k)
+      where (coalesce(space.ritmo_mano(x, y, z), space.bottino_cometa(x, y, z)) is null) <> (ritmo is null)
+        or (select array_agg(k order by k) from jsonb_object_keys(coalesce(space.ritmo_mano(x, y, z), space.bottino_cometa(x, y, z))) k)
           is distinct from (select array_agg(k order by k) from jsonb_object_keys(ritmo) k)
         or exists (
           select 1 from jsonb_each_text(ritmo) e
-          where abs((space.ritmo_mano(x, y, z) ->> e.key)::double precision - e.value::double precision) > 1e-9 * e.value::double precision
+          where abs((coalesce(space.ritmo_mano(x, y, z), space.bottino_cometa(x, y, z)) ->> e.key)::double precision - e.value::double precision) > 1e-9 * e.value::double precision
         )
     ) as ritmi_diversi,
     count(*) as totale

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { TipoCorpo } from './catalogo'
 import type { Nave } from './navigazione'
 import { BILANCIAMENTO } from './bilanciamento'
-import { caricoOra, capacitaStiva, mixCorpo, nessuna, ritmoMano, stivaPienaTra } from './risorse'
+import { bottinoCometa, caricoOra, capacitaStiva, inStiva, mixCorpo, nessuna, ritmoMano, stivaPienaTra } from './risorse'
 import { BASE, settore, tipoSettore, type Coordinate } from './settore'
 
 /** Il primo settore di un tipo lungo l'asse x. */
@@ -70,5 +70,19 @@ describe('mix e raccolta a mano', () => {
     const dove = primo('asteroidi')
     const carico = { quantita: { ...nessuna(), metallo: 40 }, dal: t0 }
     expect(caricoOra(carico, nave(dove), ore(10)).metallo).toBe(40)
+  })
+})
+
+describe('comete', () => {
+  it('danno Ghiaccio, e Idrogeno solo con la coda lunga', () => {
+    const corpo = settore(primo('cometa')).corpo!
+    const bottino = bottinoCometa(corpo)!
+    expect(bottino.ghiaccio).toBeCloseTo(200 * corpo.ricchezza, 9)
+    expect('idrogeno' in bottino).toBe(corpo.dettagli.tipo === 'cometa' && corpo.dettagli.coda >= 0.8)
+    expect(bottinoCometa(settore(primo('asteroidi')).corpo)).toBeNull()
+  })
+
+  it('quello che non entra si perde', () => {
+    expect(inStiva({ ghiaccio: 300, idrogeno: 10 }, { ...nessuna(), ghiaccio: 5 }, 25)).toEqual({ ghiaccio: 20, idrogeno: 10 })
   })
 })

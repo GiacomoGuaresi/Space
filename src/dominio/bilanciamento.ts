@@ -119,6 +119,13 @@ export const BILANCIAMENTO = {
     /** La raccolta a mano, in sosta, vale tanti estrattori di livello 1 su quel corpo. */
     mano: 3,
   },
+  cometa: {
+    /** Arrivando su una cometa, una volta sola: tanto Ghiaccio per la ricchezza… */
+    ghiaccio: 200,
+    /** …e, se la coda è lunga almeno così, anche Idrogeno. */
+    codaLunga: 0.8,
+    idrogeno: 50,
+  },
   /**
    * Come si divide la produzione di un corpo tra le risorse, per sottotipo
    * (doc/09-bilanciamento.md#produzione). Un sistema planetario segue il

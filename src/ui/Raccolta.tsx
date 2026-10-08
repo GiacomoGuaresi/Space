@@ -1,10 +1,10 @@
 import { useContext } from 'react'
 import { BILANCIAMENTO } from '../dominio/bilanciamento'
 import type { Nave } from '../dominio/navigazione'
-import { mixCorpo, RISORSE, ritmoMano, stivaPienaTra } from '../dominio/risorse'
+import { bottinoCometa, mixCorpo, RISORSE, ritmoMano, stivaPienaTra } from '../dominio/risorse'
 import { NOMI_RISORSE } from '../dominio/catalogo'
-import { settore } from '../dominio/settore'
-import { durata, numero } from './formato'
+import { settore, stessoSettore } from '../dominio/settore'
+import { durata, numero, orario } from './formato'
 import { Etichetta, Info, Numero } from './plancia'
 import { CaricoAttuale } from './SchedaNave'
 
@@ -17,6 +17,31 @@ export function Raccolta({ nave, ora }: { nave: Nave; ora: Date }) {
   const corpo = settore(nave.posizione).corpo
   const ritmi = ritmoMano(corpo)
   const mix = mixCorpo(corpo)
+  const cometa = bottinoCometa(corpo)
+  if (bordo && cometa && nave.dal <= ora) {
+    const preso = bordo.raccolti.find((r) => stessoSettore(r.coordinate, nave.posizione))
+    return (
+      <section aria-label="Bottino della cometa" className="mt-3 flex flex-col gap-1.5 border-t border-separatore pt-3">
+        <h3 className="etichetta m-0 text-ambra!">Bottino della cometa</h3>
+        <p className="m-0 text-[13px]">
+          {preso
+            ? `Preso ${orario(preso.istante, ora)}: ${
+                RISORSE.filter((r) => (preso.bottino[r] ?? 0) > 0)
+                  .map((r) => `+${numero(preso.bottino[r]!, 0)} ${NOMI_RISORSE[r]}`)
+                  .join(', ') || 'la stiva era già piena'
+              }.`
+            : 'Si prende arrivando: aggiorna tra un attimo.'}
+        </p>
+        <p className="m-0 text-xs text-testo-tenue">
+          Una volta sola:{' '}
+          {RISORSE.filter((r) => cometa[r])
+            .map((r) => `${numero(cometa[r]!, 0)} ${NOMI_RISORSE[r]}`)
+            .join(' e ')}
+          , fin dove entra nella stiva.
+        </p>
+      </section>
+    )
+  }
   if (!bordo || !corpo || !ritmi || !mix || nave.dal > ora) return null
   const tra = stivaPienaTra(bordo.carico, nave, ora)
   const { mano, ritmo } = BILANCIAMENTO.produzione
@@ -46,7 +71,9 @@ export function Raccolta({ nave, ora }: { nave: Nave; ora: Date }) {
                 <Numero valore={bordo.quantita[r]} />/<Numero valore={bordo.capacita} />
               </span>
             </div>
-            <span className="text-right text-xs text-testo-tenue">{tra[r]! > 0 ? `piena tra ${durata(tra[r]! * 3_600_000)}` : 'piena'}</span>
+            <span className="text-right text-xs text-testo-tenue">
+              {tra[r]! > 0 ? `piena tra ${durata(tra[r]! * 3_600_000)}` : 'piena'}
+            </span>
           </li>
         ))}
       </ul>

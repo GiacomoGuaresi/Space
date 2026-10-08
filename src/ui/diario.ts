@@ -3,22 +3,15 @@
 // stato della nave. Non si salva nulla, salvo fin dove l'hai già letto.
 
 import { createContext, useSyncExternalStore } from 'react'
-import type { Scansione, Scoperta } from '../dati'
+import type { Raccolto, Scansione, Scoperta } from '../dati'
+import { NOMI_RISORSE } from '../dominio/catalogo'
+import { RISORSE } from '../dominio/risorse'
 import { CATALOGO, type TipoCorpo } from '../dominio/catalogo'
-import {
-  carburanteOra,
-  inViaggio,
-  ricaricaQui,
-  scansione,
-  tettoQui,
-  tipiRilevabili,
-  type Nave,
-  type Viaggio,
-} from '../dominio/navigazione'
+import { carburanteOra, inViaggio, ricaricaQui, scansione, tettoQui, tipiRilevabili, type Nave, type Viaggio } from '../dominio/navigazione'
 import { BASE, distanza, settore, stessoSettore, type Coordinate } from '../dominio/settore'
 import { coordinatePlancia, numero, orario } from './formato'
 
-export type TipoVoce = 'partenza' | 'arrivo' | 'sosta' | 'ricarica' | 'rilevato' | 'scoperto'
+export type TipoVoce = 'partenza' | 'arrivo' | 'sosta' | 'ricarica' | 'rilevato' | 'scoperto' | 'raccolto'
 
 export interface Voce {
   quando: Date
@@ -42,6 +35,7 @@ export const NOMI_VOCI: Readonly<Record<TipoVoce, { uno: string; tanti: string }
   ricarica: { uno: 'Nave', tanti: 'ricariche' },
   rilevato: { uno: 'Rilevato', tanti: 'corpi rilevati' },
   scoperto: { uno: 'Scoperta', tanti: 'nuovi nel catalogo' },
+  raccolto: { uno: 'Raccolta', tanti: 'raccolte' },
 }
 
 /** Come si chiama un settore nel diario: il nome del corpo, la base madre o le coordinate. */
@@ -58,6 +52,7 @@ interface Fonti {
   viaggi: readonly Viaggio[]
   scoperte: readonly Scoperta[]
   scansioni: readonly Scansione[]
+  raccolti: readonly Raccolto[]
   nave: Nave
   ora: Date
 }
@@ -125,8 +120,7 @@ function vociScoperte(scoperte: readonly Scoperta[]): Voce[] {
     return {
       quando: s.scoperta,
       tipo: 'scoperto',
-      testo:
-        primi.get(s.tipo) === s ? `Primo nel catalogo di questo tipo: ${nome}, ${tipo}.` : `Nuovo nel catalogo: ${nome}, ${tipo}.`,
+      testo: primi.get(s.tipo) === s ? `Primo nel catalogo di questo tipo: ${nome}, ${tipo}.` : `Nuovo nel catalogo: ${nome}, ${tipo}.`,
       breve: nome,
     }
   })
@@ -163,14 +157,33 @@ function vociRilevamenti(scansioni: readonly Scansione[]): Voce[] {
   return voci
 }
 
+/** I bottini presi all'arrivo, con quello che è entrato nella stiva. */
+function vociRaccolti(raccolti: readonly Raccolto[]): Voce[] {
+  return raccolti.map((r) => {
+    const dove = luogo(r.coordinate)
+    const preso = RISORSE.filter((k) => (r.bottino[k] ?? 0) > 0)
+      .map((k) => `+${numero(r.bottino[k]!, 0)} ${NOMI_RISORSE[k]}`)
+      .join(', ')
+    return {
+      quando: r.istante,
+      tipo: 'raccolto',
+      testo: preso
+        ? `Bottino di ${dove.breve}: ${preso}. Quello che non entrava nella stiva è perso.`
+        : `Bottino di ${dove.breve}: la stiva era già piena.`,
+      breve: dove.breve,
+    }
+  })
+}
+
 /** Tutte le voci degli ultimi 30 giorni già successe, dalla più recente. */
-export function vociDiario({ viaggi, scoperte, scansioni, nave, ora }: Fonti): Voce[] {
+export function vociDiario({ viaggi, scoperte, scansioni, raccolti, nave, ora }: Fonti): Voce[] {
   const dal = ora.getTime() - GIORNI_DIARIO * 24 * ORA_MS
   return [
     ...vociViaggi(viaggi, ora),
     ...vociRicarica(nave, ora),
     ...vociScoperte(scoperte),
     ...vociRilevamenti(scansioni),
+    ...vociRaccolti(raccolti),
   ]
     .filter((v) => v.quando.getTime() >= dal && v.quando <= ora)
     .sort((a, b) => b.quando.getTime() - a.quando.getTime())

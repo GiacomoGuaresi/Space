@@ -33,6 +33,13 @@ export interface Scansione {
   istante: Date
 }
 
+/** Un corpo a raccolta una tantum già preso (una cometa), con quello che è entrato nella stiva. */
+export interface Raccolto {
+  coordinate: Coordinate
+  istante: Date
+  bottino: Partial<Record<Risorsa, number>>
+}
+
 /** I rifiuti di `viaggia`, con il loro codice. */
 export type MotivoRifiuto = 'in_viaggio' | 'stesso_settore' | 'carburante_insufficiente'
 
@@ -155,6 +162,17 @@ export class NaveSupabase {
       coordinate: { x: r.x, y: r.y, z: r.z },
       tipo: r.tipo,
       scoperta: new Date(r.scoperta),
+    }))
+  }
+
+  /** I corpi a raccolta una tantum già presi. */
+  async raccolti(): Promise<Raccolto[]> {
+    const { data, error } = await this.client.from('raccolto').select('x, y, z, istante, bottino')
+    if (error) throw fallita('Raccolti non letti', error)
+    return (data as { x: number; y: number; z: number; istante: string; bottino: Partial<Record<Risorsa, number>> }[]).map((r) => ({
+      coordinate: { x: r.x, y: r.y, z: r.z },
+      istante: new Date(r.istante),
+      bottino: r.bottino,
     }))
   }
 

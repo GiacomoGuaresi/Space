@@ -39,15 +39,15 @@ const Scena = lazy(async () => ({ default: (await import('../grafica/Scena')).Sc
 /** Le pagine dell'app (ui/indirizzo.ts): ponte, mappa, altro, diario, catalogo e l'osservatorio in sviluppo. */
 export function App() {
   const pagina = usePagina()
-  const { stato, scarto, scoperte, scansioni, viaggi, aperturaDiario, parti, ricarica } = useNave()
+  const { stato, scarto, scoperte, scansioni, viaggi, raccolti, aperturaDiario, parti, ricarica } = useNave()
   const ora = useOra(scarto)
 
   // Il diario si ricalcola al minuto: le voci nuove (un arrivo, una ricarica) compaiono da sole.
   const minuto = Math.floor(ora.getTime() / 60_000)
   const nave = stato.fase === 'pronta' ? stato.nave : null
   const voci = useMemo(
-    () => (nave ? vociDiario({ viaggi, scoperte, scansioni, nave, ora: new Date(minuto * 60_000) }) : []),
-    [viaggi, scoperte, scansioni, nave, minuto],
+    () => (nave ? vociDiario({ viaggi, scoperte, scansioni, raccolti, nave, ora: new Date(minuto * 60_000) }) : []),
+    [viaggi, scoperte, scansioni, raccolti, nave, minuto],
   )
   // Su PC (doc/11-interfaccia.md#pc--plancia-a-finestre) le pagine sono finestre.
   const pc = usePC()
@@ -73,8 +73,10 @@ export function App() {
   const secondo = Math.floor(ora.getTime() / 1000)
   const bordo = useMemo(
     () =>
-      carico && nave ? { carico, quantita: caricoOra(carico, nave, new Date(secondo * 1000)), capacita: capacitaStiva(nave.stiva) } : null,
-    [carico, nave, secondo],
+      carico && nave
+        ? { carico, quantita: caricoOra(carico, nave, new Date(secondo * 1000)), capacita: capacitaStiva(nave.stiva), raccolti }
+        : null,
+    [carico, nave, secondo, raccolti],
   )
   const ultima = useMemo(() => ({ voce: voci[0] ?? null, nuove: daLeggere }), [voci, daLeggere])
 

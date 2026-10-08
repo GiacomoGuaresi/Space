@@ -1,4 +1,5 @@
 import { createContext, type ReactNode } from 'react'
+import type { Raccolto } from '../dati'
 import { raggioScanner, type Nave } from '../dominio/navigazione'
 import { capacitaStiva, RISORSE, type Carico, type Quantita } from '../dominio/risorse'
 import { NOMI_RISORSE } from '../dominio/catalogo'
@@ -7,7 +8,9 @@ import { numero } from './formato'
 import { Etichetta, Info, Numero, Pannello } from './plancia'
 
 /** Quello che c'è a bordo adesso, raccolta a mano compresa: lo calcola l'App ogni secondo. */
-export const CaricoAttuale = createContext<{ carico: Carico; quantita: Quantita; capacita: number } | null>(null)
+export const CaricoAttuale = createContext<{ carico: Carico; quantita: Quantita; capacita: number; raccolti: readonly Raccolto[] } | null>(
+  null,
+)
 
 /**
  * La Nave (doc/11-interfaccia.md#nave): le statistiche e la stiva, una barra

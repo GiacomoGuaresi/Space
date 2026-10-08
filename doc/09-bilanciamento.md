@@ -162,7 +162,7 @@ Un estrattore su un buco nero a ~100 settori ne dà ~58 al giorno.
 
 Una volta **per giocatore**; l'esito viene dal seed del settore, quindi è lo stesso per tutti.
 
-- **Cometa**: `200 × ricchezza` di Ghiaccio (più un po' di Idrogeno se la coda è lunga), fino a riempire la stiva; il resto si perde.
+- **Cometa**: `200 × ricchezza` di Ghiaccio, più `50 × ricchezza` di Idrogeno se la coda è almeno 0,8, fino a riempire la stiva; il resto si perde.
 - **Relitto**: `30 × ricchezza` di Materia oscura e un carico di risorse pari al 50 % della stiva, con la ricetta del gradino raggiunto. Nel **30 %** dei casi c'è anche un **progetto**: la prossima ricerca costa la metà. Con *Recupero* il bottino raddoppia e il progetto esce nel 50 % dei casi.
 
 ## Traguardi

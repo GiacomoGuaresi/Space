@@ -95,6 +95,11 @@ language sql immutable parallel safe set search_path = '' as $$
     },
     "mano": 3
   },
+  "cometa": {
+    "ghiaccio": 200,
+    "codaLunga": 0.8,
+    "idrogeno": 50
+  },
   "mix": {
     "asteroidi": {
       "metallica": {

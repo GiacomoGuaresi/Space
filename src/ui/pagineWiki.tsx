@@ -120,6 +120,7 @@ const GUIDA: PaginaWiki[] = [
           allontanandosi dalla base. Un sistema planetario dà la media dei suoi pianeti.
         </P>
         <P>Ripartendo, quello che hai raccolto resta a bordo.</P>
+        <P>Le comete si raccolgono arrivando, una volta sola: quello che non entra nella stiva si perde.</P>
       </>
     ),
     numeri: () => {
@@ -135,6 +136,10 @@ const GUIDA: PaginaWiki[] = [
         [
           'Pianeti',
           `rocciosi ${mix(pianeti.roccioso)} · oceanici ${mix(pianeti.oceanico)} · ghiacciati ${mix(pianeti.ghiacciato)} · gassosi ${mix(pianeti.gassoso)}`,
+        ],
+        [
+          'Cometa',
+          `${BILANCIAMENTO.cometa.ghiaccio} × ricchezza di Ghiaccio, più ${BILANCIAMENTO.cometa.idrogeno} × ricchezza di Idrogeno se la coda è almeno ${Math.round(BILANCIAMENTO.cometa.codaLunga * 100)} %`,
         ],
       ]
     },
