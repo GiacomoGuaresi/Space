@@ -2,9 +2,9 @@
 
 Piccolo gioco di esplorazione spaziale in tempo reale, nello spirito di OGame, che si gioca dal browser. Lo spazio è una griglia infinita di **settori a tre coordinate**: ogni settore genera da solo, a partire dalle coordinate, il corpo celeste che contiene, il suo nome e la sua grafica. La nave parte dalla base in `(0, 0, 0)`, e ogni viaggio richiede **tempo reale** e carburante.
 
-Si esplora, si raccolgono risorse, si fondano colonie che producono fino a riempire il magazzino (poi bisogna tornare a svuotarle) e si potenziano nave e base.
+Si esplora, si fondano basi ed estrattori che producono fino a riempire il magazzino, si fanno i giri di raccolta e si potenzia la nave, che è il centro della progressione. Le ricerche sbloccano strutture come il ponte di curvatura, che collega le basi. I rari compaiono ad anelli allontanandosi da casa. La progressione dura più di un anno e il gioco non finisce: ci sono solo traguardi.
 
-> **Stato: M2 completato.** Online su [giacomoguaresi.github.io/Space](https://giacomoguaresi.github.io/Space/): dal **ponte di comando** si scelgono le mete con lo scanner, si parte e si aspetta in tempo reale; il **catalogo** raccoglie le scoperte. Risorse e colonie arrivano con M3. Domande aperte in [Q&A.md](Q&A.md).
+> **Stato: M2 completato.** Online su [giacomoguaresi.github.io/Space](https://giacomoguaresi.github.io/Space/): dal **ponte di comando** si scelgono le mete con lo scanner, si parte e si aspetta in tempo reale; il **catalogo** raccoglie le scoperte. Prossimo: M3, la navigazione con i valori definitivi, poi risorse e colonie ([roadmap](doc/06-roadmap.md)). Domande aperte in [Q&A.md](Q&A.md).
 
 ## Per iniziare
 
@@ -19,7 +19,7 @@ npm test
 npm run build
 ```
 
-`npm run icone` rigenera le icone della PWA da `public/icona.svg`; il risultato è versionato. `npm run verifica-sql` controlla che il database calcoli l'universo come il browser (doc/08). In sviluppo c'è anche l'osservatorio libero, su `#/osservatorio`. A ogni push su `main` il workflow [`pubblica.yml`](.github/workflows/pubblica.yml) esegue i test e pubblica su GitHub Pages.
+`npm run icone` rigenera le icone della PWA da `public/icona.svg`; il risultato è versionato. `npm run verifica-sql` controlla che il database calcoli l'universo come il browser (doc/08). `python3 sim/economia.py` simula un anno di gioco con i valori di [doc/09](doc/09-bilanciamento.md). In sviluppo c'è anche l'osservatorio libero, su `#/osservatorio`. A ogni push su `main` il workflow [`pubblica.yml`](.github/workflows/pubblica.yml) esegue i test e pubblica su GitHub Pages.
 
 ## In breve
 
@@ -34,11 +34,13 @@ npm run build
 | Documento | Contenuto |
 |---|---|
 | [doc/01-visione.md](doc/01-visione.md) | Scopo, origine, principi, cosa non è |
-| [doc/02-meccaniche.md](doc/02-meccaniche.md) | Viaggio, carburante, scoperte, risorse, colonie, potenziamenti |
+| [doc/02-meccaniche.md](doc/02-meccaniche.md) | Pilastri, nave, viaggio, scanner, risorse, insediamenti, strutture, ricerche, Materia oscura |
 | [doc/03-universo.md](doc/03-universo.md) | Coordinate, seed, catalogo dei corpi celesti, grafica |
 | [doc/04-architettura.md](doc/04-architettura.md) | Stack, regole nel database, convivenza con le altre app |
 | [doc/05-modello-dati.md](doc/05-modello-dati.md) | Tabelle previste (bozza) |
-| [doc/06-roadmap.md](doc/06-roadmap.md) | Macro step di sviluppo |
+| [doc/06-roadmap.md](doc/06-roadmap.md) | Macro step e step piccoli di sviluppo |
 | [doc/07-decisioni.md](doc/07-decisioni.md) | Registro delle decisioni |
 | [doc/08-deploy.md](doc/08-deploy.md) | Pubblicazione, variabili, configurazione di Supabase |
+| [doc/09-bilanciamento.md](doc/09-bilanciamento.md) | Formule, valori, ritmo atteso; simulazioni in [`sim/`](sim/) |
+| [doc/10-ricerche.md](doc/10-ricerche.md) | Albero tecnologico (42 ricerche) |
 | [Q&A.md](Q&A.md) | Domande ancora aperte |

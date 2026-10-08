@@ -1,12 +1,21 @@
 # 06 · Roadmap
 
-Lo sviluppo procede per **macro step stabili**: ognuno si chiude pubblicato e giocabile. Dentro ogni macro step ci sono step piccoli, come nelle altre app, e ognuno si chiude con test verdi, build riuscita, prova in locale e commit. Si passa al successivo solo dopo la prova.
+## Come si procede
 
-## Fase 0 · Progettazione ← *in corso*
+Sviluppo **agile a step piccoli**. Ogni step:
+
+- è **piccolo**, da una a tre sessioni di lavoro, e aggiunge **una cosa sola** che si vede o si gioca;
+- si chiude con test verdi, `npm run verifica-sql` (quando tocca il database), build, prova in locale, commit e push. **Il push pubblica**, quindi ogni step è un rilascio;
+- **non lascia il gioco rotto**: una meccanica a metà resta nascosta o disattivata finché non è giocabile;
+- aggiorna `doc/` se cambia una regola, e il registro [07](07-decisioni.md) se cambia una decisione.
+
+I macro step (M3, M4…) raggruppano gli step per tema. Si chiudono con una riga in "Si consegna" e la documentazione allineata. Regole e numeri vengono da [02](02-meccaniche.md), [09](09-bilanciamento.md) e [10](10-ricerche.md).
+
+## Fase 0 · Progettazione ✅
 - [x] Bozza della documentazione
 - [x] Catalogo dei corpi celesti e macro step
-- [ ] Giri di Q&A fino a nessuna domanda aperta
-- [ ] Documentazione senza punti aperti: valori numerici, interfaccia, sicurezza
+- [x] Giri di Q&A: meccaniche a lungo termine, numeri e simulazioni (giri 2-20, trasferiti il 2026-10-08)
+- [x] Documentazione senza punti aperti sulle meccaniche; interfaccia e sicurezza si decidono step per step
 
 ## M0 · Fondamenta ✅
 - [x] `git init`, LICENSE MIT, repository pubblico `Space` su GitHub
@@ -42,29 +51,94 @@ Lo sviluppo procede per **macro step stabili**: ognuno si chiude pubblicato e gi
 
 **Si consegna**: il gioco di esplorazione in tempo reale.
 
-## M3 · Risorse e colonie ← *prossimo*
-- [ ] Stiva, raccolta dai corpi, scarico alla base, magazzino
-- [ ] Corpi a raccolta una tantum (comete)
-- [ ] Fondazione delle colonie, produzione fino al tetto, raccolta sul posto
+## M3 · Navigazione ricalibrata ← *prossimo*
 
-**Si consegna**: il ciclo economico (esplora → colonizza → giro di raccolta).
+Porta la navigazione di M2 sui valori v1 ([09](09-bilanciamento.md)).
 
-## M4 · Potenziamenti di nave e base
-- [ ] Costi e tempi di costruzione in tempo reale
-- [ ] Nave: motore, serbatoio, ricarica, stiva, scanner
-- [ ] Base: raffineria, magazzino, cantiere
-- [ ] Colonie: tasso e tetto
+- [ ] **3.1 Valori in un posto solo**: le costanti di bilanciamento in un modulo TS e una funzione SQL gemella, con il confronto in `verifica-sql`. Nessun cambiamento visibile.
+- [ ] **3.2 Nave v1**: motore 0,25 settori/h, serbatoio 4, ricarica 0,4/h; una migrazione aggiorna la nave esistente. *Si gioca: viaggi da ore, 1-2 corpi al giorno.*
+- [ ] **3.3 Ricarica al 50 %** fuori dalla base, 100 % in base o accanto a una stella (ricarica ×2). *Si gioca: le stelle diventano tappe.*
+- [ ] **3.4 Fionda v1**: ×1,5 e il primo 20 % della rotta gratis.
+- [ ] **3.5 Soglie dei rari** in `catalogo.ts` e in SQL, con il campione di `verifica-sql` rigenerato. *Si gioca: i rari compaiono ad anelli.*
+- [ ] **3.6 Scanner a livelli**: raggio 4, al livello 1 rileva solo i sistemi planetari, gli altri tipi sono invisibili (livello fisso per ora).
+- [ ] **3.7 Mappa dei settori scansionati** (tabella `scansione`), visibile da subito.
 
-**Si consegna**: la progressione.
+**Si consegna**: l'esplorazione con il ritmo definitivo.
 
-## M5 · Rarità e speciale
-- [ ] Materia oscura e suoi usi
-- [ ] Relitti da saccheggiare
-- [ ] Wormhole
-- [ ] Rifinitura dei pesi e della curva di distanza
+## M4 · Risorse e prima colonia
 
-**Si consegna**: obiettivi a lungo termine.
+- [ ] **4.1 Stiva per risorsa** (tabella `stiva`, sei risorse) e pannello della stiva.
+- [ ] **4.2 Raccolta a mano**: sosta su un corpo con risorse, estrazione nel tempo fino alla stiva piena. *Si gioca: prime risorse.*
+- [ ] **4.3 Comete**: raccolta una volta per giocatore (tabella `raccolto`).
+- [ ] **4.4 Base madre come insediamento**: produzione delle 4 comuni nel suo magazzino, fino al tetto.
+- [ ] **4.5 Raccolta di persona** dal magazzino di un insediamento alla stiva.
+- [ ] **4.6 Fondare la prima colonia** (gratis) su un sistema planetario, con il mix del pianeta. *Si gioca: il primo giro di raccolta.*
+- [ ] **4.7 Fondare altre basi**, pagando dalla stiva, fino al limite di 2.
+- [ ] **4.8 Riepilogo come cronologia**, con gli eventi degli insediamenti.
+
+**Si consegna**: il ciclo esplora → fonda → raccogli.
+
+## M5 · Cantiere e potenziamenti
+
+- [ ] **5.1 Coda di costruzione** (tabella `costruzione`), con le ricette a gradini e il pagamento da stiva + magazzino della base.
+- [ ] **5.2 Motore, serbatoio, ricarica** nel cantiere della base madre; la nave resta ferma. *Si gioca: il primo potenziamento.*
+- [ ] **5.3 Stiva infinita**: 40 % della stiva, 1 h.
+- [ ] **5.4 Scanner come potenziamento**: raggio e tipi a livelli alterni.
+- [ ] **5.5 Livelli di produzione** degli insediamenti, nella coda della base.
+- [ ] **5.6 Magazzino a livelli.**
+- [ ] **5.7 Cantiere a livelli**: tempi più brevi e tetto della nave a 2 × livello.
+- [ ] **5.8 Deposito carburante**: pieno istantaneo a 5 Idrogeno/unità, a livelli.
+
+**Si consegna**: la progressione della nave.
+
+## M6 · Laboratorio e ricerche
+
+- [ ] **6.1 Motore delle ricerche** (tabella `ricerca`): una alla volta, nave ferma ≤ 1 h, gradino ≤ livello del laboratorio; laboratorio a livelli. Interfaccia dell'albero.
+- [ ] **6.2 Ingegneria 1-4**: Automazione, Stiva modulare, Cantiere orbitale, Leghe.
+- [ ] **6.3 Colonizzazione 1-4**: Astrofisica I (+2 basi), Estrattori minerari, Raccoglitori di gas, Magazzini modulari.
+- [ ] **6.4 Sensori 1-4**: Scansione in volo, Spettrometria, Radar (solo lo sblocco), Telemetria.
+- [ ] **6.5 Propulsione 1-2**: Raffinazione I, Iniettori.
+
+**Si consegna**: le prime scelte nell'albero.
+
+## M7 · Rete di basi ed estrattori
+
+- [ ] **7.1 Estrattori** su asteroidi, nebulose e giganti, con il loro limite. *Si gioca: la rete di raccolta.*
+- [ ] **7.2 Strutture nelle colonie**: magazzino e laboratorio subito, cantiere (I3) e deposito (I5) dopo la ricerca.
+- [ ] **7.3 Radar** a livelli nelle basi.
+- [ ] **7.4 Abbandono** di basi ed estrattori.
+- [ ] **7.5 Ricerche fino al gradino 6** nei quattro rami (Astrofisica II, Riciclo, Filtri nebulari, Analisi stellare, Raffinazione II, Vele solari…).
+
+**Si consegna**: l'infrastruttura.
+
+## M8 · Ponte di curvatura e Terre rare
+
+- [ ] **8.1 Ponte di curvatura** (P3): rete libera tra le basi, ×3 velocità e ⅓ carburante. *Si gioca: spostarsi nella propria rete.*
+- [ ] **8.2 Terre rare**: raccolta a mano presso le pulsar, Estrattori stellari (C5).
+- [ ] **8.3 Ricette fino al gradino 10-14** in gioco, con un controllo dei tempi reali contro [09](09-bilanciamento.md#ritmo-atteso).
+- [ ] **8.4 Ricerche dei gradini 7-8**: Ponte risonante, Interferometria, Radar profondo, Automazione II, Estrazione profonda…
+
+**Si consegna**: la frontiera si sposta in avanti con le basi.
+
+## M9 · Materia oscura e rari
+
+- [ ] **9.1 Buchi neri**: raccolta a mano, Contenimento gravitazionale (C7), estrattori di Materia oscura.
+- [ ] **9.2 Fionda gravitazionale** (P6).
+- [ ] **9.3 Relitti**: bottino una volta per giocatore, progetti.
+- [ ] **9.4 Accelerare** viaggi, costruzioni e ricarica con la Materia oscura.
+- [ ] **9.5 Wormhole**: Navigazione dei varchi (P9), 50 MO, senso unico; Sonda di varco (S9).
+- [ ] **9.6 Ultime ricerche** (gradini 9-10) e i due **nodi infiniti**.
+
+**Si consegna**: tutte le meccaniche.
+
+## M10 · Traguardi e rifinitura
+
+- [ ] **10.1 Traguardi** (tabella `traguardo`) e una pagina delle medaglie.
+- [ ] **10.2 Rifinitura del bilanciamento** con i dati reali di gioco, aggiornando [09](09-bilanciamento.md) e `sim/`.
+- [ ] **10.3 Qualità grafica ridotta** in automatico sui dispositivi lenti (rimandata da M1).
+
+**Si consegna**: il gioco completo per un giocatore.
 
 ## Più avanti, se servirà
-- Altri giocatori, furto dalle colonie altrui
+- Altri giocatori: insediamenti condivisi (RLS da rivedere), uso delle strutture altrui, prelievo dai magazzini altrui, eventi nel riepilogo
 - Eventi e incontri

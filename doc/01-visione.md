@@ -10,6 +10,10 @@ Le meccaniche sono descritte in [02](02-meccaniche.md), l'universo in [03](03-un
 
 Space riprende l'idea di **DeepSpace**, un vecchio prototipo del 2022 mai finito: **viaggiare tra coordinate `(x, y, z)` aspettando in tempo reale**. Del vecchio progetto non si tiene altro: corpi celesti, grafica, meccaniche e codice ripartono da zero.
 
+## Pilastri
+
+Il giocatore si sente più forte quando **va più lontano**, quando **riempie il catalogo** e quando **allarga la rete di basi**. L'economia è il mezzo. Si gioca 2-3 volte al giorno, la progressione dura più di un anno, e non c'è una fine: solo traguardi ([02](02-meccaniche.md#pilastri-e-ritmo)).
+
 ## Principi
 
 Gli stessi delle altre app di casa:
@@ -26,7 +30,7 @@ Per ora **solo il proprietario**, con l'account di casa. I dati sono comunque pe
 
 ## Cosa NON è (per ora)
 
-- Un gioco multigiocatore: niente furti, combattimenti o commercio, che arriveranno forse più avanti
+- Un gioco multigiocatore: niente combattimenti né commercio. Più avanti potranno arrivare altri giocatori che condividono le basi ([02](02-meccaniche.md#altri-giocatori-più-avanti))
 - Un gioco a notifiche: niente push, all'apertura c'è un riepilogo di cosa è successo
 - Un simulatore 3D navigabile liberamente: si vede il settore in cui si trova la nave, più lo scanner dei dintorni
 - Un gioco a flotte: la nave è una sola

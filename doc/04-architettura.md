@@ -21,7 +21,7 @@ flowchart LR
 3. Il **database** conserva solo lo stato del gioco: nave, viaggi, scoperte, risorse, colonie, potenziamenti ([05](05-modello-dati.md)).
 4. **Le azioni passano da funzioni Postgres** (`space.viaggia`, `space.raccogli`, `space.colonizza`, `space.potenzia`…). Le funzioni controllano le regole e scrivono il risultato; il browser non scrive mai direttamente posizione, carburante o risorse. Per sapere cosa c'è in un settore usano l'hash scritto in SQL.
 5. **Tutto si calcola alla lettura, senza job programmati**: posizione della nave (arrivata se `arrivo <= now()`), carburante ricaricato, produzione delle colonie, costruzioni finite. Si salvano gli istanti di partenza e di ultima raccolta, il resto si ricava da `now()`.
-6. **Row Level Security**: ognuno vede e modifica solo i propri dati.
+6. **Row Level Security**: ognuno vede e modifica solo i propri dati. Quando arriveranno altri giocatori, gli insediamenti diventeranno condivisi ([02](02-meccaniche.md#altri-giocatori-più-avanti)) e la RLS andrà rivista.
 
 ## Convivenza con le altre app
 

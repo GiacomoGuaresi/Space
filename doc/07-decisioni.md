@@ -19,18 +19,43 @@
 | 2026-10-08 | Potenziamenti di **nave, base e colonie**, con costi e tempi reali | deciso |
 | 2026-10-08 | Niente notifiche push: **riepilogo all'apertura** | deciso |
 | 2026-10-08 | Grafica **procedurale ricca** con **three.js** e shader | deciso |
-| 2026-10-08 | Sviluppo a **macro step stabili**: M0 fondamenta, M1 universo, M2 navigazione, M3 risorse e colonie, M4 potenziamenti, M5 rarità | deciso |
+| 2026-10-08 | ~~Sviluppo a **macro step stabili**: M0 fondamenta, M1 universo, M2 navigazione, M3 risorse e colonie, M4 potenziamenti, M5 rarità~~ | superata |
 | 2026-10-08 | Seed dal **finalizzatore di MurmurHash3** in catena sulle coordinate, generatore **Mulberry32**, sequenze separate per ogni parte del settore; in SQL identico dal M2 | deciso |
 | 2026-10-08 | Azioni solo tramite **funzioni Postgres** (`stato`, `viaggia`), tabelle in sola lettura, stato calcolato alla lettura senza job | deciso |
 | 2026-10-08 | Palette provvisoria **scura** (fondo spazio, accento blu nebula), icona: pianeta con anello | deciso |
-| 2026-10-08 | Valori provvisori: **un settore su dieci** non vuoto, pesi che cambiano fino a **500 settori** dalla base, ricchezza media `1 + √(d / 100)`; la base è vuota | proposta |
+| 2026-10-08 | ~~Valori provvisori: **un settore su dieci** non vuoto, pesi che cambiano fino a **500 settori** dalla base, ricchezza media `1 + √(d / 100)`; la base è vuota~~ | superata |
 | 2026-10-08 | Sottotipi: classe stellare (M, K, G, F, B), pianeti (roccioso, oceanico, ghiacciato, gassoso), generi di nebulosa, forme di relitto | deciso |
 | 2026-10-08 | **Osservatorio** come strumento di M1: coordinate nell'indirizzo, ricerca del corpo più vicino; in M2 resterà solo in sviluppo | deciso |
 | 2026-10-08 | Grafica con **bloom**; camera libera attorno al corpo con rotazione automatica lenta | deciso |
-| 2026-10-08 | Valori provvisori della nave: **12 settori all'ora**, **serbatoio 20**, consumo 1 a settore, **ricarica 2,5 all'ora** solo da fermi | proposta |
-| 2026-10-08 | Effetti: ricarica **×3** accanto alle stelle, scanner **3 settori** (1 nelle nebulose, 6 presso le pulsar), fionda **×2** dai buchi neri | proposta |
+| 2026-10-08 | ~~Valori provvisori della nave: **12 settori all'ora**, **serbatoio 20**, consumo 1 a settore, **ricarica 2,5 all'ora** solo da fermi~~ | superata |
+| 2026-10-08 | ~~Effetti: ricarica **×3** accanto alle stelle, scanner **3 settori** (1 nelle nebulose, 6 presso le pulsar), fionda **×2** dai buchi neri~~ | superata |
 | 2026-10-08 | Distanze con `√(dx²+dy²+dz²)` e arrotondamenti con `floor(v + 0,5)`, uguali in JavaScript e Postgres; campione fisso e `npm run verifica-sql` per controllarlo | deciso |
 | 2026-10-08 | Scanner come **elenco** (tipo e distanza, il nome si scopre arrivando); mappa 3D rimandata | deciso |
-| 2026-10-08 | In viaggio niente scanner né rotta; il viaggio non si annulla, per ora | proposta |
+| 2026-10-08 | In viaggio niente scanner né rotta; **il viaggio non si annulla** | deciso |
 | 2026-10-08 | Scoperta registrata alla partenza con l'istante d'arrivo, nascosta dalla policy finché la nave non arriva | deciso |
 | 2026-10-08 | Riepilogo dall'ultima visita salvata sul dispositivo; gli arrivi visti dal vivo non ci finiscono | deciso |
+| 2026-10-08 | **Pilastri**: distanza, collezione, infrastruttura; l'economia è un mezzo. Gioco **aperto** con traguardi (solo medaglie), 2-3 sessioni al giorno, progressione **oltre un anno** | deciso |
+| 2026-10-08 | Bersagli di ritmo: 1-2 corpi al giorno all'inizio, primo raro al **mese 1**, 500 settori al **mese 6**, livello più lungo **~1 settimana** a un anno | deciso |
+| 2026-10-08 | Modello numerico **v1** ([09](09-bilanciamento.md)), verificato con le simulazioni in `sim/`; sostituisce i valori provvisori di M1 e M2 | deciso |
+| 2026-10-08 | Rari **ad anelli**: soglie di distanza (pulsar 25, buchi neri e relitti 80, wormhole 150), poi peso crescente fino a 500 | deciso |
+| 2026-10-08 | **Nave al centro della progressione**: statistiche esponenziali; si potenzia solo in una base con **cantiere** e resta ferma; tetto della nave = 2 × livello del cantiere | deciso |
+| 2026-10-08 | Ricarica solo da fermi, **tetto 50 %** fuori dalle basi, **100 %** in base o accanto a una stella | deciso |
+| 2026-10-08 | Scanner a livelli che alternano **raggio** e **tipi rilevabili** (per utilità, dai sistemi planetari ai wormhole); i tipi non rilevati sono **invisibili**; la mappa dei settori scansionati c'è da subito | deciso |
+| 2026-10-08 | **Colonie vere = basi**, con strutture: magazzino, laboratorio, cantiere, deposito, radar, **ponte di curvatura** (rete libera, ×3 velocità, ⅓ carburante) | deciso |
+| 2026-10-08 | **Estrattori** su asteroidi, nebulose, giganti, pulsar e **buchi neri**: producono ma non sono basi; limite separato | deciso |
+| 2026-10-08 | **Nessuno scarico**: si paga con stiva + magazzino della base; stiva **per risorsa**, infinita, sempre pagabile, 1 h | deciso |
+| 2026-10-08 | ~~Scarico della stiva nel magazzino della base~~ | superata |
+| 2026-10-08 | **Ricette a rarità crescente**: ogni gradino di livello aggiunge una risorsa | deciso |
+| 2026-10-08 | Produzione per **sottotipo**, tetto di ~**1 settimana**, raccolta **solo di persona**; produzione persa non mostrata | deciso |
+| 2026-10-08 | **Raccolta a mano** dai corpi in sosta, per spezzare i circoli chiusi (serve una risorsa per sbloccarne l'estrattore) | deciso |
+| 2026-10-08 | Base madre: produce poco delle 4 comuni, parte con cantiere, laboratorio, magazzino, deposito; **prima colonia gratis**; fondazione pagata dalla stiva | deciso |
+| 2026-10-08 | Basi fondabili: 2, +2 per ogni Astrofisica; abbandono possibile solo per il fondatore, non resta nulla | deciso |
+| 2026-10-08 | Carburante: rigenerazione gratuita + **deposito** (pieno in Idrogeno, prezzo ridotto da ricerche e livelli) | deciso |
+| 2026-10-08 | **Albero di 42 ricerche** in 4 rami ([10](10-ricerche.md)), una alla volta, nave ferma ≤ 1 h, gradino ≤ livello del laboratorio; nodi infiniti solo in Propulsione e Colonizzazione | deciso |
+| 2026-10-08 | **Materia oscura**: livelli alti, ricerche avanzate, accelerare (costo ∝ ore^1,5), wormhole (costo fisso) | deciso |
+| 2026-10-08 | **Wormhole a senso unico**, uscita in direzione qualsiasi a 300-1500 settori | deciso |
+| 2026-10-08 | **Fionda**: ×1,5 e il primo tratto della rotta senza consumo | deciso |
+| 2026-10-08 | Comete e relitti una volta **per giocatore**; il relitto dà Materia oscura, risorse, a volte un progetto | deciso |
+| 2026-10-08 | Basi **condivise** in futuro: il fondatore è un'etichetta; gli altri usano, prelevano, potenziano | deciso |
+| 2026-10-08 | Riepilogo all'apertura come **cronologia** | deciso |
+| 2026-10-08 | Sviluppo **agile a step piccoli**, ognuno pubblicato; macro step M3-M10 ([06](06-roadmap.md)) | deciso |
