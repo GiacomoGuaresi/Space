@@ -3,9 +3,10 @@ import { Pallini } from './Barra'
 import { mostraAiuto } from './tastiera'
 import { alterna, FINESTRE, mostra, riordina, useDisposizione, type IdFinestra, type StatoFinestra } from './finestre'
 
-// Nave, Rete, Base, Ricerche e Traguardi arrivano con le loro meccaniche (doc/06-roadmap.md).
+// Rete, Base, Ricerche e Traguardi arrivano con le loro meccaniche (doc/06-roadmap.md).
 const GRUPPI: readonly { nome: string; voci: readonly IdFinestra[] }[] = [
   { nome: 'Navigazione', voci: ['qui', 'scanner', 'rotta'] },
+  { nome: 'Nave e rete', voci: ['nave'] },
   { nome: 'Archivio', voci: ['diario', 'wiki', 'catalogo'] },
 ]
 

@@ -5,6 +5,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { TipoCorpo } from '../dominio/catalogo'
 import type { Nave, Viaggio } from '../dominio/navigazione'
+import { nessuna, RISORSE, type Carico, type Risorsa } from '../dominio/risorse'
 import type { Coordinate } from '../dominio/settore'
 import { fallita } from './errore'
 
@@ -14,6 +15,7 @@ export interface StatoRemoto {
   nave: Nave
   /** Il viaggio in corso, se c'è. */
   viaggio: Viaggio | null
+  carico: Carico
 }
 
 export interface Scoperta {
@@ -50,6 +52,7 @@ interface RigaNave {
   serbatoio: number
   ricarica: number
   scanner: number
+  stiva: number
 }
 
 interface RigaViaggio {
@@ -77,6 +80,7 @@ function nave(r: RigaNave): Nave {
     serbatoio: r.serbatoio,
     ricarica: r.ricarica,
     scanner: r.scanner,
+    stiva: r.stiva,
   }
 }
 
@@ -92,6 +96,19 @@ function viaggio(r: RigaViaggio): Viaggio {
   }
 }
 
+/** La stiva dal database: tutte le righe hanno lo stesso `dal`, scritte insieme. */
+function carico(righe: Partial<Record<Risorsa, { quantita: number; dal: string }>> | null): Carico {
+  const quantita = nessuna()
+  let dal = new Date(0)
+  for (const r of RISORSE) {
+    const riga = righe?.[r]
+    if (!riga) continue
+    quantita[r] = riga.quantita
+    if (new Date(riga.dal) > dal) dal = new Date(riga.dal)
+  }
+  return { quantita, dal }
+}
+
 const MOTIVI: readonly MotivoRifiuto[] = ['in_viaggio', 'stesso_settore', 'carburante_insufficiente']
 
 export class NaveSupabase {
@@ -100,8 +117,13 @@ export class NaveSupabase {
   async stato(): Promise<StatoRemoto> {
     const { data, error } = await this.client.rpc('stato')
     if (error) throw fallita('Stato della nave non letto', error)
-    const d = data as { ora: string; nave: RigaNave; viaggio: RigaViaggio | null }
-    return { ora: new Date(d.ora), nave: nave(d.nave), viaggio: d.viaggio ? viaggio(d.viaggio) : null }
+    const d = data as {
+      ora: string
+      nave: RigaNave
+      viaggio: RigaViaggio | null
+      stiva: Partial<Record<Risorsa, { quantita: number; dal: string }>> | null
+    }
+    return { ora: new Date(d.ora), nave: nave(d.nave), viaggio: d.viaggio ? viaggio(d.viaggio) : null, carico: carico(d.stiva) }
   }
 
   async viaggia(meta: Coordinate): Promise<Viaggio> {

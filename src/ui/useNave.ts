@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { nave as datiNave, type Scansione, type Scoperta } from '../dati'
 import type { Nave, Viaggio } from '../dominio/navigazione'
+import type { Carico } from '../dominio/risorse'
 import type { Coordinate } from '../dominio/settore'
 import { tipoSettore } from '../dominio/settore'
 import { suona } from './suoni'
@@ -9,7 +10,7 @@ import { GIORNI_DIARIO, letto, novita, segnaLetto, vociDiario } from './diario'
 export type StatoNave =
   | { fase: 'carico' }
   | { fase: 'errore'; messaggio: string }
-  | { fase: 'pronta'; nave: Nave; viaggio: Viaggio | null }
+  | { fase: 'pronta'; nave: Nave; viaggio: Viaggio | null; carico: Carico }
 
 /**
  * L'ora del database vista dal dispositivo: l'orologio del telefono può essere
@@ -55,7 +56,7 @@ export function useNave() {
       // Lo scarto si misura a metà della richiesta: la risposta ha viaggiato.
       const scartoNuovo = remoto.ora.getTime() - (prima + dopo) / 2
       setScarto(scartoNuovo)
-      setStato({ fase: 'pronta', nave: remoto.nave, viaggio: remoto.viaggio })
+      setStato({ fase: 'pronta', nave: remoto.nave, viaggio: remoto.viaggio, carico: remoto.carico })
       setScoperte(elenco)
       setScansioni(soste)
       setViaggi(recenti)

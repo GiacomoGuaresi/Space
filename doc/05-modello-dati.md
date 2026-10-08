@@ -10,7 +10,7 @@ Schema `space`. Le colonne arrivano con lo step che le usa ([06](06-roadmap.md))
 | `viaggio` ✅ | da, meta, a (dove si arriva davvero), partenza, arrivo, consumo, fionda; poi ponte e wormhole | M2, M8, M9 |
 | `scoperta` ✅ | coordinate, tipo di corpo, istante della prima visita (nascosta finché la nave non arriva) | M2 |
 | `scansione` ✅ | centro, raggio e livello dello scanner di ogni sosta, una riga per settore (tornando con uno scanner migliore si aggiorna), nascosta finché la nave non arriva: da qui si ricalcola la mappa dei settori scansionati | M3 |
-| `stiva` | quantità per risorsa a bordo | M4 |
+| `stiva` ✅ | una riga per risorsa: quantità a bordo, valida dall'istante `dal` (la raccolta a mano si aggiunge alla lettura); il livello della stiva sta in `nave.stiva` | M4 |
 | `insediamento` | coordinate, tipo (base, estrattore), fondatore (etichetta), fondazione, ultima raccolta, scorte a quell'istante, livelli di produzione e magazzino; la base madre è la prima riga | M4 |
 | `struttura` | insediamento, tipo (cantiere, laboratorio, deposito, radar, ponte), livello | M5, M7, M8 |
 | `costruzione` | coda: cosa (statistica della nave, struttura, produzione), dove, inizio, fine | M5 |

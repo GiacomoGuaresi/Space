@@ -12,6 +12,7 @@
 import { readFileSync } from 'node:fs'
 import { BILANCIAMENTO } from '../src/dominio/bilanciamento.ts'
 import { raggioScanner } from '../src/dominio/navigazione.ts'
+import { capacitaStiva } from '../src/dominio/risorse.ts'
 
 const PROGETTO = 'fvsohjlrulwabvfvcfxo'
 const token = process.env.SUPABASE_ACCESS_TOKEN
@@ -67,10 +68,23 @@ const esitoRaggi = await interroga(`
   select count(*) filter (where space.raggio_scanner(l, nullif(t, 'vuoto')) <> r) as raggi_diversi, count(*) as totale
   from (values ${raggi}) as c(l, t, r)`)
 
+const capacita = Array.from({ length: 40 }, (_, i) => `(${i + 1},${capacitaStiva(i + 1)})`).join(',')
+const esitoStiva = await interroga(`
+  select count(*) filter (where space.capacita_stiva(l) <> c) as capacita_diverse, count(*) as totale
+  from (values ${capacita}) as v(l, c)`)
+
 console.log('Settori', esitoSettori)
 console.log('Rotte', esitoRotte)
 console.log('Raggi dello scanner', esitoRaggi)
-if (!esitoValori.uguali || esitoSettori.seed_diversi || esitoSettori.tipi_diversi || esitoRotte.rotte_diverse || esitoRaggi.raggi_diversi) {
+console.log('Capacità della stiva', esitoStiva)
+if (
+  !esitoValori.uguali ||
+  esitoSettori.seed_diversi ||
+  esitoSettori.tipi_diversi ||
+  esitoRotte.rotte_diverse ||
+  esitoRaggi.raggi_diversi ||
+  esitoStiva.capacita_diverse
+) {
   console.error('TypeScript e SQL non danno lo stesso universo')
   process.exit(1)
 }

@@ -3,6 +3,7 @@
 // arrivano con le loro meccaniche. Ogni pagina finisce con i Numeri, calcolati
 // con i valori attuali della nave.
 
+import { capacitaStiva } from '../dominio/risorse'
 import type { ReactNode } from 'react'
 import { BILANCIAMENTO } from '../dominio/bilanciamento'
 import { CATALOGO, NOMI_COLONIE, NOMI_RISORSE, PIENEZZA, pesi, ricchezzaMedia, TIPI, type TipoCorpo } from '../dominio/catalogo'
@@ -85,7 +86,11 @@ const GUIDA: PaginaWiki[] = [
     suggerimento: '',
     testo: () => (
       <>
-        <P>Una sola, per sempre. Ha un motore (la velocità), un serbatoio, una ricarica e uno scanner.</P>
+        <P>Una sola, per sempre. Ha un motore (la velocità), un serbatoio, una ricarica, uno scanner e una stiva.</P>
+        <P>
+          La stiva ha un posto per ognuna delle sei risorse, tutte con la stessa capacità. Non si scarica mai: le risorse si spendono
+          da lì, insieme al magazzino della base dove si costruisce.
+        </P>
         <P>Potenziarla sarà il cuore della progressione: arriverà con il cantiere.</P>
       </>
     ),
@@ -94,6 +99,7 @@ const GUIDA: PaginaWiki[] = [
       ['Serbatoio', `${numero(nave.serbatoio, 1)} unità`],
       ['Ricarica', `${numero(nave.ricarica, 2)} unità/h, da ferma`],
       ['Scanner', `livello ${nave.scanner}`],
+      ['Stiva', `25 × 1,5^(livello − 1) per risorsa = ${numero(capacitaStiva(nave.stiva), 0)} al livello ${nave.stiva}`],
     ],
   },
   {

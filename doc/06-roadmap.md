@@ -97,7 +97,7 @@ Porta l'interfaccia su PC nella [plancia a finestre](11-interfaccia.md#pc--planc
 
 ## M4 · Risorse e prima colonia ← *prossimo*
 
-- [ ] **4.1 Stiva per risorsa** (tabella `stiva`, sei risorse) e la **Nave** (finestra N su PC, sezione sul telefono), con la stiva; stiva in breve nella barra di stato del PC.
+- [x] **4.1 Stiva per risorsa** (tabella `stiva`, sei risorse) e la **Nave** (finestra N su PC, sezione sul telefono), con la stiva; stiva in breve nella barra di stato del PC. (`008_stiva.sql`: `nave.stiva` è il livello, `space.capacita_stiva` confrontata da `verifica-sql`; `src/dominio/risorse.ts`, `SchedaNave.tsx`.)
 - [ ] **4.2 Raccolta a mano**: sosta su un corpo con risorse, estrazione nel tempo fino alla stiva piena. *Si gioca: prime risorse.*
 - [ ] **4.3 Comete**: raccolta una volta per giocatore (tabella `raccolto`).
 - [ ] **4.4 Base madre come insediamento**: produzione delle 4 comuni nel suo magazzino, fino al tetto.

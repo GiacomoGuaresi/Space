@@ -2,6 +2,7 @@ import { Suspense, lazy, useEffect, useMemo, useRef, useState, type ReactNode } 
 import { CATALOGO, TIPI, type TipoCorpo } from '../dominio/catalogo'
 import { corpiNoti } from '../dominio/mappa'
 import { inViaggio, type Nave } from '../dominio/navigazione'
+import { capacitaStiva } from '../dominio/risorse'
 import { BASE, settore as calcolaSettore } from '../dominio/settore'
 import { sottotipo } from '../dominio/sottotipi'
 import { Altro } from './Altro'
@@ -21,6 +22,7 @@ import { segnaPonteVisto, segnaWikiSbloccate, useVisti } from './pallini'
 import { Pannello } from './plancia'
 import { Ponte } from './Ponte'
 import { Scheda } from './Scheda'
+import { CaricoAttuale, SchedaNave } from './SchedaNave'
 import { usePC } from './schermo'
 import { useNave, useOra } from './useNave'
 import { Wiki } from './Wiki'
@@ -66,6 +68,8 @@ export function App() {
     eraAperto.current = diarioAperto
   }, [pc, diarioAperto, scarto])
   const daLeggere = voci.filter((v) => novita(v, lettoAperto)).length
+  const carico = stato.fase === 'pronta' ? stato.carico : null
+  const bordo = useMemo(() => (carico && nave ? { carico, capacita: capacitaStiva(nave.stiva) } : null), [carico, nave])
   const ultima = useMemo(() => ({ voce: voci[0] ?? null, nuove: daLeggere }), [voci, daLeggere])
 
   // Pallini: Ponte se la nave è arrivata da quando l'hai visto, Mappa se c'è un
@@ -132,6 +136,7 @@ export function App() {
       wiki: 'wiki',
       catalogo: 'catalogo',
       impostazioni: 'impostazioni',
+      nave: 'nave',
     }
     const id = finestre[pagina.pagina]
     if (id) apri(id)
@@ -185,9 +190,17 @@ export function App() {
             diario: { contenuto: <Diario voci={voci} letto={lettoAperto} ora={ora} /> },
             wiki: statoWiki ? { contenuto: <Wiki stato={statoWiki} voce={wikiPC.voce} numeri={wikiPC.numeri} affiancata /> } : undefined,
             catalogo: { contenuto: <ContenutoCatalogo scoperte={scoperte} /> },
+            nave: { contenuto: <SchedaNave nave={stato.nave} carico={stato.carico} /> },
             impostazioni: { contenuto: <Impostazioni /> },
           }}
         />
+      )
+    }
+    if (pagina.pagina === 'nave') {
+      return (
+        <Cornice pagina="nave" nave={stato.nave} viaggio={viaggio} scarto={scarto} fondo={<FondoNave nave={stato.nave} scarto={scarto} />}>
+          <SchedaNave nave={stato.nave} carico={stato.carico} />
+        </Cornice>
       )
     }
     if (pagina.pagina === 'diario') {
@@ -303,7 +316,9 @@ export function App() {
   }
   return (
     <Pallini.Provider value={pallini}>
-      <UltimaVoce.Provider value={ultima}>{vista()}</UltimaVoce.Provider>
+      <UltimaVoce.Provider value={ultima}>
+        <CaricoAttuale.Provider value={bordo}>{vista()}</CaricoAttuale.Provider>
+      </UltimaVoce.Provider>
     </Pallini.Provider>
   )
 }

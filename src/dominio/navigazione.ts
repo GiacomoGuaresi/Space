@@ -24,6 +24,8 @@ export interface Nave {
   ricarica: number
   /** Il livello dello scanner. */
   scanner: number
+  /** Il livello della stiva: decide la capacità per risorsa (risorse.ts). */
+  stiva: number
 }
 
 export interface Viaggio {

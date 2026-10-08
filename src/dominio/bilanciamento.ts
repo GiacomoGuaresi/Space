@@ -107,4 +107,10 @@ export const BILANCIAMENTO = {
     nebulosa: 0.5,
     pulsar: 2,
   },
+  stiva: {
+    /** La capacità per ogni risorsa al livello 1… */
+    capacita: 25,
+    /** …moltiplicata per tanto a ogni livello. */
+    crescita: 1.5,
+  },
 } as const

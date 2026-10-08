@@ -79,3 +79,5 @@
 | 2026-10-08 | Su PC lo sfondo è la scena **o** la mappa 3D (Tab); Qui, Scanner e Rotta sono tre finestre; una finestra per tipo; disposizione ricordata sul dispositivo, con Riordina | deciso |
 | 2026-10-08 | Finestre con **react-rnd**; scorciatoie a una lettera; densità compatta su PC; nell'indirizzo solo link diretti | deciso |
 | 2026-10-08 | Macro step **MF · Plancia a finestre** prima di M4 | deciso |
+| 2026-10-08 | Stiva: una riga per risorsa con quantità e istante `dal`, calcolata alla lettura come il carburante; il livello in `nave.stiva` | deciso |
+| 2026-10-08 | Ricchezza, sottotipo e pianeti dei sistemi si portano in SQL, identici al TypeScript, perché raccolta e produzione si calcolano nel database | deciso |

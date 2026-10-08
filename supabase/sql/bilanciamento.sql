@@ -82,6 +82,10 @@ language sql immutable parallel safe set search_path = '' as $$
     ],
     "nebulosa": 0.5,
     "pulsar": 2
+  },
+  "stiva": {
+    "capacita": 25,
+    "crescita": 1.5
   }
 }'::jsonb
 $$;

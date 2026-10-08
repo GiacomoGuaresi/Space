@@ -4,7 +4,7 @@
 
 import { useSyncExternalStore } from 'react'
 
-export type IdFinestra = 'qui' | 'scanner' | 'rotta' | 'diario' | 'wiki' | 'catalogo' | 'impostazioni'
+export type IdFinestra = 'qui' | 'scanner' | 'rotta' | 'nave' | 'diario' | 'wiki' | 'catalogo' | 'impostazioni'
 
 export type StatoFinestra = 'aperta' | 'ridotta' | 'chiusa'
 
@@ -39,6 +39,7 @@ export const FINESTRE: Readonly<
   qui: { titolo: 'Qui', tasto: 'Q', w: 340, h: 300, minW: 260, minH: 160 },
   scanner: { titolo: 'Scanner', tasto: 'S', w: 340, h: 420, minW: 260, minH: 200 },
   rotta: { titolo: 'Rotta', tasto: 'R', w: 340, h: 320, minW: 280, minH: 220 },
+  nave: { titolo: 'Nave', tasto: 'N', w: 420, h: 560, minW: 320, minH: 260, piena: true },
   diario: { titolo: 'Diario di bordo', tasto: 'D', w: 420, h: 520, minW: 320, minH: 260, piena: true },
   wiki: { titolo: 'Wiki', tasto: 'W', w: 720, h: 560, minW: 420, minH: 300, piena: true },
   catalogo: { titolo: 'Catalogo', tasto: 'C', w: 640, h: 520, minW: 360, minH: 260, piena: true },
@@ -71,8 +72,9 @@ export function disposizioneIniziale(larghezza: number, altezza = 816): Disposiz
       catalogo: alCentro('catalogo', 1),
       diario: alCentro('diario', 2),
       impostazioni: alCentro('impostazioni', 3),
+      nave: alCentro('nave', 4),
     },
-    ordine: ['diario', 'wiki', 'catalogo', 'impostazioni', 'qui', 'scanner', 'rotta'],
+    ordine: ['nave', 'diario', 'wiki', 'catalogo', 'impostazioni', 'qui', 'scanner', 'rotta'],
     sfondo: 'scena',
   }
 }

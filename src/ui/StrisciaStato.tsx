@@ -4,6 +4,8 @@ import { carburanteOra, inViaggio, pienoTra, ricaricaQui, tettoQui, type Nave, t
 import { BASE, settore, stessoSettore } from '../dominio/settore'
 import { coordinatePlancia, durata, numero, orario, rovescia } from './formato'
 import { NOMI_VOCI, UltimaVoce } from './diario'
+import { NOMI_RISORSE, RISORSE } from '../dominio/risorse'
+import { CaricoAttuale } from './SchedaNave'
 import { Etichetta, Info } from './plancia'
 
 interface Props {
@@ -26,6 +28,7 @@ const SEGMENTI = 10
 export function StrisciaStato({ nave, viaggio, ora, onApri, riga = false }: Props) {
   const volo = inViaggio(nave, ora)
   const ultima = useContext(UltimaVoce)
+  const bordo = useContext(CaricoAttuale)
   const carburante = carburanteOra(nave, ora)
   const tetto = tettoQui(nave, nave.posizione)
   const pieno = pienoTra(nave, ora)
@@ -106,6 +109,24 @@ export function StrisciaStato({ nave, viaggio, ora, onApri, riga = false }: Prop
       <span aria-hidden="true" className="h-5 w-px shrink-0 bg-separatore" />
       <div className="w-[340px] shrink-0">{serbatoio}</div>
       <span aria-hidden="true" className="h-5 w-px shrink-0 bg-separatore" />
+      {bordo && (
+        <>
+          <div className="flex shrink-0 items-end gap-1.5" role="group" aria-label="Stiva in breve">
+            {RISORSE.map((r) => {
+              const pieno = Math.min(1, bordo.carico.quantita[r] / bordo.capacita)
+              return (
+                <span key={r} className="flex items-end gap-0.5" title={`${NOMI_RISORSE[r].nome}: ${Math.floor(bordo.carico.quantita[r])}`}>
+                  <span className="etichetta leading-none">{NOMI_RISORSE[r].sigla}</span>
+                  <span aria-hidden="true" className="relative h-3 w-1.5 bg-[#211a10]">
+                    <span className="absolute inset-x-0 bottom-0 bg-ambra" style={{ height: `${pieno * 100}%` }} />
+                  </span>
+                </span>
+              )
+            })}
+          </div>
+          <span aria-hidden="true" className="h-5 w-px shrink-0 bg-separatore" />
+        </>
+      )}
       {avviso ? (
         <div className="min-w-0 flex-1 truncate">{avviso}</div>
       ) : (

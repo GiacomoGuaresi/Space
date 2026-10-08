@@ -15,6 +15,7 @@ const nave = (parziale: Partial<Nave> = {}): Nave => ({
   carburante: NAVE_INIZIALE.serbatoio,
   ...NAVE_INIZIALE,
   scanner: 1,
+  stiva: 1,
   ...parziale,
 })
 
