@@ -1,13 +1,8 @@
 import { CATALOGO, NOMI_COLONIE, NOMI_RISORSE } from '../dominio/catalogo'
 import { NOMI_CLASSI, NOMI_GENERI_NEBULOSA, type Dettagli, type Settore } from '../dominio/settore'
-import { scriviCoordinate } from './indirizzo'
+import { COLORI_RARITA } from './colori'
+import { coordinate } from './formato'
 
-const COLORI_RARITA = {
-  comune: 'text-testo-tenue',
-  'non comune': 'text-[#7fd1a8]',
-  rara: 'text-[#c39bff]',
-  leggendaria: 'text-[#ffc46b]',
-} as const
 
 const numero = (n: number, cifre = 0) => n.toLocaleString('it-IT', { maximumFractionDigits: cifre })
 
@@ -40,7 +35,7 @@ function righeDettagli(d: Dettagli): [string, string][] {
     case 'relitto':
       return [['Forma', d.forma], ['Età', `${numero(d.eta)} mila anni`]]
     case 'wormhole':
-      return [['Uscita', scriviCoordinate(d.uscita).slice(2).replaceAll(',', ', ')]]
+      return [['Uscita', coordinate(d.uscita)]]
   }
 }
 
@@ -73,7 +68,7 @@ export function Scheda({ settore }: { settore: Settore }) {
     <section className="rounded-2xl border border-bordo/70 bg-pannello/75 p-3 backdrop-blur">
       <div className="flex items-baseline justify-between gap-3">
         <h2 className="m-0 text-base font-semibold">{corpo.nome}</h2>
-        <span className={`shrink-0 text-xs ${COLORI_RARITA[corpo.rarita]}`}>{corpo.rarita}</span>
+        <span className={`shrink-0 text-xs ${COLORI_RARITA[corpo.rarita].testo}`}>{corpo.rarita}</span>
       </div>
       <p className="m-0 mt-0.5 text-xs text-testo-tenue">
         {CATALOGO[corpo.tipo].nome} · {dove} · {lontano}

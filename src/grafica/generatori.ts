@@ -11,11 +11,13 @@ import { pulsar } from './corpi/pulsar'
 import { relitto } from './corpi/relitto'
 import { sistema } from './corpi/sistema'
 import { stella } from './corpi/stella'
+import { viaggio } from './corpi/viaggio'
 import { vuoto } from './corpi/vuoto'
 import { wormhole } from './corpi/wormhole'
 
-export const GENERATORI: Readonly<Record<TipoCorpo | 'vuoto', Generatore>> = {
+export const GENERATORI: Readonly<Record<TipoCorpo | 'vuoto' | 'viaggio', Generatore>> = {
   vuoto,
+  viaggio,
   asteroidi,
   nebulosa,
   stella,

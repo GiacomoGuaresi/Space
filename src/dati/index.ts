@@ -4,11 +4,13 @@
 import { createBrowserClient } from '@supabase/ssr'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { AccessoSupabase, type Accesso } from './accesso'
+import { NaveSupabase } from './nave'
 import { fetchPaziente } from './orologio'
 
 export type { Accesso, EsitoAccesso } from './accesso'
+export { ViaggioRifiutato, type MotivoRifiuto, type NaveSupabase, type Scoperta, type StatoRemoto } from './nave'
 
-let connessione: { accesso: Accesso } | null = null
+let connessione: { accesso: Accesso; nave: NaveSupabase } | null = null
 
 /**
  * Il client è uno solo: accesso e query condividono la sessione.
@@ -32,11 +34,16 @@ function connetti() {
     global: { fetch: fetchPaziente() },
     db: { schema: 'space' },
   }) as unknown as SupabaseClient
-  connessione = { accesso: new AccessoSupabase(client, email) }
+  connessione = { accesso: new AccessoSupabase(client, email), nave: new NaveSupabase(client) }
   return connessione
 }
 
 /** Chi può entrare: serve la sessione aperta dalla passphrase. */
 export function accesso(): Accesso {
   return connetti().accesso
+}
+
+/** La nave, i viaggi e le scoperte. */
+export function nave(): NaveSupabase {
+  return connetti().nave
 }

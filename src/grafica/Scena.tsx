@@ -29,7 +29,7 @@ interface Motore {
  * allarga le luci più forti. Si gira attorno al corpo trascinando e si zooma
  * con la rotella o le dita; da fermo la camera gira da sola, piano.
  */
-export function Scena({ settore }: { settore: Settore }) {
+export function Scena({ settore, inViaggio = false }: { settore: Settore; inViaggio?: boolean }) {
   const contenitore = useRef<HTMLDivElement>(null)
   const motore = useRef<Motore | null>(null)
 
@@ -109,7 +109,7 @@ export function Scena({ settore }: { settore: Settore }) {
       libera(m.attuale.contenuto.oggetto)
       libera(m.attuale.sfondo.oggetto)
     }
-    const generatore = GENERATORI[settore.corpo?.tipo ?? 'vuoto']
+    const generatore = GENERATORI[inViaggio ? 'viaggio' : (settore.corpo?.tipo ?? 'vuoto')]
     const contenuto = generatore(settore, casuale(derivato(settore.seed, PARTE_GRAFICA)))
     const sfondo = creaSfondo(casuale(derivato(settore.seed, PARTE_SFONDO)))
     m.scena.add(sfondo.oggetto, contenuto.oggetto)
@@ -125,8 +125,11 @@ export function Scena({ settore }: { settore: Settore }) {
     m.controlli.target.set(0, 0, 0)
     m.controlli.minDistance = vicino
     m.controlli.maxDistance = lontano * allarga
+    const fissa = contenuto.inquadratura.fissa === true
+    m.controlli.enabled = !fissa
+    m.controlli.autoRotate = !fissa && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
     m.controlli.update()
-  }, [settore])
+  }, [settore, inViaggio])
 
   return <div ref={contenitore} className="absolute inset-0 touch-none" aria-hidden="true" />
 }

@@ -7,8 +7,11 @@ import type { Settore } from '../dominio/settore'
 /** Quello che un generatore mette in scena per un settore. */
 export interface Contenuto {
   oggetto: THREE.Object3D
-  /** Dove sta la camera all'arrivo: distanza dal centro e altezza sul piano. */
-  inquadratura: { distanza: number; altezza: number; vicino: number; lontano: number }
+  /**
+   * Dove sta la camera all'arrivo: distanza dal centro e altezza sul piano.
+   * `fissa`: la camera non si gira e non zooma (il viaggio).
+   */
+  inquadratura: { distanza: number; altezza: number; vicino: number; lontano: number; fissa?: boolean }
   /** A ogni fotogramma, con il tempo in secondi. */
   aggiorna(tempo: number, camera: THREE.Camera): void
 }

@@ -3,7 +3,7 @@ import { ChevronDown, ChevronUp, Crosshair, Home, Search } from 'lucide-react'
 import { CATALOGO, TIPI, type TipoCorpo } from '../dominio/catalogo'
 import { piuVicino } from '../dominio/ricerca'
 import { BASE, type Coordinate, type Settore } from '../dominio/settore'
-import { vaiA } from './indirizzo'
+import { osserva } from './indirizzo'
 
 const ASSI = ['x', 'y', 'z'] as const
 
@@ -26,16 +26,16 @@ export function Osservatorio({ settore }: { settore: Settore }) {
 
   const vai = (evento: FormEvent) => {
     evento.preventDefault()
-    vaiA(bozza)
+    osserva(bozza)
   }
 
-  const sposta = (asse: (typeof ASSI)[number], passo: number) => vaiA({ ...coordinate, [asse]: coordinate[asse] + passo })
+  const sposta = (asse: (typeof ASSI)[number], passo: number) => osserva({ ...coordinate, [asse]: coordinate[asse] + passo })
 
   const cerca = () => {
     const trovato: Coordinate | null = piuVicino(coordinate, tipo)
     if (trovato) {
       setAvviso(null)
-      vaiA(trovato)
+      osserva(trovato)
     } else {
       setAvviso(
         `Nessun ${tipo === 'qualsiasi' ? 'corpo' : CATALOGO[tipo].nome.toLowerCase()} entro 25 settori. Prova più lontano dalla base.`,
@@ -102,7 +102,7 @@ export function Osservatorio({ settore }: { settore: Settore }) {
           <Search className="size-3.5" />
           Più vicino
         </button>
-        <button className={pulsante} type="button" aria-label="Torna alla base" title="Torna alla base" onClick={() => vaiA(BASE)}>
+        <button className={pulsante} type="button" aria-label="Torna alla base" title="Torna alla base" onClick={() => osserva(BASE)}>
           <Home className="size-4" />
         </button>
         <button
@@ -113,7 +113,7 @@ export function Osservatorio({ settore }: { settore: Settore }) {
           // Qui il caso non genera nulla: sceglie solo dove guardare.
           onClick={() => {
             const a = () => Math.round((Math.random() * 2 - 1) * 1500)
-            vaiA({ x: a(), y: a(), z: a() })
+            osserva({ x: a(), y: a(), z: a() })
           }}
         >
           <Crosshair className="size-4" />

@@ -1,11 +1,17 @@
-// Le coordinate nell'indirizzo, `#/x,y,z`: un settore si ricarica e si condivide.
+// Le pagine nell'indirizzo: `#/` il ponte, `#/catalogo` le scoperte,
+// `#/osservatorio/x,y,z` l'osservatorio libero (solo in sviluppo, doc/06).
 
 import { useSyncExternalStore } from 'react'
 import { BASE, type Coordinate } from '../dominio/settore'
 
-/** Le coordinate di un indirizzo, o `null` se non lo sono. */
-export function leggiCoordinate(hash: string): Coordinate | null {
-  const parti = hash.replace(/^#\/?/, '').split(',')
+export type Pagina =
+  | { pagina: 'ponte' }
+  | { pagina: 'catalogo' }
+  | { pagina: 'osservatorio'; coordinate: Coordinate }
+
+/** Le coordinate di un testo "x,y,z", o `null` se non lo sono. */
+export function leggiCoordinate(testo: string): Coordinate | null {
+  const parti = testo.split(',')
   // Number('') vale 0: le parti vuote si scartano prima.
   if (parti.length !== 3 || parti.some((p) => p.trim() === '')) return null
   const numeri = parti.map((p) => Number(p.trim()))
@@ -14,8 +20,26 @@ export function leggiCoordinate(hash: string): Coordinate | null {
   return { x, y, z }
 }
 
-export function scriviCoordinate({ x, y, z }: Coordinate): string {
-  return `#/${x},${y},${z}`
+export function leggiPagina(hash: string): Pagina {
+  const percorso = hash.replace(/^#\/?/, '')
+  if (percorso === 'catalogo') return { pagina: 'catalogo' }
+  if (percorso === 'osservatorio' || percorso.startsWith('osservatorio/')) {
+    return { pagina: 'osservatorio', coordinate: leggiCoordinate(percorso.slice('osservatorio/'.length)) ?? BASE }
+  }
+  return { pagina: 'ponte' }
+}
+
+export function indirizzo(pagina: Pagina): string {
+  switch (pagina.pagina) {
+    case 'ponte':
+      return '#/'
+    case 'catalogo':
+      return '#/catalogo'
+    case 'osservatorio': {
+      const { x, y, z } = pagina.coordinate
+      return `#/osservatorio/${x},${y},${z}`
+    }
+  }
 }
 
 function iscriviti(avvisa: () => void) {
@@ -23,12 +47,16 @@ function iscriviti(avvisa: () => void) {
   return () => window.removeEventListener('hashchange', avvisa)
 }
 
-/** Le coordinate dell'indirizzo attuale; senza coordinate valide, la base. */
-export function useCoordinate(): Coordinate {
+export function usePagina(): Pagina {
   const hash = useSyncExternalStore(iscriviti, () => window.location.hash)
-  return leggiCoordinate(hash) ?? BASE
+  return leggiPagina(hash)
 }
 
-export function vaiA(coordinate: Coordinate) {
-  window.location.hash = scriviCoordinate(coordinate)
+export function vaiA(pagina: Pagina) {
+  window.location.hash = indirizzo(pagina)
+}
+
+/** Nell'osservatorio: guarda un altro settore. */
+export function osserva(coordinate: Coordinate) {
+  vaiA({ pagina: 'osservatorio', coordinate })
 }
