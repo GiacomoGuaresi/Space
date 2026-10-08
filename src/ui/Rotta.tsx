@@ -106,6 +106,7 @@ export function Rotta({ nave, ora, meta, scoperti, onMeta, onParti }: Props) {
             {prova.fionda ? ` · fionda ×${numero(BILANCIAMENTO.fionda.velocita, 1)}` : ''}{' '}
             <Info
               titolo="Durata"
+              wiki="viaggio"
               formula={`${numero(prova.percorsa, 2)} settori / (${numero(nave.velocita, 2)} settori/h${
                 prova.fionda ? ` × ${numero(BILANCIAMENTO.fionda.velocita, 1)}` : ''
               })`}

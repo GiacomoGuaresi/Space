@@ -73,3 +73,5 @@
 | 2026-10-08 | Nel diario le **partenze** non sono mai novità (le hai decise tu), e nemmeno gli arrivi visti dal vivo; alla primissima apertura non c'è nulla da raccontare | deciso |
 | 2026-10-08 | **Suoni** sintetizzati al momento (niente file), **spenti** finché non li accendi; impostazioni e pallini già visti valgono per dispositivo | deciso |
 | 2026-10-08 | Nelle impostazioni niente "esci": l'account è quello di casa, condiviso con le altre app | deciso |
+| 2026-10-08 | Nella **wiki** ci sono solo le pagine di ciò che esiste già; le altre arrivano con le loro meccaniche. Una pagina sbloccata resta sbloccata (sul dispositivo) | deciso |
+| 2026-10-08 | Sottotipi in `src/dominio/sottotipi.ts`: classe della stella per stelle e sistemi, composizione, genere, anelli, forma; comete, pulsar, buchi neri e wormhole non ne hanno | deciso |

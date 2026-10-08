@@ -80,6 +80,7 @@ export function StrisciaStato({ nave, viaggio, ora, onApri }: Props) {
               </Etichetta>
               <Info
                 titolo="Ricarica"
+                wiki="viaggio"
                 formula={`${numero(nave.ricarica, 2)}/h${stellare ? ` × ${BILANCIAMENTO.carburante.ricaricaStella} (stella)` : ''} fino a ${numero(nave.serbatoio, 1)} × ${percentoTetto}%`}
                 esatto={`${numero(ricaricaQui(nave, nave.posizione), 2)}/h, tetto ${numero(tetto, 2)}`}
               />

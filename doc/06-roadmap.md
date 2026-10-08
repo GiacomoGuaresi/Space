@@ -67,7 +67,7 @@ Porta la navigazione di M2 sui valori v1 ([09](09-bilanciamento.md)).
 
 **Si consegna**: l'esplorazione con il ritmo definitivo.
 
-## MI · Ossatura dell'interfaccia ← *prossimo*
+## MI · Ossatura dell'interfaccia ✅
 
 Porta l'interfaccia di M2-M3 nella struttura di [11](11-interfaccia.md), senza meccaniche nuove.
 
@@ -76,11 +76,11 @@ Porta l'interfaccia di M2-M3 nella struttura di [11](11-interfaccia.md), senza m
 - [x] **I.3 Barra in basso**: Ponte (schede Qui, Scanner, Rotta), Mappa (`#/mappa`, con forme di rarità, filtri e tasti Nave/Madre), Altro (`#/altro`: Catalogo; Impostazioni in I.5). Rete e Nave compaiono con le loro meccaniche in M4.
 - [x] **I.4 Diario di bordo** al posto del riepilogo (`#/diario`, `src/ui/diario.ts`): novità evidenziate, "Già visti", 30 giorni, raggruppamento; si apre dalla striscia, da Altro e da solo all'apertura se ci sono novità. Voci di oggi: partenza, arrivo, sosta forzata, ricarica completata, corpo rilevato (rari e primo di un tipo), nuovo nel catalogo.
 - [x] **I.5 Pallini** su Ponte, Mappa e Altro (`pallini.ts`); **Impostazioni** (`#/impostazioni`) con suoni sintetizzati (spenti all'inizio) e animazioni: come il sistema, ridotte o piene.
-- [ ] **I.6 Wiki**: indice con le pagine chiuse e il suggerimento, Guida per ciò che esiste già (nave, viaggio, scanner), pagine dei corpi sbloccate alla prima rilevazione, sezione Numeri.
+- [x] **I.6 Wiki** (`#/wiki`, `pagineWiki.tsx`): indice con le pagine chiuse e il suggerimento, Guida per ciò che esiste già (come si gioca, nave, viaggio, scanner, catalogo), Fionda gravitazionale, pagine dei corpi sbloccate alla prima rilevazione con i sottotipi coperti finché non li trovi, sezione Numeri raggiunta anche dalle ⓘ. Le pagine delle altre meccaniche arrivano con i loro step.
 
 **Si consegna**: la plancia, pronta ad accogliere le meccaniche.
 
-## M4 · Risorse e prima colonia
+## M4 · Risorse e prima colonia ← *prossimo*
 
 - [ ] **4.1 Stiva per risorsa** (tabella `stiva`, sei risorse) e sezione **Nave** nella barra, con la stiva.
 - [ ] **4.2 Raccolta a mano**: sosta su un corpo con risorse, estrazione nel tempo fino alla stiva piena. *Si gioca: prime risorse.*

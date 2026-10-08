@@ -1,8 +1,9 @@
 import { Suspense, lazy, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { CATALOGO, TIPI } from '../dominio/catalogo'
+import { CATALOGO, TIPI, type TipoCorpo } from '../dominio/catalogo'
 import { corpiNoti } from '../dominio/mappa'
 import { inViaggio, type Nave } from '../dominio/navigazione'
 import { BASE, settore as calcolaSettore } from '../dominio/settore'
+import { sottotipo } from '../dominio/sottotipi'
 import { Altro } from './Altro'
 import { Pallini } from './Barra'
 import { Catalogo } from './Catalogo'
@@ -14,11 +15,13 @@ import { useImpostazioni, type Movimento } from './impostazioni'
 import { apriDiario, chiudiDiario, indirizzo, usePagina, type Pagina } from './indirizzo'
 import { Mappa } from './Mappa'
 import { Osservatorio } from './Osservatorio'
-import { segnaPonteVisto, useVisti } from './pallini'
+import { PAGINE_WIKI, sbloccate, type StatoWiki } from './pagineWiki'
+import { segnaPonteVisto, segnaWikiSbloccate, useVisti } from './pallini'
 import { Pannello } from './plancia'
 import { Ponte } from './Ponte'
 import { Scheda } from './Scheda'
 import { useNave, useOra } from './useNave'
+import { Wiki } from './Wiki'
 
 const NOMI_MOVIMENTO: Readonly<Record<Movimento, string>> = {
   sistema: 'animazioni come il sistema',
@@ -63,13 +66,36 @@ export function App() {
   const rariNuovi = noti.filter(
     (p) => !p.scoperto && ['rara', 'leggendaria'].includes(CATALOGO[p.tipo].rarita) && !visti.rari.includes(`${p.coordinate.x},${p.coordinate.y},${p.coordinate.z}`),
   ).length
+  // La wiki: tipi rilevati, sottotipi trovati, fionda usata. Ciò che si è
+  // sbloccato una volta resta sbloccato, anche quando i dati escono dai 30 giorni.
+  const statoWiki = useMemo<StatoWiki | null>(() => {
+    if (!nave) return null
+    const trovati = new Map<TipoCorpo, Set<string>>()
+    for (const s of scoperte) {
+      const corpo = calcolaSettore(s.coordinate).corpo
+      const chiave = corpo && sottotipo(corpo.dettagli)
+      if (!chiave) continue
+      if (!trovati.has(s.tipo)) trovati.set(s.tipo, new Set())
+      trovati.get(s.tipo)!.add(chiave)
+    }
+    return {
+      nave,
+      rilevati: new Set([...noti.map((p) => p.tipo), ...TIPI.filter((t) => visti.sbloccate.includes(t))]),
+      trovati,
+      fionda: viaggi.some((v) => v.fionda) || visti.sbloccate.includes('fionda'),
+    }
+  }, [nave, scoperte, noti, viaggi, visti.sbloccate])
+  const wikiSbloccate = useMemo(() => (statoWiki ? sbloccate(statoWiki) : []), [statoWiki])
+  useEffect(() => segnaWikiSbloccate(wikiSbloccate), [wikiSbloccate])
+  const wikiNuove = wikiSbloccate.filter((id) => !visti.wiki.includes(id))
+
   const pallini = useMemo(
     () => ({
       ponte: arrivoNonVisto ? 'la nave è arrivata' : undefined,
       mappa: rariNuovi ? `${rariNuovi} ${rariNuovi === 1 ? 'corpo raro rilevato' : 'corpi rari rilevati'}` : undefined,
-      altro: daLeggere ? `${daLeggere} novità nel diario` : undefined,
+      altro: daLeggere ? `${daLeggere} novità nel diario` : wikiNuove.length ? 'nuove pagine nella wiki' : undefined,
     }),
-    [arrivoNonVisto, rariNuovi, daLeggere],
+    [arrivoNonVisto, rariNuovi, daLeggere, wikiNuove.length],
   )
   // Sul ponte, a nave ferma, l'arrivo è visto.
   useEffect(() => {
@@ -142,6 +168,14 @@ export function App() {
                 pallino: daLeggere > 0,
               },
               {
+                titolo: 'Wiki',
+                sottotitolo: wikiNuove.length
+                  ? `Nuova pagina: ${wikiNuove.map((id) => PAGINE_WIKI.find((p) => p.id === id)?.titolo).join(', ')}`
+                  : `${PAGINE_WIKI.filter((p) => statoWiki && p.sbloccata(statoWiki)).length} pagine aperte su ${PAGINE_WIKI.length}`,
+                pagina: { pagina: 'wiki' },
+                pallino: wikiNuove.length > 0,
+              },
+              {
                 titolo: 'Catalogo',
                 sottotitolo: `${scoperte.length} ${scoperte.length === 1 ? 'corpo' : 'corpi'} · ${tipi} tipi su ${TIPI.length}`,
                 pagina: { pagina: 'catalogo' },
@@ -156,6 +190,13 @@ export function App() {
                 : []),
             ]}
           />
+        </Cornice>
+      )
+    }
+    if (pagina.pagina === 'wiki' && statoWiki) {
+      return (
+        <Cornice pagina="wiki" nave={stato.nave} viaggio={viaggio} scarto={scarto} fondo={<FondoNave nave={stato.nave} scarto={scarto} />}>
+          <Wiki stato={statoWiki} voce={pagina.voce} numeri={pagina.numeri} />
         </Cornice>
       )
     }

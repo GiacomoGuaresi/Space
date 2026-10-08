@@ -70,6 +70,7 @@ export function Scheda({ settore }: { settore: Settore }) {
         <span className="cifre">×{numero(corpo.ricchezza, 2)}</span>
         <Info
           titolo="Ricchezza"
+          wiki={corpo.tipo}
           formula={`media 1 + √(${numero(distanzaBase, 1)} / 100) = ${numero(media, 2)}, × ${numero(corpo.ricchezza / media, 2)} per questo corpo`}
           esatto={numero(corpo.ricchezza, 4)}
         />

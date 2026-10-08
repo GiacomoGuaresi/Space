@@ -5,6 +5,7 @@ import { useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type Rea
 import type { Rarita } from '../dominio/catalogo'
 import { COLORI_RARITA } from './colori'
 import { abbreviato } from './formato'
+import { indirizzo } from './indirizzo'
 import { suona } from './suoni'
 
 /** Un pannello sopra la scena: fondo scuro quasi pieno, bordo di 1 px, angoli piccoli. */
@@ -76,7 +77,18 @@ export function BottoneSecondario({ className = '', ...resto }: ButtonHTMLAttrib
  * ⓘ accanto a un valore calcolato: un tocco mostra la formula con i numeri
  * attuali e il valore esatto. Si chiude toccando fuori o con Esc.
  */
-export function Info({ titolo, formula, esatto }: { titolo: string; formula: ReactNode; esatto?: ReactNode }) {
+export function Info({
+  titolo,
+  formula,
+  esatto,
+  wiki,
+}: {
+  titolo: string
+  formula: ReactNode
+  esatto?: ReactNode
+  /** La pagina della wiki con la sezione Numeri. */
+  wiki?: string
+}) {
   const [aperta, setAperta] = useState(false)
   const id = useId()
   const dove = useRef<HTMLSpanElement>(null)
@@ -118,6 +130,11 @@ export function Info({ titolo, formula, esatto }: { titolo: string; formula: Rea
           <span className="etichetta">{titolo}</span>
           <span className="cifre text-[12px] leading-relaxed">{formula}</span>
           {esatto !== undefined && <span className="cifre text-[12px] text-ambra">= {esatto}</span>}
+          {wiki && (
+            <a href={indirizzo({ pagina: 'wiki', voce: wiki, numeri: true })} className="etichetta mt-1 self-end no-underline text-ambra!">
+              Numeri ›
+            </a>
+          )}
         </span>
       )}
     </span>

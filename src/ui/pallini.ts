@@ -8,17 +8,22 @@ interface Visti {
   ponte: string | null
   /** I corpi rari (chiave "x,y,z") di cui hai aperto la scheda nella mappa. */
   rari: string[]
+  /** Le pagine della wiki già aperte. */
+  wiki: string[]
+  /** Le pagine della wiki sbloccate: restano aperte anche se i dati che le hanno sbloccate escono dai 30 giorni. */
+  sbloccate: string[]
 }
 
 const CHIAVE = 'space_visti'
+const VUOTI: Visti = { ponte: null, rari: [], wiki: [], sbloccate: [] }
 let visti: Visti = leggi()
 const ascoltatori = new Set<() => void>()
 
 function leggi(): Visti {
   try {
-    return { ponte: null, rari: [], ...(JSON.parse(localStorage.getItem(CHIAVE) ?? '{}') as Partial<Visti>) }
+    return { ...VUOTI, ...(JSON.parse(localStorage.getItem(CHIAVE) ?? '{}') as Partial<Visti>) }
   } catch {
-    return { ponte: null, rari: [] }
+    return VUOTI
   }
 }
 
@@ -50,4 +55,15 @@ export function segnaPonteVisto(fino: Date) {
 export function segnaRaroVisto(chiave: string) {
   if (visti.rari.includes(chiave)) return
   salva({ ...visti, rari: [...visti.rari, chiave] })
+}
+
+export function segnaWikiAperta(id: string) {
+  if (visti.wiki.includes(id)) return
+  salva({ ...visti, wiki: [...visti.wiki, id] })
+}
+
+/** Ricorda le pagine sbloccate: una volta aperta, una pagina resta aperta. */
+export function segnaWikiSbloccate(ids: readonly string[]) {
+  const nuove = ids.filter((id) => !visti.sbloccate.includes(id))
+  if (nuove.length) salva({ ...visti, sbloccate: [...visti.sbloccate, ...nuove] })
 }

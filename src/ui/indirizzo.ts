@@ -1,6 +1,6 @@
 // Le pagine nell'indirizzo: `#/` il ponte (`#/rotta/x,y,z` con una meta già
 // scelta), `#/mappa` i settori scansionati, `#/altro` l'elenco delle altre
-// pagine, `#/diario` il diario di bordo, `#/impostazioni`, `#/catalogo` le scoperte,
+// pagine, `#/diario` il diario di bordo, `#/impostazioni`, `#/wiki/voce/numeri` la wiki, `#/catalogo` le scoperte,
 // `#/osservatorio/x,y,z` l'osservatorio libero (solo in sviluppo, doc/06).
 
 import { useSyncExternalStore } from 'react'
@@ -12,6 +12,7 @@ export type Pagina =
   | { pagina: 'altro' }
   | { pagina: 'diario' }
   | { pagina: 'impostazioni' }
+  | { pagina: 'wiki'; voce?: string; numeri?: boolean }
   | { pagina: 'catalogo' }
   | { pagina: 'osservatorio'; coordinate: Coordinate }
 
@@ -33,6 +34,11 @@ export function leggiPagina(hash: string): Pagina {
   if (percorso === 'altro') return { pagina: 'altro' }
   if (percorso === 'diario') return { pagina: 'diario' }
   if (percorso === 'impostazioni') return { pagina: 'impostazioni' }
+  if (percorso === 'wiki') return { pagina: 'wiki' }
+  if (percorso.startsWith('wiki/')) {
+    const [voce, sezione] = percorso.slice('wiki/'.length).split('/')
+    return sezione === 'numeri' ? { pagina: 'wiki', voce, numeri: true } : { pagina: 'wiki', voce }
+  }
   if (percorso.startsWith('rotta/')) {
     const meta = leggiCoordinate(percorso.slice('rotta/'.length))
     return meta ? { pagina: 'ponte', meta } : { pagina: 'ponte' }
@@ -58,6 +64,9 @@ export function indirizzo(pagina: Pagina): string {
       return '#/diario'
     case 'impostazioni':
       return '#/impostazioni'
+    case 'wiki':
+      if (!pagina.voce) return '#/wiki'
+      return `#/wiki/${pagina.voce}${pagina.numeri ? '/numeri' : ''}`
     case 'catalogo':
       return '#/catalogo'
     case 'osservatorio': {

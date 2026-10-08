@@ -62,12 +62,16 @@ interface Fonti {
 /** Le voci dei viaggi: partenze, arrivi e soste forzate già successi. */
 function vociViaggi(viaggi: readonly Viaggio[], ora: Date): Voce[] {
   const voci: Voce[] = []
+  // La prima fionda apre la sua pagina della wiki.
+  const primaFionda = [...viaggi].sort((a, b) => a.partenza.getTime() - b.partenza.getTime()).find((v) => v.fionda)
   for (const v of viaggi) {
     if (v.partenza <= ora) {
       voci.push({
         quando: v.partenza,
         tipo: 'partenza',
-        testo: `Verso ${coordinatePlancia(v.meta)}, arrivo ${orario(v.arrivo, v.partenza)}${v.fionda ? ' · fionda gravitazionale' : ''}.`,
+        testo: `Verso ${coordinatePlancia(v.meta)}, arrivo ${orario(v.arrivo, v.partenza)}${v.fionda ? ' · fionda gravitazionale' : ''}.${
+          v === primaFionda ? ' Nuova pagina della wiki: Fionda gravitazionale.' : ''
+        }`,
         breve: coordinatePlancia(v.meta),
       })
     }
@@ -140,12 +144,15 @@ function vociRilevamenti(scansioni: readonly Scansione[]): Voce[] {
       visti.add(k)
       const { rarita, nome } = CATALOGO[tipo]
       const raro = rarita === 'rara' || rarita === 'leggendaria'
-      if (!raro && tipiVisti.has(tipo)) continue
+      const primo = !tipiVisti.has(tipo)
+      if (!raro && !primo) continue
       tipiVisti.add(tipo)
       voci.push({
         quando: s.istante,
         tipo: 'rilevato',
-        testo: `${nome} (${rarita}) in ${coordinatePlancia(coordinate)}, a ${numero(distanza(coordinate, BASE), 1)} sett. dalla base madre.`,
+        testo: `${nome} (${rarita}) in ${coordinatePlancia(coordinate)}, a ${numero(distanza(coordinate, BASE), 1)} sett. dalla base madre.${
+          primo ? ` Nuova pagina della wiki: ${nome}.` : ''
+        }`,
         breve: nome.toLowerCase(),
       })
     }
