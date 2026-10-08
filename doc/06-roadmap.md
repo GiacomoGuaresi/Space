@@ -112,7 +112,7 @@ Porta l'interfaccia su PC nella [plancia a finestre](11-interfaccia.md#pc--planc
 
 - [x] **5.1 Coda di costruzione** (tabella `costruzione`), con le ricette a gradini e il pagamento da stiva + magazzino della base. (`015_cantiere.sql`: `space.potenzia(lavoro)`, una coda per la nave e una per base, lavori applicati alla lettura in `assesta`; costi e tempi verificati da `verifica-sql`.)
 - [x] **5.2 Motore, serbatoio, ricarica** nel cantiere della base madre; la nave resta ferma. *Si gioca: il primo potenziamento.*
-- [ ] **5.3 Stiva infinita**: 40 % della stiva, 1 h.
+- [x] **5.3 Stiva infinita**: 40 % della stiva, 1 h.
 - [ ] **5.4 Scanner come potenziamento**: raggio e tipi a livelli alterni.
 - [ ] **5.5 Livelli di produzione** degli insediamenti, nella coda della base.
 - [ ] **5.6 Magazzino a livelli.**

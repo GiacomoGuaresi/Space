@@ -15,7 +15,7 @@ import { RIFIUTI } from './rifiuti'
 import { CaricoAttuale } from './SchedaNave'
 
 /** Le statistiche che oggi si potenziano (le altre arrivano con i loro step, doc/06-roadmap.md). */
-export const STATISTICHE_ATTIVE: readonly Statistica[] = ['motore', 'serbatoio', 'ricarica']
+export const STATISTICHE_ATTIVE: readonly Statistica[] = ['motore', 'serbatoio', 'ricarica', 'stiva']
 
 /** Il livello attuale di un lavoro: della nave, o della base `base`. */
 export function livelloAttuale(lavoro: Lavoro, nave: Nave, base: Insediamento | undefined): number {

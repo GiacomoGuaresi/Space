@@ -207,7 +207,8 @@ const GUIDA: PaginaWiki[] = [
         ['Costo', `base × ${cantiere.crescita}^(livello − 1); base ${cantiere.base.motore} per motore, serbatoio, ricarica e scanner`],
         ['Tempo', `${cantiere.ore} h × ${cantiere.crescitaTempo}^(livello − 2) / (1 + ${cantiere.riduzione} × (cantiere − 1))`],
         ['Statistiche', `valore di partenza × ${nave.crescita}^(livello − 1)`],
-        ['Tetto', `livello della nave ≤ ${cantiere.tetto} × livello del cantiere`],
+        ['Tetto', `livello della nave ≤ ${cantiere.tetto} × livello del cantiere (la stiva no)`],
+        ['Stiva', `${Math.round(cantiere.stiva.quota * 100)} % della stiva attuale, M 60 S 40, sempre ${cantiere.stiva.ore} h`],
         ['Ricette', 'liv. 1-3 M 60 S 40 · 4-6 M 50 S 30 G 20 · 7-9 + Idrogeno · 10-14 + Terre rare · 15+ + Materia oscura'],
       ]
     },
