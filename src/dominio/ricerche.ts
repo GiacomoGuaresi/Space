@@ -5,7 +5,7 @@
 import { BILANCIAMENTO } from './bilanciamento'
 import { aLivello } from './insediamenti'
 import type { Quantita } from './risorse'
-import { ricetta } from './cantiere'
+import { conLeghe, ricetta } from './cantiere'
 
 export type Ramo = 'P' | 'C' | 'S' | 'I'
 export type IdRicerca = keyof typeof BILANCIAMENTO.ricerche.nodi
@@ -76,13 +76,13 @@ export function gradino(id: IdRicerca): number {
 }
 
 /** Il costo di una ricerca di gradino `g`: come un livello `2g` di base 60, con la stessa ricetta. */
-export function costoGradino(g: number): Partial<Quantita> {
+export function costoGradino(g: number, fatte: Ricerche = NESSUNA_RICERCA): Partial<Quantita> {
   const { base, costo } = BILANCIAMENTO.ricerche
   const livello = costo * g
   const totale = aLivello(base, BILANCIAMENTO.cantiere.crescita, livello)
   const risultato: Partial<Quantita> = {}
   for (const [r, parte] of Object.entries(ricetta(livello))) risultato[r as keyof Quantita] = totale * parte
-  return risultato
+  return conLeghe(risultato, fatte)
 }
 
 /** Le ore di una ricerca di gradino `g`: 6 min a gradino, al massimo 1 h. */

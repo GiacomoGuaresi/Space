@@ -39,6 +39,16 @@ export function capacitaStiva(livello: number): number {
   return valore
 }
 
+/** Le ricerche completate: alcune cambiano i numeri (doc/10-ricerche.md). */
+export type Fatte = ReadonlySet<string>
+
+const NESSUNA: Fatte = new Set()
+
+/** La capacità della stiva con le ricerche: *Stiva modulare* la alza del 15 %. Come `space.capacita_di`. */
+export function capacitaNave(livello: number, fatte: Fatte = NESSUNA): number {
+  return capacitaStiva(livello) * (fatte.has('I2') ? 1 + BILANCIAMENTO.ricerche.effetti.I2 : 1)
+}
+
 /** Quello che c'è a bordo, valido dall'istante `dal`. */
 export interface Carico {
   quantita: Quantita
@@ -95,12 +105,12 @@ export function ritmoMano(corpo: Corpo | null): Partial<Quantita> | null {
  * sola, da quando è arrivata (o dall'ultima volta che la stiva è stata
  * scritta), fino a riempire la stiva. Come `space.stiva_ora` in SQL.
  */
-export function caricoOra(carico: Carico, nave: Nave, ora: Date): Quantita {
+export function caricoOra(carico: Carico, nave: Nave, ora: Date, fatte: Fatte = NESSUNA): Quantita {
   const quantita = { ...carico.quantita }
   if (nave.dal > ora) return quantita
   const ritmi = ritmoMano(settore(nave.posizione).corpo)
   if (!ritmi) return quantita
-  const capacita = capacitaStiva(nave.stiva)
+  const capacita = capacitaNave(nave.stiva, fatte)
   const inizio = Math.max(carico.dal.getTime(), nave.dal.getTime())
   const ore = Math.max(0, ora.getTime() - inizio) / 3_600_000
   for (const r of RISORSE) {
@@ -112,10 +122,10 @@ export function caricoOra(carico: Carico, nave: Nave, ora: Date): Quantita {
 }
 
 /** Tra quante ore la raccolta a mano riempie la stiva per ogni risorsa che si raccoglie qui. */
-export function stivaPienaTra(carico: Carico, nave: Nave, ora: Date): Partial<Quantita> {
+export function stivaPienaTra(carico: Carico, nave: Nave, ora: Date, fatte: Fatte = NESSUNA): Partial<Quantita> {
   const ritmi = ritmoMano(settore(nave.posizione).corpo) ?? {}
-  const adesso = caricoOra(carico, nave, ora)
-  const capacita = capacitaStiva(nave.stiva)
+  const adesso = caricoOra(carico, nave, ora, fatte)
+  const capacita = capacitaNave(nave.stiva, fatte)
   const tra: Partial<Quantita> = {}
   for (const r of RISORSE) {
     const ritmo = ritmi[r]

@@ -46,3 +46,17 @@ describe('deposito', () => {
     expect(costoPieno(-1, 1)).toBe(0)
   })
 })
+
+describe('ricerche di Ingegneria', () => {
+  it('Automazione accorcia i tempi del 10 %, non la stiva', () => {
+    expect(durataLavoro('motore', 2, 1, new Set(['I1']))).toBeCloseTo(2.7, 10)
+    expect(durataLavoro('stiva', 2, 1, new Set(['I1']))).toBe(1)
+  })
+
+  it('Leghe toglie il 10 % di Metallo e Silicio', () => {
+    const c = costoLavoro('motore', 4, new Set(['I4']))
+    const base = costoLavoro('motore', 4)
+    expect(c.metallo).toBeCloseTo(base.metallo! * 0.9, 10)
+    expect(c.ghiaccio).toBe(base.ghiaccio)
+  })
+})

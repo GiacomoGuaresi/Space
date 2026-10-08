@@ -219,9 +219,16 @@ export const BILANCIAMENTO = {
       I10: { gradino: 10, richiede: ['I9'] },
     },
     /** I nodi che si possono già ricercare: gli altri arrivano con le loro meccaniche (doc/06-roadmap.md). */
-    attive: [] as string[],
+    attive: ['I1', 'I2', 'I3', 'I4'] as string[],
     /** Gli effetti, con i loro numeri. */
-    effetti: {},
+    effetti: {
+      /** Automazione: tempi di costruzione −10 %. */
+      I1: 0.1,
+      /** Stiva modulare: +15 %. */
+      I2: 0.15,
+      /** Leghe: Metallo e Silicio nelle ricette −10 %. */
+      I4: 0.1,
+    },
   },
   deposito: {
     /** Il pieno al deposito: tanto Idrogeno per unità di carburante, per tanto a ogni livello. */

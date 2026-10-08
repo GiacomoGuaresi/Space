@@ -11,7 +11,7 @@ import { Coda, Potenziamenti } from './Cantiere'
 import { AzioniNave } from './azioni'
 import { coordinatePlancia, numero, rovescia } from './formato'
 import { indirizzo } from './indirizzo'
-import { RICERCHE, type IdRicerca } from '../dominio/ricerche'
+import { NESSUNA_RICERCA, RICERCHE, type IdRicerca } from '../dominio/ricerche'
 import { BarreMagazzino, NOMI_INSEDIAMENTI } from './Magazzino'
 import { BottoneSecondario, Etichetta, Info, Pannello } from './plancia'
 import { RIFIUTI } from './rifiuti'
@@ -22,9 +22,11 @@ import { CaricoAttuale } from './SchedaNave'
  * base madre, nelle colonie arrivano con le ricerche (M7). Le altre arrivano
  * con i loro step (doc/06-roadmap.md).
  */
-export function struttureAttive(base: Insediamento): Struttura[] {
+export function struttureAttive(base: Insediamento, fatte: ReadonlySet<string>): Struttura[] {
   const tutte: Struttura[] = ['produzione', 'magazzino', 'cantiere', 'deposito', 'laboratorio']
-  return base.tipo === 'madre' ? tutte : tutte.filter((s) => s !== 'cantiere' && s !== 'deposito')
+  if (base.tipo === 'madre') return tutte
+  // Nelle colonie il cantiere arriva con *Cantiere orbitale* (I3), il deposito con *Deposito* (I5).
+  return tutte.filter((s) => (s !== 'cantiere' || fatte.has('I3')) && (s !== 'deposito' || fatte.has('I5')))
 }
 
 /** Vero se la nave è attraccata a una base: il dock mostra la voce Base solo allora. */
@@ -42,6 +44,7 @@ export function useBaseQui(nave: Nave, ora: Date): Insediamento | undefined {
  * coda della base e il magazzino. C'è solo da attraccati: si costruisce sul posto.
  */
 export function SchedaBase({ nave, ora, base }: { nave: Nave; ora: Date; base: Insediamento }) {
+  const fatte = useContext(CaricoAttuale)?.fatte ?? NESSUNA_RICERCA
   const nome = base.tipo === 'madre' ? 'Base madre' : (settore(base.coordinate).corpo?.nome ?? coordinatePlancia(base.coordinate))
   return (
     <Pannello className="flex min-h-0 flex-1 flex-col overflow-y-auto" etichetta="Base">
@@ -54,7 +57,7 @@ export function SchedaBase({ nave, ora, base }: { nave: Nave; ora: Date; base: I
       </header>
       <section aria-label="Strutture" className="border-b border-separatore p-3.5">
         <h2 className="etichetta m-0 mb-1">Strutture</h2>
-        <Potenziamenti nave={nave} ora={ora} lavori={struttureAttive(base)} base={base} />
+        <Potenziamenti nave={nave} ora={ora} lavori={struttureAttive(base, fatte)} base={base} />
         <h3 className="etichetta m-0 mt-3 mb-2">Coda della base</h3>
         <Coda coda="base" base={base} ora={ora} />
       </section>

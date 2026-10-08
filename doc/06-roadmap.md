@@ -124,7 +124,7 @@ Porta l'interfaccia su PC nella [plancia a finestre](11-interfaccia.md#pc--planc
 ## M6 · Laboratorio e ricerche ← *prossimo*
 
 - [x] **6.1 Motore delle ricerche** (tabella `ricerca`): una alla volta, nave ferma ≤ 1 h, gradino ≤ livello del laboratorio; laboratorio a livelli. Interfaccia dell'albero (finestra T su PC). (`017_ricerche.sql`: `space.ricerca(nodo)`, nodi in `bilanciamento.ricerche` con l'elenco `attive`; `AlberoRicerche.tsx`, voce Ricerche in Altro; laboratorio nella Base; ricerche e lavori finiti nel diario.)
-- [ ] **6.2 Ingegneria 1-4**: Automazione, Stiva modulare, Cantiere orbitale, Leghe.
+- [x] **6.2 Ingegneria 1-4**: Automazione, Stiva modulare, Cantiere orbitale, Leghe. (`018_ingegneria.sql`: `space.capacita_di`, `space.con_leghe`; in TypeScript le funzioni ricevono le ricerche completate.)
 - [ ] **6.3 Colonizzazione 1-4**: Astrofisica I (+2 basi), Estrattori minerari, Raccoglitori di gas, Magazzini modulari.
 - [ ] **6.4 Sensori 1-4**: Scansione in volo, Spettrometria, Radar (solo lo sblocco), Telemetria.
 - [ ] **6.5 Propulsione 1-2**: Raffinazione I, Iniettori.

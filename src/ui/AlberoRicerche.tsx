@@ -110,7 +110,7 @@ function Dettaglio({
   const [inCorso, setInCorso] = useState(false)
   const [errore, setErrore] = useState<string | null>(null)
   const g = gradino(id)
-  const costo = costoGradino(g)
+  const costo = costoGradino(g, fatte)
   const base = !inViaggio(nave, ora) ? bordo?.insediamenti.find((i) => stessoSettore(i.coordinate, nave.posizione)) : undefined
   const manca = bordo ? mancante(costo, bordo.quantita, base ? magazzinoOra(base, ora) : {}) : {}
   const motivo =

@@ -43,7 +43,7 @@ export function Raccolta({ nave, ora }: { nave: Nave; ora: Date }) {
     )
   }
   if (!bordo || !corpo || !ritmi || !mix || nave.dal > ora) return null
-  const tra = stivaPienaTra(bordo.carico, nave, ora)
+  const tra = stivaPienaTra(bordo.carico, nave, ora, bordo.fatte)
   const { mano, ritmo } = BILANCIAMENTO.produzione
   const raccolte = RISORSE.filter((r) => ritmi[r])
   const piena = raccolte.every((r) => bordo.quantita[r] >= bordo.capacita)

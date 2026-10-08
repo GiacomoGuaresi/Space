@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { TipoCorpo } from './catalogo'
 import type { Nave } from './navigazione'
 import { BILANCIAMENTO } from './bilanciamento'
-import { bottinoCometa, caricoOra, capacitaStiva, inStiva, mixCorpo, nessuna, ritmoMano, stivaPienaTra } from './risorse'
+import { bottinoCometa, capacitaNave, caricoOra, capacitaStiva, inStiva, mixCorpo, nessuna, ritmoMano, stivaPienaTra } from './risorse'
 import { BASE, settore, tipoSettore, type Coordinate } from './settore'
 
 /** Il primo settore di un tipo lungo l'asse x. */
@@ -85,5 +85,12 @@ describe('comete', () => {
 
   it('quello che non entra si perde', () => {
     expect(inStiva({ ghiaccio: 300, idrogeno: 10 }, { ...nessuna(), ghiaccio: 5 }, 25)).toEqual({ ghiaccio: 20, idrogeno: 10 })
+  })
+})
+
+describe('Stiva modulare', () => {
+  it('alza la capacità del 15 %', () => {
+    expect(capacitaNave(1, new Set(['I2']))).toBeCloseTo(28.75, 10)
+    expect(capacitaNave(1)).toBe(25)
   })
 })

@@ -2,7 +2,7 @@ import { Suspense, lazy, useEffect, useMemo, useRef, useState, type ReactNode } 
 import { CATALOGO, TIPI, type TipoCorpo } from '../dominio/catalogo'
 import { corpiNoti } from '../dominio/mappa'
 import { inViaggio, type Nave } from '../dominio/navigazione'
-import { caricoOra, capacitaStiva } from '../dominio/risorse'
+import { capacitaNave, caricoOra } from '../dominio/risorse'
 import { pienoIl, ritmoInsediamento } from '../dominio/insediamenti'
 import { BASE, settore as calcolaSettore } from '../dominio/settore'
 import { sottotipo } from '../dominio/sottotipi'
@@ -105,6 +105,12 @@ export function App() {
   }, [pc, diarioAperto, scarto])
   const daLeggere = voci.filter((v) => novita(v, lettoAperto)).length
   const carico = stato.fase === 'pronta' ? stato.carico : null
+  // Le ricerche completate, che cambiano alcuni numeri: si ricalcolano al minuto.
+  const chiaveFatte = ricerche
+    .filter((r) => r.fine.getTime() <= minuto * 60_000)
+    .map((r) => r.nodo)
+    .join(',')
+  const fatte = useMemo(() => new Set(chiaveFatte ? chiaveFatte.split(',') : []), [chiaveFatte])
   // Al secondo, come il carburante: la raccolta a mano si vede crescere.
   const secondo = Math.floor(ora.getTime() / 1000)
   const bordo = useMemo(
@@ -112,13 +118,14 @@ export function App() {
       carico && nave
         ? {
             carico,
-            quantita: caricoOra(carico, nave, new Date(secondo * 1000)),
-            capacita: capacitaStiva(nave.stiva),
+            quantita: caricoOra(carico, nave, new Date(secondo * 1000), fatte),
+            capacita: capacitaNave(nave.stiva, fatte),
             raccolti,
             insediamenti,
+            fatte,
           }
         : null,
-    [carico, nave, secondo, raccolti, insediamenti],
+    [carico, nave, secondo, raccolti, insediamenti, fatte],
   )
   const azioni = useMemo(
     () => ({ fonda, potenzia, pieno, avviaRicerca, ricerche, costruzioni }),

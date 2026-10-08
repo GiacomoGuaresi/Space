@@ -4,7 +4,7 @@
 
 import { BILANCIAMENTO } from './bilanciamento'
 import { aLivello } from './insediamenti'
-import { capacitaStiva, RISORSE, type Quantita } from './risorse'
+import { capacitaStiva, RISORSE, type Fatte, type Quantita } from './risorse'
 
 export type Statistica = 'motore' | 'serbatoio' | 'ricarica' | 'scanner' | 'stiva'
 export type Struttura = 'produzione' | 'magazzino' | 'cantiere' | 'deposito' | 'laboratorio'
@@ -42,7 +42,20 @@ export function ricetta(livello: number): Partial<Quantita> {
  * Il costo per arrivare al livello `livello`. La stiva costa il 40 % della
  * stiva attuale (livello − 1); il resto `base × 1,45^(livello − 1)`.
  */
-export function costoLavoro(lavoro: Lavoro, livello: number): Partial<Quantita> {
+export function costoLavoro(lavoro: Lavoro, livello: number, fatte: Fatte = new Set()): Partial<Quantita> {
+  return conLeghe(costoBase(lavoro, livello), fatte)
+}
+
+/** *Leghe* toglie il 10 % di Metallo e Silicio dalle ricette. Come `space.con_leghe`. */
+export function conLeghe(costo: Partial<Quantita>, fatte: Fatte): Partial<Quantita> {
+  if (!fatte.has('I4')) return costo
+  const sconto = 1 - BILANCIAMENTO.ricerche.effetti.I4
+  const risultato = { ...costo }
+  for (const r of ['metallo', 'silicio'] as const) if (risultato[r] !== undefined) risultato[r] = risultato[r]! * sconto
+  return risultato
+}
+
+function costoBase(lavoro: Lavoro, livello: number): Partial<Quantita> {
   const { cantiere } = BILANCIAMENTO
   const costo: Partial<Quantita> = {}
   if (lavoro === 'stiva') {
@@ -59,12 +72,14 @@ export function costoLavoro(lavoro: Lavoro, livello: number): Partial<Quantita> 
 }
 
 /** Quante ore dura arrivare al livello `livello`, con il cantiere della base a `livelloCantiere` (0 se non c'è). */
-export function durataLavoro(lavoro: Lavoro, livello: number, livelloCantiere: number): number {
+export function durataLavoro(lavoro: Lavoro, livello: number, livelloCantiere: number, fatte: Fatte = new Set()): number {
   const { cantiere } = BILANCIAMENTO
   if (lavoro === 'stiva') return cantiere.stiva.ore
   let ore: number = cantiere.ore
   for (let i = 2; i < livello; i++) ore *= cantiere.crescitaTempo
-  return ore / (1 + cantiere.riduzione * (Math.max(1, livelloCantiere) - 1))
+  // *Automazione* accorcia del 10 %.
+  const automazione = fatte.has('I1') ? 1 - BILANCIAMENTO.ricerche.effetti.I1 : 1
+  return (ore / (1 + cantiere.riduzione * (Math.max(1, livelloCantiere) - 1))) * automazione
 }
 
 /** Il valore di motore (settori/h), serbatoio (unità) o ricarica (unità/h) al livello `livello`. */

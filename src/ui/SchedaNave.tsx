@@ -1,8 +1,8 @@
-import { createContext, type ReactNode } from 'react'
+import { createContext, useContext, type ReactNode } from 'react'
 import type { Raccolto } from '../dati'
 import type { Insediamento } from '../dominio/insediamenti'
 import { raggioScanner, type Nave } from '../dominio/navigazione'
-import { capacitaStiva, RISORSE, type Carico, type Quantita } from '../dominio/risorse'
+import { capacitaNave, RISORSE, type Carico, type Fatte, type Quantita } from '../dominio/risorse'
 import { NOMI_RISORSE } from '../dominio/catalogo'
 import { tipoSettore } from '../dominio/settore'
 import { numero } from './formato'
@@ -16,6 +16,8 @@ export const CaricoAttuale = createContext<{
   capacita: number
   raccolti: readonly Raccolto[]
   insediamenti: readonly Insediamento[]
+  /** Le ricerche completate: cambiano capacità, costi e tempi. */
+  fatte: Fatte
 } | null>(null)
 
 /**
@@ -23,7 +25,8 @@ export const CaricoAttuale = createContext<{
  * per risorsa. I potenziamenti arrivano col cantiere (M5).
  */
 export function SchedaNave({ nave, quantita, ora }: { nave: Nave; quantita: Quantita; ora: Date }) {
-  const capacita = capacitaStiva(nave.stiva)
+  const fatte = useContext(CaricoAttuale)?.fatte
+  const capacita = capacitaNave(nave.stiva, fatte)
   return (
     <Pannello className="flex min-h-0 flex-1 flex-col overflow-y-auto" etichetta="Nave">
       <header className="flex flex-col gap-1 border-b border-linea p-3.5">
