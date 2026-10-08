@@ -1,13 +1,16 @@
-import { Suspense, lazy, useEffect, useMemo, useState } from 'react'
+import { Suspense, lazy, useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { Scoperta } from '../dati'
 import { inViaggio, type Nave, type Viaggio } from '../dominio/navigazione'
 import { settore as calcolaSettore, type Coordinate } from '../dominio/settore'
 import { vaiA } from './indirizzo'
 import { Cornice } from './Cornice'
+import { Finestra } from './Finestra'
+import { apri, FINESTRE, inPrimoPiano, useDisposizione, type IdFinestra } from './finestre'
 import { Pannello } from './plancia'
 import { Rotta } from './Rotta'
 import { Scanner } from './Scanner'
 import { Scheda } from './Scheda'
+import { usePC } from './schermo'
 import { useOra } from './useNave'
 
 const Scena = lazy(async () => ({ default: (await import('../grafica/Scena')).Scena }))
@@ -27,7 +30,8 @@ interface Props {
 /**
  * Il ponte di comando (M2): la vista del settore dove sta la nave (o il
  * viaggio, se è in volo), lo stato della nave in alto e in basso il settore,
- * lo scanner e la rotta.
+ * lo scanner e la rotta: sul telefono come schede di un pannello, su PC come
+ * tre finestre (doc/11-interfaccia.md#finestre).
  */
 export function Ponte({ nave, viaggio, scarto, scoperte, meta: metaScelta, onParti }: Props) {
   const ora = useOra(scarto)
@@ -37,17 +41,71 @@ export function Ponte({ nave, viaggio, scarto, scoperte, meta: metaScelta, onPar
   const scoperti = useMemo(() => new Set(scoperte.map(({ coordinate: c }) => `${c.x},${c.y},${c.z}`)), [scoperte])
   const [scheda, setScheda] = useState<Linguetta>(metaScelta ? 'rotta' : 'qui')
   const [meta, setMeta] = useState<Coordinate | null>(metaScelta ?? null)
+  const pc = usePC()
+  const disposizione = useDisposizione()
 
   const { x: mx, y: my, z: mz } = metaScelta ?? { x: null, y: null, z: null }
   useEffect(() => {
     if (mx === null || my === null || mz === null) return
     setMeta({ x: mx, y: my, z: mz })
     setScheda('rotta')
+    apri('rotta')
   }, [mx, my, mz])
 
+  // Scegliere una meta apre la rotta: la scheda sul telefono, la finestra su PC.
   const scegli = (c: Coordinate) => {
     setMeta(c)
     setScheda('rotta')
+    apri('rotta')
+  }
+
+  const fondo = (
+    <Suspense fallback={null}>
+      <Scena settore={settore} inViaggio={volo} />
+    </Suspense>
+  )
+  const rotta = (
+    <Rotta
+      nave={nave}
+      ora={ora}
+      meta={meta}
+      scoperti={scoperti}
+      onMeta={setMeta}
+      onParti={async (m) => {
+        await onParti(m)
+        setMeta(null)
+        setScheda('qui')
+        // La meta della mappa non serve più: l'indirizzo torna quello del ponte.
+        if (metaScelta) vaiA({ pagina: 'ponte' })
+      }}
+    />
+  )
+  const inArrivo = <p className="m-0 text-xs text-testo-tenue">Disponibile all'arrivo.</p>
+
+  if (pc) {
+    const contenuti: Record<IdFinestra, ReactNode> = {
+      qui: <Scheda settore={settore} />,
+      scanner: volo ? inArrivo : <Scanner centro={nave.posizione} livello={nave.scanner} scoperti={scoperti} onScegli={scegli} />,
+      rotta: volo ? inArrivo : rotta,
+    }
+    const attiva = inPrimoPiano(disposizione)
+    return (
+      <Cornice pagina="ponte" nave={nave} viaggio={viaggio} scarto={scarto} fondo={fondo} finestre>
+        {(Object.keys(FINESTRE) as IdFinestra[])
+          .filter((id) => disposizione.finestre[id].stato === 'aperta')
+          .map((id) => (
+            <Finestra
+              key={id}
+              id={id}
+              finestra={disposizione.finestre[id]}
+              livello={disposizione.ordine.indexOf(id) + 1}
+              attiva={attiva === id}
+            >
+              {contenuti[id]}
+            </Finestra>
+          ))}
+      </Cornice>
+    )
   }
 
   const linguetta = (valore: Linguetta, testo: string) => (
@@ -63,17 +121,7 @@ export function Ponte({ nave, viaggio, scarto, scoperte, meta: metaScelta, onPar
   )
 
   return (
-    <Cornice
-      pagina="ponte"
-      nave={nave}
-      viaggio={viaggio}
-      scarto={scarto}
-      fondo={
-        <Suspense fallback={null}>
-          <Scena settore={settore} inViaggio={volo} />
-        </Suspense>
-      }
-    >
+    <Cornice pagina="ponte" nave={nave} viaggio={viaggio} scarto={scarto} fondo={fondo}>
       {volo ? (
         <Pannello className="p-3 text-xs text-testo-tenue">
           Lo scanner e la rotta tornano disponibili all'arrivo. Il nome di quello che c'è laggiù lo scoprirai arrivando.
@@ -91,20 +139,7 @@ export function Ponte({ nave, viaggio, scarto, scoperte, meta: metaScelta, onPar
             ) : scheda === 'scanner' ? (
               <Scanner centro={nave.posizione} livello={nave.scanner} scoperti={scoperti} onScegli={scegli} />
             ) : (
-              <Rotta
-                nave={nave}
-                ora={ora}
-                meta={meta}
-                scoperti={scoperti}
-                onMeta={setMeta}
-                onParti={async (m) => {
-                  await onParti(m)
-                  setMeta(null)
-                  setScheda('qui')
-                  // La meta della mappa non serve più: l'indirizzo torna quello del ponte.
-                  if (metaScelta) vaiA({ pagina: 'ponte' })
-                }}
-              />
+              rotta
             )}
           </div>
         </Pannello>
