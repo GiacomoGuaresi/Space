@@ -22,3 +22,4 @@
 | 2026-10-08 | Sviluppo a **macro step stabili**: M0 fondamenta, M1 universo, M2 navigazione, M3 risorse e colonie, M4 potenziamenti, M5 rarità | deciso |
 | 2026-10-08 | Seed da una **funzione di hash scritta da noi**, identica in TypeScript e in SQL | proposta |
 | 2026-10-08 | Azioni solo tramite **funzioni Postgres**, stato calcolato alla lettura senza job | proposta |
+| 2026-10-08 | Palette provvisoria **scura** (fondo spazio, accento blu nebula), icona: pianeta con anello | deciso |

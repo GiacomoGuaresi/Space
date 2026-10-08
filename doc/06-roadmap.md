@@ -8,16 +8,17 @@ Lo sviluppo procede per **macro step stabili**: ognuno si chiude pubblicato e gi
 - [ ] Giri di Q&A fino a nessuna domanda aperta
 - [ ] Documentazione senza punti aperti: valori numerici, interfaccia, sicurezza
 
-## M0 · Fondamenta
+## M0 · Fondamenta ✅
 - [x] `git init`, LICENSE MIT, repository pubblico `Space` su GitHub
-- [ ] GitHub Pages attivo
-- [ ] Scaffold Vite + React + TS + Tailwind, Vitest, three.js
-- [ ] Workflow `pubblica.yml`
-- [ ] Accesso con l'account di casa, schema `space` esposto
+- [x] GitHub Pages attivo, variabili del repository impostate
+- [x] Scaffold Vite + React + TS + Tailwind, Vitest, three.js, PWA con icona
+- [x] Workflow `pubblica.yml`
+- [x] Accesso con l'account di casa, schema `space` creato ed esposto, URL nei redirect di Auth ([08](08-deploy.md))
+- [x] Pagina provvisoria con un campo di stelle three.js
 
 **Si consegna**: una pagina vuota online, dietro l'accesso.
 
-## M1 · Universo e corpi celesti
+## M1 · Universo e corpi celesti ← *prossimo*
 - [ ] Hash delle coordinate e generatore casuale, con test sui settori noti
 - [ ] Catalogo: pesi, gradiente di distanza, sottotipi, ricchezza
 - [ ] Nomi per tipo

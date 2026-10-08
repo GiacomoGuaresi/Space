@@ -1,0 +1,43 @@
+@import 'tailwindcss';
+
+/* Palette spazio, solo tema scuro: provvisoria, si definisce con l'interfaccia.
+   Font e scala come le altre app di casa. */
+@theme {
+  --color-fondo: #070b14;
+  --color-pannello: #0f1626;
+  --color-bordo: #24304a;
+  --color-testo: #dbe4f5;
+  --color-testo-tenue: #8796b3;
+  --color-nebula: #7aa2ff;
+  --color-nebula-scura: #5a82e0;
+  --color-pericolo: #ff7a85;
+
+  --font-sans: 'Avenir Next', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* Chi ha chiesto meno movimento vede tutto cambiare di colpo. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+  }
+}
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background: var(--color-fondo);
+  color: var(--color-testo);
+  font-family: var(--font-sans);
+  font-size: 14px;
+}
+
+/* I campi di testo restano a 16px: sotto, iOS zooma da solo al tocco. */
+input {
+  font-size: 16px;
+}

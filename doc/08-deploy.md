@@ -1,0 +1,43 @@
+# 08 · Deploy e manutenzione
+
+## Repository
+
+- Pubblico, `github.com/GiacomoGuaresi/Space`, licenza **MIT**
+- Branch principale `main`
+
+## Frontend → GitHub Pages
+
+Workflow `.github/workflows/pubblica.yml`, come nelle altre app. A ogni push su `main`:
+1. `npm ci`
+2. controllo che le variabili siano presenti
+3. `npm test`
+4. `npm run build`
+5. pubblicazione di `dist/` con `actions/upload-pages-artifact` + `actions/deploy-pages`
+
+Variabili del repository (Settings → Secrets and variables → Actions → **Variables**, perché finiscono nel bundle pubblico): `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SUPABASE_EMAIL`, con gli stessi valori di produzione delle altre app. Impostate il 2026-10-08 con `gh variable set`.
+
+URL: `https://giacomoguaresi.github.io/Space/`. Vite ha `base: '/Space/'`. Pages è attivo con sorgente "GitHub Actions" dal 2026-10-08.
+
+## Sviluppo locale
+
+`.env.local` con le stesse tre variabili (vedi `.env.example`): `npm run dev` lavora sul progetto di produzione, nello schema `space`.
+
+## Database → Supabase
+
+| Aspetto | Decisione |
+|---|---|
+| Progetto | **produzione di Grocery** |
+| Schema | `space`, esposto nell'API |
+| Script SQL | `supabase/sql/NNN_*.sql`, applicati a mano |
+| Keep-alive | non serve |
+
+## Configurazioni una tantum
+
+Fatte il 2026-10-08 con la Management API:
+1. Script `001_schema.sql` applicato (`POST /v1/projects/{ref}/database/query`)
+2. `space` aggiunto agli *Exposed schemas* (`PATCH /v1/projects/{ref}/postgrest`). La lista `db_schema` si manda sempre intera, con gli schemi delle altre app
+3. `https://giacomoguaresi.github.io/Space/` aggiunto agli URL di redirect di Auth (`PATCH /v1/projects/{ref}/config/auth`, `uri_allow_list`). Anche questa lista si manda intera
+
+Gli script successivi si applicano allo stesso modo, oppure dal SQL Editor. Il token della Management API sta in `credenziali.local`, nella cartella sopra i repository, mai nel repo.
+
+⚠️ Il progetto è quello di produzione di Grocery: ogni modifica alla configurazione va fatta senza toccare le impostazioni usate dalle altre app.

@@ -4,7 +4,22 @@ Piccolo gioco di esplorazione spaziale in tempo reale, nello spirito di OGame, c
 
 Si esplora, si raccolgono risorse, si fondano colonie che producono fino a riempire il magazzino (poi bisogna tornare a svuotarle) e si potenziano nave e base.
 
-> **Stato: progettazione.** Documentazione di base scritta, domande aperte in [Q&A.md](Q&A.md). Nessuna riga di codice ancora.
+> **Stato: M0 completato.** Online su [giacomoguaresi.github.io/Space](https://giacomoguaresi.github.io/Space/), per ora solo una pagina dietro l'accesso. Domande aperte in [Q&A.md](Q&A.md).
+
+## Per iniziare
+
+Serve Node 22.12 o più recente; la CI usa Node 24, indicato in [`.nvmrc`](.nvmrc).
+
+```sh
+nvm use                      # o `nvm install` la prima volta
+cp .env.example .env.local   # e riempi le variabili (doc/08)
+npm install
+npm run dev                  # http://localhost:5173/Space/
+npm test
+npm run build
+```
+
+`npm run icone` rigenera le icone della PWA da `public/icona.svg`; il risultato è versionato. A ogni push su `main` il workflow [`pubblica.yml`](.github/workflows/pubblica.yml) esegue i test e pubblica su GitHub Pages.
 
 ## In breve
 
@@ -25,4 +40,5 @@ Si esplora, si raccolgono risorse, si fondano colonie che producono fino a riemp
 | [doc/05-modello-dati.md](doc/05-modello-dati.md) | Tabelle previste (bozza) |
 | [doc/06-roadmap.md](doc/06-roadmap.md) | Macro step di sviluppo |
 | [doc/07-decisioni.md](doc/07-decisioni.md) | Registro delle decisioni |
+| [doc/08-deploy.md](doc/08-deploy.md) | Pubblicazione, variabili, configurazione di Supabase |
 | [Q&A.md](Q&A.md) | Domande ancora aperte |
