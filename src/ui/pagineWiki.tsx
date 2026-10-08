@@ -162,6 +162,10 @@ const GUIDA: PaginaWiki[] = [
           resta lì. Ripartendo si carica anche quello che ha prodotto durante la sosta. La Rete mostra tutti gli insediamenti, con il tasto
           VAI per impostare la rotta.
         </P>
+        <P>
+          Su un sistema planetario si fonda una base scegliendo il pianeta: produce col suo mix. La prima è gratis, le altre si pagano dalla
+          stiva.
+        </P>
       </>
     ),
     numeri: () => {
@@ -171,6 +175,11 @@ const GUIDA: PaginaWiki[] = [
         ['Base madre', `${madre}/h in tutto, ${numero(madre / 4, 1)}/h di Metallo, Silicio, Ghiaccio e Idrogeno`],
         ['Livello di produzione', `ritmo × ${crescita}^(livello − 1)`],
         ['Tetto del magazzino', `${ore} h della produzione di livello 1 × ${crescitaMagazzino}^(livello − 1)`],
+        ['Colonia', `${BILANCIAMENTO.produzione.ritmo.comune}/h × ricchezza, col mix del pianeta scelto`],
+        [
+          'Fondazione',
+          `la prima gratis, poi ${BILANCIAMENTO.fondazione.costo} × ${BILANCIAMENTO.fondazione.crescita}^(basi fondate − 1) in parti uguali di Metallo, Silicio e Ghiaccio; al massimo ${BILANCIAMENTO.fondazione.basi} basi`,
+        ],
       ]
     },
   },

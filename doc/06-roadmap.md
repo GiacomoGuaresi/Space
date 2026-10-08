@@ -103,7 +103,7 @@ Porta l'interfaccia su PC nella [plancia a finestre](11-interfaccia.md#pc--planc
 - [x] **4.4 Base madre come insediamento**: produzione delle 4 comuni nel suo magazzino, fino al tetto. (`011_insediamenti.sql`, `insediamenti.ts`; la base madre nasce alla prima lettura di `stato`, il magazzino si vede in Qui.)
 - [x] **4.5 Raccolta di persona**: arrivando in un insediamento il magazzino passa da solo nella stiva; la **Rete** (finestra E su PC, sezione sul telefono). (`012_raccolta_di_persona.sql`: `space.preleva` all'arrivo e alla partenza, `nave.assestato`, tabella `prelievo` per il diario; `Rete.tsx`.)
 - [x] **4.6 Fondare la prima colonia** (gratis) su un sistema planetario, con il mix del pianeta. *Si gioca: il primo giro di raccolta.* (`013_colonie.sql`: `space.fonda(pianeta)`, il pianeta lo sceglie il giocatore in Qui; produzione delle colonie verificata da `verifica-sql`.)
-- [ ] **4.7 Fondare altre basi**, pagando dalla stiva, fino al limite di 2.
+- [x] **4.7 Fondare altre basi**, pagando dalla stiva, fino al limite di 2. (`014_altre_basi.sql`; con la stiva di livello 1 la seconda base non è ancora pagabile: lo diventa potenziando la stiva in M5.)
 - [ ] **4.8 Eventi degli insediamenti nel diario** (pieno, fondazione) e pallino su Rete.
 
 **Si consegna**: il ciclo esplora → fonda → raccogli.
