@@ -11,7 +11,8 @@ export const BILANCIAMENTO = {
     distanzaLontana: 500,
     /**
      * Pesi dei corpi tra i settori non vuoti, alla base e da `distanzaLontana`
-     * in poi; in mezzo si passa dagli uni agli altri in modo lineare.
+     * in poi; in mezzo si passa dagli uni agli altri in modo lineare. I rari
+     * seguono invece `soglie`.
      */
     pesiVicini: {
       asteroidi: 30,
@@ -20,7 +21,7 @@ export const BILANCIAMENTO = {
       sistema: 12,
       gigante: 4,
       cometa: 4,
-      pulsar: 0.5,
+      pulsar: 0,
       buconero: 0,
       relitto: 0,
       wormhole: 0,
@@ -36,6 +37,16 @@ export const BILANCIAMENTO = {
       buconero: 4,
       relitto: 4,
       wormhole: 2,
+    },
+    /**
+     * I rari non esistono sotto la loro soglia di distanza; sopra, il peso sale
+     * in modo lineare da 0 fino a quello lontano, a `distanzaLontana`.
+     */
+    soglie: {
+      pulsar: 25,
+      buconero: 80,
+      relitto: 80,
+      wormhole: 150,
     },
   },
   nave: {

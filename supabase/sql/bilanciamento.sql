@@ -17,7 +17,7 @@ language sql immutable parallel safe set search_path = '' as $$
       "sistema": 12,
       "gigante": 4,
       "cometa": 4,
-      "pulsar": 0.5,
+      "pulsar": 0,
       "buconero": 0,
       "relitto": 0,
       "wormhole": 0
@@ -33,6 +33,12 @@ language sql immutable parallel safe set search_path = '' as $$
       "buconero": 4,
       "relitto": 4,
       "wormhole": 2
+    },
+    "soglie": {
+      "pulsar": 25,
+      "buconero": 80,
+      "relitto": 80,
+      "wormhole": 150
     }
   },
   "nave": {

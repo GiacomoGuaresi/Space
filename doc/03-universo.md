@@ -19,11 +19,11 @@ seed = hash(seedUniverso, x, y, z)   → intero a 32 bit senza segno
 
 ## Distanza dall'origine
 
-Allontanandosi dalla base, i corpi rari compaiono **ad anelli** e tutti i corpi diventano **più ricchi** (valori in [09](09-bilanciamento.md#distribuzione-dei-corpi), codice in `src/dominio/catalogo.ts`):
+Allontanandosi dalla base, i corpi rari compaiono **ad anelli** e tutti i corpi diventano **più ricchi** (valori in [09](09-bilanciamento.md#distribuzione-dei-corpi) e in `src/dominio/bilanciamento.ts`, calcolo in `catalogo.ts`):
 
 - **un settore su dieci** non è vuoto, ovunque;
 - i pesi dei comuni passano in modo lineare da quelli "vicini" a quelli "lontani", raggiunti a **500 settori** dalla base;
-- ogni raro ha una **soglia** sotto la quale non esiste: pulsar da 25 settori, buchi neri e relitti da 80, wormhole da 150. Sopra la soglia il peso sale fino a 500. *Da applicare al codice ([06](06-roadmap.md)): oggi i rari compaiono subito, con peso crescente, e tutti stanno entro 30 settori;*
+- ogni raro ha una **soglia** sotto la quale non esiste: pulsar da 25 settori, buchi neri e relitti da 80, wormhole da 150. Sopra la soglia il peso sale fino a 500;
 - la **ricchezza** media vale `1 + √(d / 100)`: ×2 a 100 settori, ×3 a 400; ogni corpo varia tra ×0,6 e ×1,4 attorno alla media.
 
 La base, in `(0, 0, 0)`, è sempre vuota.

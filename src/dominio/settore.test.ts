@@ -31,9 +31,21 @@ describe('pesi', () => {
     expect(pesi(DISTANZA_LONTANA * 10)).toEqual(lontani)
   })
 
+  it('i rari compaiono solo oltre la loro soglia', () => {
+    for (const [tipo, soglia] of [
+      ['pulsar', 25],
+      ['buconero', 80],
+      ['relitto', 80],
+      ['wormhole', 150],
+    ] as const) {
+      expect(pesi(soglia - 0.5)[tipo]).toBe(0)
+      expect(pesi(soglia + 1)[tipo]).toBeGreaterThan(0)
+    }
+  })
+
   it('i rari crescono con la distanza', () => {
-    expect(pesi(250).buconero).toBeGreaterThan(pesi(50).buconero)
-    expect(pesi(250).wormhole).toBeGreaterThan(pesi(50).wormhole)
+    expect(pesi(250).buconero).toBeGreaterThan(pesi(100).buconero)
+    expect(pesi(250).wormhole).toBeGreaterThan(pesi(160).wormhole)
   })
 })
 

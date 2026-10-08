@@ -122,16 +122,28 @@ export const NOMI_COLONIE: Readonly<Record<Colonia, string>> = {
 
 // Distribuzione (doc/09-bilanciamento.md#distribuzione-dei-corpi) --------------
 
-const { distanzaLontana, pesiVicini, pesiLontani } = BILANCIAMENTO.universo
+const { distanzaLontana, pesiVicini, pesiLontani, soglie } = BILANCIAMENTO.universo
+const SOGLIE: Partial<Record<TipoCorpo, number>> = soglie
 
 export const PIENEZZA = BILANCIAMENTO.universo.pienezza
 export const DISTANZA_LONTANA = distanzaLontana
 
-/** I pesi dei corpi alla distanza `d` dalla base. */
+/**
+ * I pesi dei corpi alla distanza `d` dalla base: i comuni passano dai vicini
+ * ai lontani, i rari compaiono ad anelli oltre la loro soglia.
+ */
 export function pesi(d: number): Record<TipoCorpo, number> {
   const t = Math.min(1, Math.max(0, d / distanzaLontana))
   const risultato = {} as Record<TipoCorpo, number>
-  for (const tipo of TIPI) risultato[tipo] = pesiVicini[tipo] + (pesiLontani[tipo] - pesiVicini[tipo]) * t
+  for (const tipo of TIPI) {
+    const soglia = SOGLIE[tipo]
+    risultato[tipo] =
+      soglia === undefined
+        ? pesiVicini[tipo] + (pesiLontani[tipo] - pesiVicini[tipo]) * t
+        : d < soglia
+          ? 0
+          : pesiLontani[tipo] * Math.min(1, (d - soglia) / (distanzaLontana - soglia))
+  }
   return risultato
 }
 
