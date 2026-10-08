@@ -1,22 +1,33 @@
-import { Suspense, lazy } from 'react'
+import { Suspense, lazy, useMemo } from 'react'
+import { settore as calcolaSettore } from '../dominio/settore'
+import { useCoordinate } from './indirizzo'
+import { Osservatorio } from './Osservatorio'
+import { Scheda } from './Scheda'
 
-// three.js pesa: si carica a parte, così la scritta compare subito.
-const Cielo = lazy(async () => ({ default: (await import('../grafica/Cielo')).Cielo }))
+// three.js pesa: si carica a parte, così i comandi compaiono subito.
+const Scena = lazy(async () => ({ default: (await import('../grafica/Scena')).Scena }))
 
 /**
- * La pagina di M0 (doc/06-roadmap.md): solo il cielo e il nome, dietro
- * l'accesso. L'universo arriva con M1.
+ * L'osservatorio (M1, doc/06-roadmap.md): la vista del settore a tutto
+ * schermo, i comandi in alto e la scheda del corpo in basso.
  */
 export function App() {
+  const { x, y, z } = useCoordinate()
+  // Un oggetto nuovo solo quando cambiano le coordinate: la scena si rifà solo allora.
+  const settore = useMemo(() => calcolaSettore({ x, y, z }), [x, y, z])
+
   return (
-    <main className="relative min-h-dvh overflow-hidden bg-fondo">
+    <main className="relative h-dvh overflow-hidden bg-black">
       <Suspense fallback={null}>
-        <Cielo />
+        <Scena settore={settore} />
       </Suspense>
-      <div className="pointer-events-none relative grid min-h-dvh place-items-center p-4 text-center">
-        <div>
-          <h1 className="m-0 text-3xl font-semibold tracking-[0.3em]">SPACE</h1>
-          <p className="mt-2 text-testo-tenue">Base in (0, 0, 0). L'universo è in costruzione.</p>
+      <div className="pointer-events-none absolute inset-0 flex flex-col justify-between gap-3 p-3 pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        <header className="pointer-events-auto flex flex-col gap-2 self-start">
+          <h1 className="m-0 text-xs font-semibold tracking-[0.3em] text-testo-tenue">SPACE · OSSERVATORIO</h1>
+          <Osservatorio settore={settore} />
+        </header>
+        <div className="pointer-events-auto w-full max-w-sm self-start">
+          <Scheda settore={settore} />
         </div>
       </div>
     </main>

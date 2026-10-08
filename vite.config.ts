@@ -7,6 +7,8 @@ import { VitePWA } from 'vite-plugin-pwa'
 // su giacomoguaresi.github.io/Space/ (doc/08-deploy.md).
 export default defineConfig({
   base: '/Space/',
+  // three.js da solo supera i 500 kB: sta in un pezzo a parte, caricato dopo i comandi.
+  build: { chunkSizeWarningLimit: 700 },
   plugins: [
     react(),
     tailwindcss(),
