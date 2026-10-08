@@ -5,11 +5,9 @@ import { settore as calcolaSettore, type Coordinate } from '../dominio/settore'
 import { vaiA } from './indirizzo'
 import { Cornice } from './Cornice'
 import { Pannello } from './plancia'
-import { Riepilogo } from './Riepilogo'
 import { Rotta } from './Rotta'
 import { Scanner } from './Scanner'
 import { Scheda } from './Scheda'
-import type { Evento } from './riepilogo'
 import { useOra } from './useNave'
 
 const Scena = lazy(async () => ({ default: (await import('../grafica/Scena')).Scena }))
@@ -23,8 +21,6 @@ interface Props {
   scoperte: Scoperta[]
   /** Una meta scelta altrove (dalla mappa): apre la rotta. */
   meta?: Coordinate
-  riepilogo: Evento[]
-  onChiudiRiepilogo: () => void
   onParti: (meta: Coordinate) => Promise<void>
 }
 
@@ -33,7 +29,7 @@ interface Props {
  * viaggio, se è in volo), lo stato della nave in alto e in basso il settore,
  * lo scanner e la rotta.
  */
-export function Ponte({ nave, viaggio, scarto, scoperte, meta: metaScelta, riepilogo, onChiudiRiepilogo, onParti }: Props) {
+export function Ponte({ nave, viaggio, scarto, scoperte, meta: metaScelta, onParti }: Props) {
   const ora = useOra(scarto)
   const volo = inViaggio(nave, ora)
   const { x, y, z } = nave.posizione
@@ -113,7 +109,6 @@ export function Ponte({ nave, viaggio, scarto, scoperte, meta: metaScelta, riepi
           </div>
         </Pannello>
       )}
-      {riepilogo.length > 0 && <Riepilogo eventi={riepilogo} ora={ora} onChiudi={onChiudiRiepilogo} />}
     </Cornice>
   )
 }

@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import type { Nave, Viaggio } from '../dominio/navigazione'
 import { Barra, sezioneDi } from './Barra'
-import type { Pagina } from './indirizzo'
+import { apriDiario, type Pagina } from './indirizzo'
 import { StrisciaStato } from './StrisciaStato'
 import { useOra } from './useNave'
 
@@ -28,7 +28,7 @@ export function Cornice({ pagina, nave, viaggio, scarto, fondo, children }: Prop
       <div className="pointer-events-none absolute inset-0 flex flex-col">
         <div className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col gap-2 p-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
           <header className="pointer-events-auto">
-            <StrisciaStato nave={nave} viaggio={viaggio} ora={ora} />
+            <StrisciaStato nave={nave} viaggio={viaggio} ora={ora} onApri={pagina === 'diario' ? undefined : apriDiario} />
           </header>
           <div className="flex min-h-0 flex-1 flex-col justify-end gap-2 [&>*]:pointer-events-auto">{children}</div>
         </div>

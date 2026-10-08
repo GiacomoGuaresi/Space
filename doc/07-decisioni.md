@@ -69,3 +69,5 @@
 | 2026-10-08 | **Wiki** di 29 pagine a sblocco, separata dal catalogo; **ⓘ** con le formule accanto ai valori calcolati | deciso |
 | 2026-10-08 | **Diario di bordo** al posto del riepilogo (30 giorni, voci raggruppate) e **pallini** sulla barra, anche per ciò che è pagabile | deciso |
 | 2026-10-08 | Macro step **MI · Ossatura dell'interfaccia** prima di M4; poi ogni step porta la sua interfaccia | deciso |
+| 2026-10-08 | Il **diario** non si salva: si ricostruisce da viaggi, scoperte, scansioni e stato della nave. Sul dispositivo resta solo fin dove l'hai letto | deciso |
+| 2026-10-08 | Nel diario le **partenze** non sono mai novità (le hai decise tu), e nemmeno gli arrivi visti dal vivo; alla primissima apertura non c'è nulla da raccontare | deciso |

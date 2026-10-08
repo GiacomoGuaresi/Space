@@ -27,6 +27,8 @@ export interface Scansione {
   centro: Coordinate
   raggio: number
   livello: number
+  /** Quando è iniziata la sosta. */
+  istante: Date
 }
 
 /** I rifiuti di `viaggia`, con il loro codice. */
@@ -112,13 +114,12 @@ export class NaveSupabase {
     return viaggio(data as RigaViaggio)
   }
 
-  /** I viaggi arrivati dopo `dal`: servono al riepilogo all'apertura. */
-  async arriviDal(dal: Date): Promise<Viaggio[]> {
+  /** I viaggi arrivati (o in arrivo) dopo `dal`: servono al diario di bordo. */
+  async viaggiDal(dal: Date): Promise<Viaggio[]> {
     const { data, error } = await this.client
       .from('viaggio')
       .select('da_x, da_y, da_z, meta_x, meta_y, meta_z, a_x, a_y, a_z, partenza, arrivo, consumo, fionda')
-      .gt('arrivo', dal.toISOString())
-      .lte('arrivo', new Date().toISOString())
+      .gte('arrivo', dal.toISOString())
       .order('arrivo')
     if (error) throw fallita('Viaggi non letti', error)
     return (data as RigaViaggio[]).map(viaggio)
@@ -137,12 +138,13 @@ export class NaveSupabase {
 
   /** Le scansioni delle soste: quella dell'arrivo in corso la nasconde il database. */
   async scansioni(): Promise<Scansione[]> {
-    const { data, error } = await this.client.from('scansione').select('x, y, z, raggio, livello')
+    const { data, error } = await this.client.from('scansione').select('x, y, z, raggio, livello, istante')
     if (error) throw fallita('Scansioni non lette', error)
-    return (data as { x: number; y: number; z: number; raggio: number; livello: number }[]).map((r) => ({
+    return (data as { x: number; y: number; z: number; raggio: number; livello: number; istante: string }[]).map((r) => ({
       centro: { x: r.x, y: r.y, z: r.z },
       raggio: r.raggio,
       livello: r.livello,
+      istante: new Date(r.istante),
     }))
   }
 }

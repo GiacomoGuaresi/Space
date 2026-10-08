@@ -1,6 +1,6 @@
 // Le pagine nell'indirizzo: `#/` il ponte (`#/rotta/x,y,z` con una meta già
 // scelta), `#/mappa` i settori scansionati, `#/altro` l'elenco delle altre
-// pagine, `#/catalogo` le scoperte,
+// pagine, `#/diario` il diario di bordo, `#/catalogo` le scoperte,
 // `#/osservatorio/x,y,z` l'osservatorio libero (solo in sviluppo, doc/06).
 
 import { useSyncExternalStore } from 'react'
@@ -10,6 +10,7 @@ export type Pagina =
   | { pagina: 'ponte'; meta?: Coordinate }
   | { pagina: 'mappa' }
   | { pagina: 'altro' }
+  | { pagina: 'diario' }
   | { pagina: 'catalogo' }
   | { pagina: 'osservatorio'; coordinate: Coordinate }
 
@@ -29,6 +30,7 @@ export function leggiPagina(hash: string): Pagina {
   if (percorso === 'catalogo') return { pagina: 'catalogo' }
   if (percorso === 'mappa') return { pagina: 'mappa' }
   if (percorso === 'altro') return { pagina: 'altro' }
+  if (percorso === 'diario') return { pagina: 'diario' }
   if (percorso.startsWith('rotta/')) {
     const meta = leggiCoordinate(percorso.slice('rotta/'.length))
     return meta ? { pagina: 'ponte', meta } : { pagina: 'ponte' }
@@ -50,6 +52,8 @@ export function indirizzo(pagina: Pagina): string {
       return '#/mappa'
     case 'altro':
       return '#/altro'
+    case 'diario':
+      return '#/diario'
     case 'catalogo':
       return '#/catalogo'
     case 'osservatorio': {
@@ -76,4 +80,19 @@ export function vaiA(pagina: Pagina) {
 /** Nell'osservatorio: guarda un altro settore. */
 export function osserva(coordinate: Coordinate) {
   vaiA({ pagina: 'osservatorio', coordinate })
+}
+
+// Da dove si è aperto il diario: chiudendolo si torna lì.
+let ritorno: string | null = null
+
+/** Apre il diario ricordando la pagina di adesso. */
+export function apriDiario() {
+  if (leggiPagina(window.location.hash).pagina !== 'diario') ritorno = window.location.hash || '#/'
+  vaiA({ pagina: 'diario' })
+}
+
+/** Chiude il diario tornando dove si era, o al ponte. */
+export function chiudiDiario() {
+  window.location.hash = ritorno ?? indirizzo({ pagina: 'ponte' })
+  ritorno = null
 }

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { nave as datiNave, type Scansione, type Scoperta } from '../dati'
 import type { Nave, Viaggio } from '../dominio/navigazione'
 import type { Coordinate } from '../dominio/settore'
-import { eventi, segnaVisita, ultimaVisita, type Evento } from './riepilogo'
+import { GIORNI_DIARIO, letto, novita, segnaLetto, vociDiario } from './diario'
 
 export type StatoNave =
   | { fase: 'carico' }
@@ -25,38 +25,45 @@ export function useOra(scarto: number): Date {
 }
 
 /**
- * Lo stato della nave dal database, le scoperte e il riepilogo dall'ultima
- * visita. Quando la nave arriva si rilegge tutto, da solo.
+ * Lo stato della nave dal database, con viaggi, scoperte e scansioni per il
+ * diario di bordo. Quando la nave arriva si rilegge tutto, da solo; quando si
+ * apre l'app (o ci si torna) con delle novità, chiede di aprire il diario.
  */
 export function useNave() {
   const [stato, setStato] = useState<StatoNave>({ fase: 'carico' })
   const [scarto, setScarto] = useState(0)
   const [scoperte, setScoperte] = useState<Scoperta[]>([])
   const [scansioni, setScansioni] = useState<Scansione[]>([])
-  const [riepilogo, setRiepilogo] = useState<Evento[]>([])
+  const [viaggi, setViaggi] = useState<Viaggio[]>([])
+  /** Cresce ogni volta che il diario va aperto da solo: all'apertura con delle novità. */
+  const [aperturaDiario, setAperturaDiario] = useState(0)
 
-  const ricarica = useCallback(async () => {
+  const ricarica = useCallback(async (apriDiario = false) => {
     try {
       const prima = Date.now()
       // Prima lo stato: alla prima apertura scrive la scansione della base.
       const remoto = await datiNave().stato()
       const dopo = Date.now()
-      const [elenco, soste] = await Promise.all([datiNave().scoperte(), datiNave().scansioni()])
+      const dal = new Date(remoto.ora.getTime() - GIORNI_DIARIO * 24 * 3_600_000)
+      const [elenco, soste, recenti] = await Promise.all([
+        datiNave().scoperte(),
+        datiNave().scansioni(),
+        datiNave().viaggiDal(dal),
+      ])
       // Lo scarto si misura a metà della richiesta: la risposta ha viaggiato.
       const scartoNuovo = remoto.ora.getTime() - (prima + dopo) / 2
       setScarto(scartoNuovo)
       setStato({ fase: 'pronta', nave: remoto.nave, viaggio: remoto.viaggio })
       setScoperte(elenco)
       setScansioni(soste)
+      setViaggi(recenti)
 
-      // Gli arrivi dall'ultima rilettura: all'apertura e al ritorno sull'app
-      // (che sul telefono può restare aperta in sottofondo per ore). Quelli
-      // visti dal vivo non ci sono: all'arrivo l'app rilegge e segna la visita.
-      const ultima = ultimaVisita()
-      segnaVisita(remoto.ora)
-      if (ultima) {
-        const nuovi = eventi(await datiNave().arriviDal(ultima))
-        if (nuovi.length) setRiepilogo((prima) => [...prima, ...nuovi])
+      if (apriDiario) {
+        const voci = vociDiario({ viaggi: recenti, scoperte: elenco, scansioni: soste, nave: remoto.nave, ora: remoto.ora })
+        const fino = letto()
+        // Alla primissima apertura non c'è nulla da raccontare: si parte da qui.
+        if (!fino) segnaLetto(remoto.ora)
+        else if (voci.some((v) => novita(v, fino))) setAperturaDiario((n) => n + 1)
       }
     } catch (errore) {
       console.error('Nave non letta', errore)
@@ -65,7 +72,7 @@ export function useNave() {
   }, [])
 
   useEffect(() => {
-    void ricarica()
+    void ricarica(true)
   }, [ricarica])
 
   // All'arrivo si rilegge: la posizione è già giusta, ma la scoperta compare solo ora.
@@ -77,9 +84,9 @@ export function useNave() {
     // I timer del browser non reggono attese oltre i 24 giorni circa.
     const id = window.setTimeout(
       () => {
-        // Arrivo visto dal vivo: non va anche nel riepilogo. Se l'app è in
-        // sottofondo invece no, e al ritorno lo si racconta.
-        if (document.visibilityState === 'visible') segnaVisita(new Date(dal))
+        // Arrivo visto dal vivo: nel diario c'è, ma non come novità. Se l'app
+        // è in sottofondo invece sì, e al ritorno il diario si apre.
+        if (document.visibilityState === 'visible') segnaLetto(new Date(dal))
         void ricarica()
       },
       Math.min(attesa + 500, 2 ** 31 - 1),
@@ -90,7 +97,7 @@ export function useNave() {
   // Tornando sull'app dopo un po' (telefono in tasca) si rilegge.
   useEffect(() => {
     const visibile = () => {
-      if (document.visibilityState === 'visible') void ricarica()
+      if (document.visibilityState === 'visible') void ricarica(true)
     }
     document.addEventListener('visibilitychange', visibile)
     return () => document.removeEventListener('visibilitychange', visibile)
@@ -104,5 +111,5 @@ export function useNave() {
     [ricarica],
   )
 
-  return { stato, scarto, scoperte, scansioni, riepilogo, chiudiRiepilogo: () => setRiepilogo([]), parti, ricarica }
+  return { stato, scarto, scoperte, scansioni, viaggi, aperturaDiario, parti, ricarica }
 }

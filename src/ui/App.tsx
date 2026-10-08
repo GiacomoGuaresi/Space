@@ -1,8 +1,10 @@
-import { Suspense, lazy, useMemo } from 'react'
+import { Suspense, lazy, useEffect, useMemo } from 'react'
 import { TIPI } from '../dominio/catalogo'
 import { BASE, settore as calcolaSettore } from '../dominio/settore'
 import { Catalogo } from './Catalogo'
-import { indirizzo, usePagina, type Pagina } from './indirizzo'
+import { Diario } from './Diario'
+import { letto, novita, segnaLetto, vociDiario } from './diario'
+import { apriDiario, chiudiDiario, indirizzo, usePagina, type Pagina } from './indirizzo'
 import { Mappa } from './Mappa'
 import { Altro } from './Altro'
 import { Cornice } from './Cornice'
@@ -16,10 +18,28 @@ import { inViaggio, type Nave } from '../dominio/navigazione'
 // three.js pesa: si carica a parte, così i comandi compaiono subito.
 const Scena = lazy(async () => ({ default: (await import('../grafica/Scena')).Scena }))
 
-/** Le pagine dell'app (ui/indirizzo.ts): il ponte, la mappa, il catalogo, l'osservatorio in sviluppo. */
+/** Le pagine dell'app (ui/indirizzo.ts): ponte, mappa, altro, diario, catalogo e l'osservatorio in sviluppo. */
 export function App() {
   const pagina = usePagina()
-  const { stato, scarto, scoperte, scansioni, riepilogo, chiudiRiepilogo, parti, ricarica } = useNave()
+  const { stato, scarto, scoperte, scansioni, viaggi, aperturaDiario, parti, ricarica } = useNave()
+  const ora = useOra(scarto)
+
+  // Il diario si ricalcola al minuto: le voci nuove (un arrivo, una ricarica) compaiono da sole.
+  const minuto = Math.floor(ora.getTime() / 60_000)
+  const nave = stato.fase === 'pronta' ? stato.nave : null
+  const voci = useMemo(
+    () => (nave ? vociDiario({ viaggi, scoperte, scansioni, nave, ora: new Date(minuto * 60_000) }) : []),
+    [viaggi, scoperte, scansioni, nave, minuto],
+  )
+  const diarioAperto = pagina.pagina === 'diario'
+  // Fin dove si era letto quando il diario si è aperto: le novità restano evidenziate finché è aperto.
+  const lettoAperto = useMemo(() => letto(), [diarioAperto, aperturaDiario])
+  const daLeggere = voci.filter((v) => novita(v, lettoAperto)).length
+
+  // All'apertura dell'app (o al ritorno) con delle novità, il diario si apre da solo.
+  useEffect(() => {
+    if (aperturaDiario) apriDiario()
+  }, [aperturaDiario])
 
   if (pagina.pagina === 'osservatorio' && import.meta.env.DEV) return <PaginaOsservatorio pagina={pagina} />
 
@@ -33,23 +53,52 @@ export function App() {
           <p className="m-0 text-sm text-pericolo" role="alert">
             {stato.messaggio}
           </p>
-          <button type="button" className="rounded-plancia border border-linea px-4 py-2 text-sm hover:border-ambra" onClick={() => void ricarica()}>
+          <button type="button" className="rounded-plancia border border-linea px-4 py-2 text-sm hover:border-ambra" onClick={() => void ricarica(true)}>
             Riprova
           </button>
         </div>
       </main>
     )
   }
-  const { nave, viaggio } = stato
+  const { viaggio } = stato
+  if (pagina.pagina === 'diario') {
+    return (
+      <Cornice pagina="diario" nave={stato.nave} viaggio={viaggio} scarto={scarto} fondo={<FondoNave nave={stato.nave} scarto={scarto} />}>
+        <Diario
+          voci={voci}
+          letto={lettoAperto}
+          ora={ora}
+          onChiudi={() => {
+            segnaLetto(ora)
+            chiudiDiario()
+          }}
+        />
+      </Cornice>
+    )
+  }
   if (pagina.pagina === 'catalogo') {
-    return <Catalogo nave={nave} viaggio={viaggio} scarto={scarto} scoperte={scoperte} fondo={<FondoNave nave={nave} scarto={scarto} />} />
+    return (
+      <Catalogo
+        nave={stato.nave}
+        viaggio={viaggio}
+        scarto={scarto}
+        scoperte={scoperte}
+        fondo={<FondoNave nave={stato.nave} scarto={scarto} />}
+      />
+    )
   }
   if (pagina.pagina === 'altro') {
     const tipi = new Set(scoperte.map((s) => s.tipo)).size
     return (
-      <Cornice pagina="altro" nave={nave} viaggio={viaggio} scarto={scarto} fondo={<FondoNave nave={nave} scarto={scarto} />}>
+      <Cornice pagina="altro" nave={stato.nave} viaggio={viaggio} scarto={scarto} fondo={<FondoNave nave={stato.nave} scarto={scarto} />}>
         <Altro
           voci={[
+            {
+              titolo: 'Diario di bordo',
+              sottotitolo: daLeggere ? `${daLeggere} novità` : 'Nessuna novità',
+              pagina: { pagina: 'diario' },
+              pallino: daLeggere > 0,
+            },
             {
               titolo: 'Catalogo',
               sottotitolo: `${scoperte.length} ${scoperte.length === 1 ? 'corpo' : 'corpi'} · ${tipi} tipi su ${TIPI.length}`,
@@ -64,7 +113,7 @@ export function App() {
     )
   }
   if (pagina.pagina === 'mappa') {
-    return <Mappa nave={nave} viaggio={viaggio} scarto={scarto} scoperte={scoperte} scansioni={scansioni} />
+    return <Mappa nave={stato.nave} viaggio={viaggio} scarto={scarto} scoperte={scoperte} scansioni={scansioni} />
   }
   return (
     <Ponte
@@ -73,8 +122,6 @@ export function App() {
       scarto={scarto}
       scoperte={scoperte}
       meta={pagina.pagina === 'ponte' ? pagina.meta : undefined}
-      riepilogo={riepilogo}
-      onChiudiRiepilogo={chiudiRiepilogo}
       onParti={parti}
     />
   )
