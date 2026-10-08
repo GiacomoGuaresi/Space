@@ -6,7 +6,7 @@ import { alterna, FINESTRE, mostra, riordina, useDisposizione, type IdFinestra, 
 // Rete, Base, Ricerche e Traguardi arrivano con le loro meccaniche (doc/06-roadmap.md).
 const GRUPPI: readonly { nome: string; voci: readonly IdFinestra[] }[] = [
   { nome: 'Navigazione', voci: ['qui', 'scanner', 'rotta'] },
-  { nome: 'Nave e rete', voci: ['nave'] },
+  { nome: 'Nave e rete', voci: ['nave', 'rete'] },
   { nome: 'Archivio', voci: ['diario', 'wiki', 'catalogo'] },
 ]
 

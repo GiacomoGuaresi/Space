@@ -21,6 +21,7 @@ import { PAGINE_WIKI, sbloccate, type StatoWiki } from './pagineWiki'
 import { segnaPonteVisto, segnaWikiSbloccate, useVisti } from './pallini'
 import { Pannello } from './plancia'
 import { Ponte } from './Ponte'
+import { Rete } from './Rete'
 import { Scheda } from './Scheda'
 import { CaricoAttuale, SchedaNave } from './SchedaNave'
 import { usePC } from './schermo'
@@ -39,15 +40,15 @@ const Scena = lazy(async () => ({ default: (await import('../grafica/Scena')).Sc
 /** Le pagine dell'app (ui/indirizzo.ts): ponte, mappa, altro, diario, catalogo e l'osservatorio in sviluppo. */
 export function App() {
   const pagina = usePagina()
-  const { stato, scarto, scoperte, scansioni, viaggi, raccolti, insediamenti, aperturaDiario, parti, ricarica } = useNave()
+  const { stato, scarto, scoperte, scansioni, viaggi, raccolti, insediamenti, prelievi, aperturaDiario, parti, ricarica } = useNave()
   const ora = useOra(scarto)
 
   // Il diario si ricalcola al minuto: le voci nuove (un arrivo, una ricarica) compaiono da sole.
   const minuto = Math.floor(ora.getTime() / 60_000)
   const nave = stato.fase === 'pronta' ? stato.nave : null
   const voci = useMemo(
-    () => (nave ? vociDiario({ viaggi, scoperte, scansioni, raccolti, nave, ora: new Date(minuto * 60_000) }) : []),
-    [viaggi, scoperte, scansioni, raccolti, nave, minuto],
+    () => (nave ? vociDiario({ viaggi, scoperte, scansioni, raccolti, prelievi, insediamenti, nave, ora: new Date(minuto * 60_000) }) : []),
+    [viaggi, scoperte, scansioni, raccolti, prelievi, insediamenti, nave, minuto],
   )
   // Su PC (doc/11-interfaccia.md#pc--plancia-a-finestre) le pagine sono finestre.
   const pc = usePC()
@@ -151,6 +152,7 @@ export function App() {
       catalogo: 'catalogo',
       impostazioni: 'impostazioni',
       nave: 'nave',
+      rete: 'rete',
     }
     const id = finestre[pagina.pagina]
     if (id) apri(id)
@@ -204,10 +206,18 @@ export function App() {
             diario: { contenuto: <Diario voci={voci} letto={lettoAperto} ora={ora} /> },
             wiki: statoWiki ? { contenuto: <Wiki stato={statoWiki} voce={wikiPC.voce} numeri={wikiPC.numeri} affiancata /> } : undefined,
             catalogo: { contenuto: <ContenutoCatalogo scoperte={scoperte} /> },
+            rete: { contenuto: <Rete nave={stato.nave} insediamenti={insediamenti} ora={ora} /> },
             nave: { contenuto: <SchedaNave nave={stato.nave} quantita={bordo?.quantita ?? stato.carico.quantita} /> },
             impostazioni: { contenuto: <Impostazioni /> },
           }}
         />
+      )
+    }
+    if (pagina.pagina === 'rete') {
+      return (
+        <Cornice pagina="rete" nave={stato.nave} viaggio={viaggio} scarto={scarto} fondo={<FondoNave nave={stato.nave} scarto={scarto} />}>
+          <Rete nave={stato.nave} insediamenti={insediamenti} ora={ora} />
+        </Cornice>
       )
     }
     if (pagina.pagina === 'nave') {

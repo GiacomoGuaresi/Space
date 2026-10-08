@@ -42,6 +42,8 @@ const fonti = (p: {
   scoperte: [],
   scansioni: [],
   raccolti: [],
+  prelievi: [],
+  insediamenti: [],
   nave: nave(),
   ...p,
 })

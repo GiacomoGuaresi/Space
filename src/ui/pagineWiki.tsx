@@ -153,10 +153,15 @@ const GUIDA: PaginaWiki[] = [
     testo: () => (
       <>
         <P>
-          La base madre, in 0 · 0 · 0, produce da sola un po' delle quattro risorse comuni. Quello che produce va nel suo
-          magazzino, finché non arriva al tetto: lì si ferma, e la produzione persa non torna.
+          La base madre, in 0 · 0 · 0, produce da sola un po' delle quattro risorse comuni. Quello che produce va nel suo magazzino, finché
+          non arriva al tetto: lì si ferma, e la produzione persa non torna.
         </P>
         <P>Il tetto vale una settimana di produzione: passando a raccogliere almeno una volta a settimana non si perde nulla.</P>
+        <P>
+          Si raccoglie solo di persona: arrivando in un insediamento il magazzino passa da solo nella stiva, fin dove c'è posto, e il resto
+          resta lì. Ripartendo si carica anche quello che ha prodotto durante la sosta. La Rete mostra tutti gli insediamenti, con il tasto
+          VAI per impostare la rotta.
+        </P>
       </>
     ),
     numeri: () => {

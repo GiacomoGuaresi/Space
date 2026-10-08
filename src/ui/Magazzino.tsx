@@ -79,7 +79,7 @@ export function MagazzinoQui({ nave, ora }: { nave: Nave; ora: Date }) {
         </Etichetta>
       </div>
       <BarreMagazzino insediamento={insediamento} ora={ora} />
-      <p className="m-0 text-xs text-testo-tenue">Produce da solo fino al tetto, poi si ferma: per ora si accumula e basta.</p>
+      <p className="m-0 text-xs text-testo-tenue">Arrivando e ripartendo il magazzino passa nella stiva, fin dove c'è posto.</p>
     </section>
   )
 }

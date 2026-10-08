@@ -12,6 +12,7 @@ export {
   ViaggioRifiutato,
   type MotivoRifiuto,
   type NaveSupabase,
+  type Prelievo,
   type Raccolto,
   type Scansione,
   type Scoperta,

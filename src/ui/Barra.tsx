@@ -1,11 +1,11 @@
 import { createContext, useContext, type ReactNode } from 'react'
 import { indirizzo, type Pagina } from './indirizzo'
 
-export type Sezione = 'ponte' | 'mappa' | 'nave' | 'altro'
+export type Sezione = 'ponte' | 'mappa' | 'rete' | 'nave' | 'altro'
 
 /** La sezione della barra a cui appartiene una pagina: catalogo e simili stanno in Altro. */
 export function sezioneDi(pagina: Pagina['pagina']): Sezione {
-  if (pagina === 'ponte' || pagina === 'mappa' || pagina === 'nave') return pagina
+  if (pagina === 'ponte' || pagina === 'mappa' || pagina === 'rete' || pagina === 'nave') return pagina
   return 'altro'
 }
 
@@ -23,6 +23,14 @@ const ICONE: Readonly<Record<Sezione, ReactNode>> = {
       <ellipse cx="12" cy="12" rx="3.5" ry="9" />
     </>
   ),
+  rete: (
+    <>
+      <circle cx="6" cy="7" r="2.5" />
+      <circle cx="18" cy="7" r="2.5" />
+      <circle cx="12" cy="18" r="2.5" />
+      <path d="M8.5 7h7M7.3 9.2l3.5 6.6M16.7 9.2l-3.5 6.6" />
+    </>
+  ),
   nave: <path d="M12 2l5 9v6l-5 3-5-3v-6zM7 17l-3 4M17 17l3 4" />,
   altro: <path d="M5 6h14M5 12h14M5 18h14" />,
 }
@@ -36,7 +44,7 @@ export const Pallini = createContext<Partial<Record<Sezione | 'diario' | 'wiki',
 const VOCI: readonly { sezione: Sezione; nome: string; pagina: Pagina }[] = [
   { sezione: 'ponte', nome: 'Ponte', pagina: { pagina: 'ponte' } },
   { sezione: 'mappa', nome: 'Mappa', pagina: { pagina: 'mappa' } },
-  // Rete arriva con gli insediamenti (doc/06-roadmap.md, M4.5).
+  { sezione: 'rete', nome: 'Rete', pagina: { pagina: 'rete' } },
   { sezione: 'nave', nome: 'Nave', pagina: { pagina: 'nave' } },
   { sezione: 'altro', nome: 'Altro', pagina: { pagina: 'altro' } },
 ]

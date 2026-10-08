@@ -3,7 +3,8 @@
 // stato della nave. Non si salva nulla, salvo fin dove l'hai già letto.
 
 import { createContext, useSyncExternalStore } from 'react'
-import type { Raccolto, Scansione, Scoperta } from '../dati'
+import type { Prelievo, Raccolto, Scansione, Scoperta } from '../dati'
+import type { Insediamento } from '../dominio/insediamenti'
 import { NOMI_RISORSE } from '../dominio/catalogo'
 import { RISORSE } from '../dominio/risorse'
 import { CATALOGO, type TipoCorpo } from '../dominio/catalogo'
@@ -53,6 +54,8 @@ interface Fonti {
   scoperte: readonly Scoperta[]
   scansioni: readonly Scansione[]
   raccolti: readonly Raccolto[]
+  prelievi: readonly Prelievo[]
+  insediamenti: readonly Insediamento[]
   nave: Nave
   ora: Date
 }
@@ -175,8 +178,21 @@ function vociRaccolti(raccolti: readonly Raccolto[]): Voce[] {
   })
 }
 
+/** I magazzini passati nella stiva, arrivando o ripartendo da un insediamento. */
+function vociPrelievi(prelievi: readonly Prelievo[], insediamenti: readonly Insediamento[]): Voce[] {
+  return prelievi.flatMap((p) => {
+    const insediamento = insediamenti.find((i) => i.id === p.insediamento)
+    if (!insediamento) return []
+    const dove = luogo(insediamento.coordinate)
+    const preso = RISORSE.filter((k) => (p.preso[k] ?? 0) > 0)
+      .map((k) => `+${numero(p.preso[k]!, 0)} ${NOMI_RISORSE[k]}`)
+      .join(', ')
+    return [{ quando: p.istante, tipo: 'raccolto' as const, testo: `Magazzino di ${dove.breve} nella stiva: ${preso}.`, breve: dove.breve }]
+  })
+}
+
 /** Tutte le voci degli ultimi 30 giorni già successe, dalla più recente. */
-export function vociDiario({ viaggi, scoperte, scansioni, raccolti, nave, ora }: Fonti): Voce[] {
+export function vociDiario({ viaggi, scoperte, scansioni, raccolti, prelievi, insediamenti, nave, ora }: Fonti): Voce[] {
   const dal = ora.getTime() - GIORNI_DIARIO * 24 * ORA_MS
   return [
     ...vociViaggi(viaggi, ora),
@@ -184,6 +200,7 @@ export function vociDiario({ viaggi, scoperte, scansioni, raccolti, nave, ora }:
     ...vociScoperte(scoperte),
     ...vociRilevamenti(scansioni),
     ...vociRaccolti(raccolti),
+    ...vociPrelievi(prelievi, insediamenti),
   ]
     .filter((v) => v.quando.getTime() >= dal && v.quando <= ora)
     .sort((a, b) => b.quando.getTime() - a.quando.getTime())

@@ -20,6 +20,7 @@ describe('leggiPagina', () => {
     expect(leggiPagina('#/')).toEqual({ pagina: 'ponte' })
     expect(leggiPagina('#/catalogo')).toEqual({ pagina: 'catalogo' })
     expect(leggiPagina('#/nave')).toEqual({ pagina: 'nave' })
+    expect(leggiPagina('#/rete')).toEqual({ pagina: 'rete' })
     expect(leggiPagina('#/mappa')).toEqual({ pagina: 'mappa' })
     expect(leggiPagina('#/altro')).toEqual({ pagina: 'altro' })
     expect(leggiPagina('#/diario')).toEqual({ pagina: 'diario' })

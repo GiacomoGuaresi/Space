@@ -41,6 +41,13 @@ export interface Raccolto {
   bottino: Partial<Record<Risorsa, number>>
 }
 
+/** Il magazzino di un insediamento passato nella stiva, arrivando o ripartendo. */
+export interface Prelievo {
+  insediamento: number
+  istante: Date
+  preso: Partial<Record<Risorsa, number>>
+}
+
 /** I rifiuti di `viaggia`, con il loro codice. */
 export type MotivoRifiuto = 'in_viaggio' | 'stesso_settore' | 'carburante_insufficiente'
 
@@ -197,6 +204,17 @@ export class NaveSupabase {
       scorte: r.scorte,
       produzione: r.produzione,
       magazzino: r.magazzino,
+    }))
+  }
+
+  /** I prelievi dai magazzini dopo `dal`: servono al diario di bordo. */
+  async prelieviDal(dal: Date): Promise<Prelievo[]> {
+    const { data, error } = await this.client.from('prelievo').select('insediamento, istante, preso').gte('istante', dal.toISOString())
+    if (error) throw fallita('Prelievi non letti', error)
+    return (data as { insediamento: number; istante: string; preso: Partial<Record<Risorsa, number>> }[]).map((r) => ({
+      insediamento: r.insediamento,
+      istante: new Date(r.istante),
+      preso: r.preso,
     }))
   }
 

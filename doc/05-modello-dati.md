@@ -12,6 +12,7 @@ Schema `space`. Le colonne arrivano con lo step che le usa ([06](06-roadmap.md))
 | `scansione` ✅ | centro, raggio e livello dello scanner di ogni sosta, una riga per settore (tornando con uno scanner migliore si aggiorna), nascosta finché la nave non arriva: da qui si ricalcola la mappa dei settori scansionati | M3 |
 | `stiva` ✅ | una riga per risorsa: quantità a bordo, valida dall'istante `dal` (la raccolta a mano si aggiunge alla lettura); il livello della stiva sta in `nave.stiva` | M4 |
 | `insediamento` ✅ | coordinate, tipo (base, estrattore), fondatore (etichetta), fondazione, ultima raccolta, scorte a quell'istante, livelli di produzione e magazzino; la base madre è la prima riga | M4 |
+| `prelievo` ✅ | i magazzini passati nella stiva: insediamento, istante, quanto (per il diario) | M4 |
 | `struttura` | insediamento, tipo (cantiere, laboratorio, deposito, radar, ponte), livello | M5, M7, M8 |
 | `costruzione` | coda: cosa (statistica della nave, struttura, produzione), dove, inizio, fine | M5 |
 | `ricerca` | nodo, livello (1 per gli sblocchi, N per i nodi infiniti), completamento | M6 |

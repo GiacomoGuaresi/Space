@@ -83,3 +83,4 @@
 | 2026-10-08 | Ricchezza, sottotipo e pianeti dei sistemi si portano in SQL, identici al TypeScript, perché raccolta e produzione si calcolano nel database | deciso |
 | 2026-10-08 | Raccolta a mano su un sistema planetario: la media dei mix dei suoi pianeti (la colonia invece segue un pianeta solo); in M4 solo le risorse comuni | deciso |
 | 2026-10-08 | Cometa: Idrogeno `50 × ricchezza` se la coda è almeno 0,8; il bottino si prende all'arrivo (`space.assesta`, chiamata da `stato` e `viaggia`) | deciso |
+| 2026-10-08 | Raccolta di persona anche **ripartendo**: la sosta in un insediamento carica quello che ha prodotto nel frattempo; `nave.assestato` segna l'arrivo già sistemato | deciso |

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { nave as datiNave, type Raccolto, type Scansione, type Scoperta } from '../dati'
+import { nave as datiNave, type Prelievo, type Raccolto, type Scansione, type Scoperta } from '../dati'
 import type { Nave, Viaggio } from '../dominio/navigazione'
 import type { Carico } from '../dominio/risorse'
 import type { Insediamento } from '../dominio/insediamenti'
@@ -39,6 +39,7 @@ export function useNave() {
   const [viaggi, setViaggi] = useState<Viaggio[]>([])
   const [raccolti, setRaccolti] = useState<Raccolto[]>([])
   const [insediamenti, setInsediamenti] = useState<Insediamento[]>([])
+  const [prelievi, setPrelievi] = useState<Prelievo[]>([])
   /** Cresce ogni volta che il diario va aperto da solo: all'apertura con delle novità. */
   const [aperturaDiario, setAperturaDiario] = useState(0)
 
@@ -49,12 +50,13 @@ export function useNave() {
       const remoto = await datiNave().stato()
       const dopo = Date.now()
       const dal = new Date(remoto.ora.getTime() - GIORNI_DIARIO * 24 * 3_600_000)
-      const [elenco, soste, recenti, presi, basi] = await Promise.all([
+      const [elenco, soste, recenti, presi, basi, prelevati] = await Promise.all([
         datiNave().scoperte(),
         datiNave().scansioni(),
         datiNave().viaggiDal(dal),
         datiNave().raccolti(),
         datiNave().insediamenti(),
+        datiNave().prelieviDal(dal),
       ])
       // Lo scarto si misura a metà della richiesta: la risposta ha viaggiato.
       const scartoNuovo = remoto.ora.getTime() - (prima + dopo) / 2
@@ -65,6 +67,7 @@ export function useNave() {
       setViaggi(recenti)
       setRaccolti(presi)
       setInsediamenti(basi)
+      setPrelievi(prelevati)
 
       if (apriDiario) {
         const voci = vociDiario({
@@ -72,6 +75,8 @@ export function useNave() {
           scoperte: elenco,
           scansioni: soste,
           raccolti: presi,
+          prelievi: prelevati,
+          insediamenti: basi,
           nave: remoto.nave,
           ora: remoto.ora,
         })
@@ -132,5 +137,5 @@ export function useNave() {
     [ricarica],
   )
 
-  return { stato, scarto, scoperte, scansioni, viaggi, raccolti, insediamenti, aperturaDiario, parti, ricarica }
+  return { stato, scarto, scoperte, scansioni, viaggi, raccolti, insediamenti, prelievi, aperturaDiario, parti, ricarica }
 }
