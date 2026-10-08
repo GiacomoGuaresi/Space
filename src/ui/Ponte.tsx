@@ -7,20 +7,21 @@ import { Cornice } from './Cornice'
 import { Finestra } from './Finestra'
 import { apri, FINESTRE, inPrimoPiano, useDisposizione, type IdFinestra } from './finestre'
 import { useSfondoMappa } from './Mappa'
-import { Pannello } from './plancia'
+import { DentroFinestra, Pannello } from './plancia'
 import { Fondazione } from './Fondazione'
 import { MagazzinoQui } from './Magazzino'
 import { Raccolta } from './Raccolta'
 import { Rotta } from './Rotta'
 import { Scanner } from './Scanner'
 import { Scheda } from './Scheda'
+import { Attraccata, SchedaBase, useBaseQui } from './SchedaBase'
 import { usePC } from './schermo'
 import { Scorciatoie, useTastiera } from './tastiera'
 import { useOra } from './useNave'
 
 const Scena = lazy(async () => ({ default: (await import('../grafica/Scena')).Scena }))
 
-type Linguetta = 'qui' | 'scanner' | 'rotta'
+type Linguetta = 'qui' | 'scanner' | 'rotta' | 'base'
 
 interface Props {
   nave: Nave
@@ -52,6 +53,13 @@ export function Ponte({ nave, viaggio, scarto, scoperte, scansioni, meta: metaSc
   const pc = usePC()
   const disposizione = useDisposizione()
   useTastiera(pc)
+  const base = useBaseQui(nave, ora)
+  // Arrivando in una base, su PC la sua finestra si apre da sola.
+  const arrivo = nave.dal.getTime()
+  const idBase = base?.id
+  useEffect(() => {
+    if (pc && idBase !== undefined) apri('base')
+  }, [pc, idBase, arrivo])
 
   const { x: mx, y: my, z: mz } = metaScelta ?? { x: null, y: null, z: null }
   useEffect(() => {
@@ -109,35 +117,38 @@ export function Ponte({ nave, viaggio, scarto, scoperte, scansioni, meta: metaSc
         contenuto: volo ? inArrivo : <Scanner centro={nave.posizione} livello={nave.scanner} scoperti={scoperti} onScegli={scegli} />,
       },
       rotta: { contenuto: volo ? inArrivo : rotta },
+      ...(base ? { base: { contenuto: <SchedaBase nave={nave} ora={ora} base={base} /> } } : {}),
       ...archivio,
     }
     const attiva = inPrimoPiano(disposizione)
     return (
-      <Cornice
-        pagina="ponte"
-        nave={nave}
-        viaggio={viaggio}
-        scarto={scarto}
-        fondo={disposizione.sfondo === 'mappa' ? mappa.fondo : fondo}
-        barretta={disposizione.sfondo === 'mappa' ? mappa.barretta : undefined}
-        finestre
-      >
-        {(Object.keys(FINESTRE) as IdFinestra[])
-          .filter((id) => disposizione.finestre[id].stato === 'aperta' && contenuti[id])
-          .map((id) => (
-            <Finestra
-              key={id}
-              id={id}
-              finestra={disposizione.finestre[id]}
-              livello={disposizione.ordine.indexOf(id) + 1}
-              attiva={attiva === id}
-              onChiudi={contenuti[id]!.onChiudi}
-            >
-              {contenuti[id]!.contenuto}
-            </Finestra>
-          ))}
-        <Scorciatoie />
-      </Cornice>
+      <Attraccata.Provider value={base !== undefined}>
+        <Cornice
+          pagina="ponte"
+          nave={nave}
+          viaggio={viaggio}
+          scarto={scarto}
+          fondo={disposizione.sfondo === 'mappa' ? mappa.fondo : fondo}
+          barretta={disposizione.sfondo === 'mappa' ? mappa.barretta : undefined}
+          finestre
+        >
+          {(Object.keys(FINESTRE) as IdFinestra[])
+            .filter((id) => disposizione.finestre[id].stato === 'aperta' && contenuti[id])
+            .map((id) => (
+              <Finestra
+                key={id}
+                id={id}
+                finestra={disposizione.finestre[id]}
+                livello={disposizione.ordine.indexOf(id) + 1}
+                attiva={attiva === id}
+                onChiudi={contenuti[id]!.onChiudi}
+              >
+                {contenuti[id]!.contenuto}
+              </Finestra>
+            ))}
+          <Scorciatoie />
+        </Cornice>
+      </Attraccata.Provider>
     )
   }
 
@@ -161,13 +172,18 @@ export function Ponte({ nave, viaggio, scarto, scoperte, scansioni, meta: metaSc
         </Pannello>
       ) : (
         <Pannello className="flex max-h-[58dvh] flex-col">
-          <div className="grid grid-cols-3 border-b border-linea" role="tablist">
+          <div className={`grid border-b border-linea ${base ? 'grid-cols-4' : 'grid-cols-3'}`} role="tablist">
             {linguetta('qui', 'Qui')}
             {linguetta('scanner', 'Scanner')}
             {linguetta('rotta', 'Rotta')}
+            {base && linguetta('base', 'Base')}
           </div>
-          <div className="min-h-0 overflow-y-auto p-3.5" role="tabpanel">
-            {scheda === 'qui' ? (
+          <div className={`min-h-0 overflow-y-auto ${scheda === 'base' && base ? '' : 'p-3.5'}`} role="tabpanel">
+            {scheda === 'base' && base ? (
+              <DentroFinestra.Provider value={true}>
+                <SchedaBase nave={nave} ora={ora} base={base} />
+              </DentroFinestra.Provider>
+            ) : scheda === 'qui' || scheda === 'base' ? (
               <>
                 <Scheda settore={settore} />
                 <Raccolta nave={nave} ora={ora} />

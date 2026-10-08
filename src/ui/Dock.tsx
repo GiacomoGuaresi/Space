@@ -1,12 +1,13 @@
 import { Fragment, useContext, type ReactNode } from 'react'
 import { Pallini } from './Barra'
+import { Attraccata } from './SchedaBase'
 import { mostraAiuto } from './tastiera'
 import { alterna, FINESTRE, mostra, riordina, useDisposizione, type IdFinestra, type StatoFinestra } from './finestre'
 
 // Rete, Base, Ricerche e Traguardi arrivano con le loro meccaniche (doc/06-roadmap.md).
 const GRUPPI: readonly { nome: string; voci: readonly IdFinestra[] }[] = [
   { nome: 'Navigazione', voci: ['qui', 'scanner', 'rotta'] },
-  { nome: 'Nave e rete', voci: ['nave', 'rete'] },
+  { nome: 'Nave e rete', voci: ['nave', 'rete', 'base'] },
   { nome: 'Archivio', voci: ['diario', 'wiki', 'catalogo'] },
 ]
 
@@ -35,6 +36,7 @@ const STILI: Readonly<Record<StatoFinestra, string>> = {
 export function Dock() {
   const { finestre, sfondo } = useDisposizione()
   const pallini = useContext(Pallini)
+  const attraccata = useContext(Attraccata)
   const mappa = sfondo === 'mappa'
   const voce = (id: IdFinestra, contenuto?: ReactNode) => {
     const { titolo, tasto } = FINESTRE[id]
@@ -61,11 +63,13 @@ export function Dock() {
         <Fragment key={gruppo.nome}>
           {i > 0 && <span aria-hidden="true" className="mx-2 my-2 w-px bg-separatore" />}
           <ul aria-label={gruppo.nome} className="m-0 flex list-none items-stretch gap-0.5 p-0">
-            {gruppo.voci.map((id) => (
-              <li key={id} className="flex">
-                {voce(id)}
-              </li>
-            ))}
+            {gruppo.voci
+              .filter((id) => id !== 'base' || attraccata)
+              .map((id) => (
+                <li key={id} className="flex">
+                  {voce(id)}
+                </li>
+              ))}
           </ul>
         </Fragment>
       ))}

@@ -114,7 +114,7 @@ Porta l'interfaccia su PC nella [plancia a finestre](11-interfaccia.md#pc--planc
 - [x] **5.2 Motore, serbatoio, ricarica** nel cantiere della base madre; la nave resta ferma. *Si gioca: il primo potenziamento.*
 - [x] **5.3 Stiva infinita**: 40 % della stiva, 1 h.
 - [x] **5.4 Scanner come potenziamento**: raggio e tipi a livelli alterni.
-- [ ] **5.5 Livelli di produzione** degli insediamenti, nella coda della base.
+- [x] **5.5 Livelli di produzione** degli insediamenti, nella coda della base. (La **Base**: finestra B su PC, nel dock solo da attraccati e aperta da sola all'arrivo; scheda BASE nel Ponte sul telefono. `SchedaBase.tsx`.)
 - [ ] **5.6 Magazzino a livelli.**
 - [ ] **5.7 Cantiere a livelli**: tempi più brevi e tetto della nave a 2 × livello.
 - [ ] **5.8 Deposito carburante**: pieno istantaneo a 5 Idrogeno/unità, a livelli.
