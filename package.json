@@ -13,7 +13,8 @@
     "icone": "pwa-assets-generator",
     "test": "vitest run",
     "test:watch": "vitest",
-    "verifica-sql": "node scripts/verifica-sql.ts"
+    "campione": "node --import ./scripts/estensioni.mjs scripts/campione.ts",
+    "verifica-sql": "node --import ./scripts/estensioni.mjs scripts/verifica-sql.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

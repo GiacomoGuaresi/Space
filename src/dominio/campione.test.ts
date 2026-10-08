@@ -1,6 +1,7 @@
 // Il campione fisso dell'universo: seed, tipi e rotte che TypeScript e SQL
 // devono dare uguali. Lo stesso file lo usa `npm run verifica-sql` contro il
-// database (doc/08-deploy.md). Se questo test fallisce, è cambiato l'universo.
+// database (doc/08-deploy.md). Se questo test fallisce, è cambiato l'universo;
+// se il cambiamento è voluto, si rigenera con `npm run campione`.
 
 import { describe, expect, it } from 'vitest'
 import { seedSettore } from './casuale'
@@ -17,9 +18,9 @@ describe('campione fisso', () => {
   })
 
   it('le rotte non cambiano', () => {
-    for (const [dx, dy, dz, mx, my, mz, carburante, ax, ay, az, consumo] of campione.rotte) {
-      const r = rotta({ x: dx, y: dy, z: dz }, { x: mx, y: my, z: mz }, carburante)
-      expect([r.a.x, r.a.y, r.a.z, r.consumo]).toEqual([ax, ay, az, consumo])
+    for (const [dx, dy, dz, mx, my, mz, carburante, quota, ax, ay, az, percorsa, consumo] of campione.rotte) {
+      const r = rotta({ x: dx, y: dy, z: dz }, { x: mx, y: my, z: mz }, carburante, quota)
+      expect([r.a.x, r.a.y, r.a.z, r.percorsa, r.consumo]).toEqual([ax, ay, az, percorsa, consumo])
     }
   })
 })

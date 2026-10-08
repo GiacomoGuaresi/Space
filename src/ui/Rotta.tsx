@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Rocket } from 'lucide-react'
 import { ViaggioRifiutato, type MotivoRifiuto } from '../dati'
+import { BILANCIAMENTO } from '../dominio/bilanciamento'
 import { CATALOGO } from '../dominio/catalogo'
 import { anteprima, type Nave } from '../dominio/navigazione'
 import { distanza, stessoSettore, tipoSettore, type Coordinate } from '../dominio/settore'
@@ -93,7 +94,7 @@ export function Rotta({ nave, ora, meta, onMeta, onParti }: Props) {
           <dt className="text-testo-tenue">Durata</dt>
           <dd className="m-0">
             {durata(prova.durata)} · arrivo alle {orario(new Date(ora.getTime() + prova.durata), ora)}
-            {prova.fionda ? ' · fionda ×2' : ''}
+            {prova.fionda ? ` · fionda ×${numero(BILANCIAMENTO.fionda.velocita, 1)}` : ''}
           </dd>
           <dt className="text-testo-tenue">Consumo</dt>
           <dd className="m-0">{numero(prova.consumo, 1)} di carburante</dd>

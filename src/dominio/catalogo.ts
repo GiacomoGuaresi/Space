@@ -1,6 +1,8 @@
 // Il catalogo dei corpi celesti (doc/03-universo.md): un solo posto per tipi,
 // rarità, risorse, colonie ed effetti, condiviso da grafica, scanner e test.
 
+import { BILANCIAMENTO } from './bilanciamento'
+
 export type TipoCorpo =
   | 'asteroidi'
   | 'nebulosa'
@@ -118,50 +120,18 @@ export const NOMI_COLONIE: Readonly<Record<Colonia, string>> = {
   raccoglitore: 'Raccoglitore di gas',
 }
 
-// Valori provvisori (Q&A, giro 2, domanda 3) ---------------------------------
+// Distribuzione (doc/09-bilanciamento.md#distribuzione-dei-corpi) --------------
 
-/** La probabilità che un settore non sia vuoto, uguale ovunque. */
-export const PIENEZZA = 0.1
+const { distanzaLontana, pesiVicini, pesiLontani } = BILANCIAMENTO.universo
 
-/** Oltre questa distanza dalla base i pesi sono quelli "lontani" e non cambiano più. */
-export const DISTANZA_LONTANA = 500
-
-/**
- * Pesi dei corpi tra i settori non vuoti, alla base e da `DISTANZA_LONTANA` in
- * poi; in mezzo si passa dagli uni agli altri in modo lineare. Vicino alla base
- * ci sono quasi solo corpi comuni.
- */
-const PESI_VICINI: Readonly<Record<TipoCorpo, number>> = {
-  asteroidi: 30,
-  nebulosa: 25,
-  stella: 25,
-  sistema: 12,
-  gigante: 4,
-  cometa: 4,
-  pulsar: 0.5,
-  buconero: 0,
-  relitto: 0,
-  wormhole: 0,
-}
-
-const PESI_LONTANI: Readonly<Record<TipoCorpo, number>> = {
-  asteroidi: 22,
-  nebulosa: 18,
-  stella: 18,
-  sistema: 14,
-  gigante: 7,
-  cometa: 6,
-  pulsar: 5,
-  buconero: 4,
-  relitto: 4,
-  wormhole: 2,
-}
+export const PIENEZZA = BILANCIAMENTO.universo.pienezza
+export const DISTANZA_LONTANA = distanzaLontana
 
 /** I pesi dei corpi alla distanza `d` dalla base. */
 export function pesi(d: number): Record<TipoCorpo, number> {
-  const t = Math.min(1, Math.max(0, d / DISTANZA_LONTANA))
+  const t = Math.min(1, Math.max(0, d / distanzaLontana))
   const risultato = {} as Record<TipoCorpo, number>
-  for (const tipo of TIPI) risultato[tipo] = PESI_VICINI[tipo] + (PESI_LONTANI[tipo] - PESI_VICINI[tipo]) * t
+  for (const tipo of TIPI) risultato[tipo] = pesiVicini[tipo] + (pesiLontani[tipo] - pesiVicini[tipo]) * t
   return risultato
 }
 

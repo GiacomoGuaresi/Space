@@ -55,7 +55,7 @@ I macro step (M3, M4…) raggruppano gli step per tema. Si chiudono con una riga
 
 Porta la navigazione di M2 sui valori v1 ([09](09-bilanciamento.md)).
 
-- [ ] **3.1 Valori in un posto solo**: le costanti di bilanciamento in un modulo TS e una funzione SQL gemella, con il confronto in `verifica-sql`. Nessun cambiamento visibile.
+- [x] **3.1 Valori in un posto solo**: `src/dominio/bilanciamento.ts` e `space.bilanciamento()` (`003_bilanciamento.sql`), confrontati da `verifica-sql`; il campione si rigenera con `npm run campione`. Nessun cambiamento visibile.
 - [ ] **3.2 Nave v1**: motore 0,25 settori/h, serbatoio 4, ricarica 0,4/h; una migrazione aggiorna la nave esistente. *Si gioca: viaggi da ore, 1-2 corpi al giorno.*
 - [ ] **3.3 Ricarica al 50 %** fuori dalla base, 100 % in base o accanto a una stella (ricarica ×2). *Si gioca: le stelle diventano tappe.*
 - [ ] **3.4 Fionda v1**: ×1,5 e il primo 20 % della rotta gratis.

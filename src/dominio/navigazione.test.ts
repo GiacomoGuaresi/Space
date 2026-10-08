@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest'
 import { piuVicino } from './ricerca'
 import {
   NAVE_INIZIALE,
-  RICARICA_STELLA,
   anteprima,
   carburanteOra,
   inViaggio,
@@ -13,6 +12,9 @@ import {
   type Nave,
 } from './navigazione'
 import { BASE, distanza, tipoSettore } from './settore'
+import { BILANCIAMENTO } from './bilanciamento'
+
+const RICARICA_STELLA = BILANCIAMENTO.carburante.ricaricaStella
 
 const ORA = 3_600_000
 const t0 = new Date('2026-10-08T10:00:00Z')
@@ -52,7 +54,7 @@ describe('carburante', () => {
 describe('rotta', () => {
   it('arriva alla meta se il carburante basta', () => {
     const r = rotta(BASE, { x: 3, y: 4, z: 0 }, 10)
-    expect(r).toEqual({ a: { x: 3, y: 4, z: 0 }, consumo: 5, fermata: false })
+    expect(r).toEqual({ a: { x: 3, y: 4, z: 0 }, percorsa: 5, consumo: 5, fermata: false })
   })
 
   it('si ferma prima se il carburante non basta, senza consumarne più di quanto ce n’è', () => {
@@ -69,7 +71,7 @@ describe('rotta', () => {
 
   it('non si muove se il carburante non basta per un settore', () => {
     const r = rotta(BASE, { x: 10, y: 0, z: 0 }, 0.3)
-    expect(r).toEqual({ a: BASE, consumo: 0, fermata: true })
+    expect(r).toEqual({ a: BASE, percorsa: 0, consumo: 0, fermata: true })
   })
 
   it('arrotonda le metà allo stesso modo anche in negativo', () => {

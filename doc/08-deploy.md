@@ -38,16 +38,16 @@ Fatte il 2026-10-08 con la Management API:
 2. `space` aggiunto agli *Exposed schemas* (`PATCH /v1/projects/{ref}/postgrest`). La lista `db_schema` si manda sempre intera, con gli schemi delle altre app
 3. `https://giacomoguaresi.github.io/Space/` aggiunto agli URL di redirect di Auth (`PATCH /v1/projects/{ref}/config/auth`, `uri_allow_list`). Anche questa lista si manda intera
 
-Gli script successivi si applicano allo stesso modo, oppure dal SQL Editor. `002_navigazione.sql` applicato il 2026-10-08.
+Gli script successivi si applicano allo stesso modo, oppure dal SQL Editor. `002_navigazione.sql` e `003_bilanciamento.sql` applicati il 2026-10-08.
 
 ### Verifica dell'universo in SQL
 
-Le funzioni dell'universo esistono due volte, in TypeScript e in SQL, e devono dare risultati identici. Dopo ogni modifica a una delle due:
+I valori del bilanciamento e le funzioni dell'universo esistono due volte, in TypeScript (`src/dominio/bilanciamento.ts`, `settore.ts`, `navigazione.ts`) e in SQL (`space.bilanciamento()` e le funzioni che lo leggono), e devono dare risultati identici. Dopo ogni modifica a una delle due:
 
 ```sh
 SUPABASE_ACCESS_TOKEN=sbp_... npm run verifica-sql
 ```
 
-Lo script confronta con il database il campione fisso `src/dominio/campione.json` (seed, tipi, rotte), che `npm test` confronta già con TypeScript. Il token della Management API sta in `credenziali.local`, nella cartella sopra i repository, mai nel repo.
+Lo script confronta i due bilanciamenti come JSON, poi il campione fisso `src/dominio/campione.json` (seed, tipi, rotte), che `npm test` confronta già con TypeScript. Quando l'universo o le rotte cambiano di proposito, il campione si rigenera con `npm run campione` (gli script in Node leggono il codice di `src/` grazie a `scripts/estensioni.mjs`). Il token della Management API sta in `credenziali.local`, nella cartella sopra i repository, mai nel repo.
 
 ⚠️ Il progetto è quello di produzione di Grocery: ogni modifica alla configurazione va fatta senza toccare le impostazioni usate dalle altre app.

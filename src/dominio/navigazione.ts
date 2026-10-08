@@ -1,24 +1,16 @@
 // La navigazione (doc/02-meccaniche.md): carburante, rotte, durate, scanner.
 // Queste funzioni danno l'anteprima nel browser; chi decide davvero è il
-// database (supabase/sql/002_navigazione.sql), che fa gli stessi conti.
+// database (supabase/sql/), che fa gli stessi conti con gli stessi valori
+// (bilanciamento.ts).
 
+import { BILANCIAMENTO } from './bilanciamento'
 import type { TipoCorpo } from './catalogo'
-import { distanza, stessoSettore, tipoSettore, type Coordinate } from './settore'
+import { BASE, distanza, stessoSettore, tipoSettore, type Coordinate } from './settore'
 
-// Valori provvisori (Q&A, giro 2, domande 1 e 2): gli stessi default delle
-// colonne di `space.nave`.
+const { carburante: CARBURANTE, fionda: FIONDA, scanner: SCANNER } = BILANCIAMENTO
 
-/** La nave iniziale: settori all'ora, unità di carburante, unità all'ora da ferma. */
-export const NAVE_INIZIALE = { velocita: 12, serbatoio: 20, ricarica: 2.5 } as const
-
-/** Accanto a una stella il carburante si ricarica tre volte più in fretta. */
-export const RICARICA_STELLA = 3
-
-/** Partendo da un buco nero la nave va al doppio della velocità. */
-export const FIONDA = 2
-
-/** Il raggio dello scanner, in settori: dimezzato nelle nebulose, doppio presso le pulsar. */
-export const RAGGIO_SCANNER = 3
+/** La nave al livello 1: gli stessi valori con cui il database la crea. */
+export const NAVE_INIZIALE = BILANCIAMENTO.nave
 
 export interface Nave {
   /** Dove si trova, o dove arriverà se è in viaggio. */
@@ -50,27 +42,44 @@ export function inViaggio(nave: Nave, ora: Date): boolean {
 
 const ORA_MS = 3_600_000
 
-export function ricaricaQui(nave: Nave, tipoQui: TipoCorpo | null): number {
-  return nave.ricarica * (tipoQui === 'stella' ? RICARICA_STELLA : 1)
+/** La ricarica all'ora, da fermi nel settore `qui`: più veloce accanto a una stella. */
+export function ricaricaQui(nave: Nave, qui: Coordinate): number {
+  return nave.ricarica * (tipoSettore(qui) === 'stella' ? CARBURANTE.ricaricaStella : 1)
 }
 
-/** Il carburante adesso: fermo da `dal`, si ricarica fino al serbatoio pieno. */
+/**
+ * Fin dove si ricarica il serbatoio da fermi nel settore `qui`: pieno in base
+ * e accanto a una stella, altrove solo in parte.
+ */
+export function tettoQui(nave: Nave, qui: Coordinate): number {
+  const pieno = stessoSettore(qui, BASE) || tipoSettore(qui) === 'stella'
+  return nave.serbatoio * (pieno ? 1 : CARBURANTE.tettoFuori)
+}
+
+/**
+ * Il carburante adesso: fermo da `dal`, si ricarica fino al tetto. Se è già
+ * oltre (arrivato da una base con il pieno) non cala: smette solo di salire.
+ */
 export function carburanteOra(nave: Nave, ora: Date): number {
   if (inViaggio(nave, ora)) return nave.carburante
+  const tetto = tettoQui(nave, nave.posizione)
+  if (nave.carburante >= tetto) return nave.carburante
   const ore = (ora.getTime() - nave.dal.getTime()) / ORA_MS
-  return Math.min(nave.serbatoio, nave.carburante + ricaricaQui(nave, tipoSettore(nave.posizione)) * ore)
+  return Math.min(tetto, nave.carburante + ricaricaQui(nave, nave.posizione) * ore)
 }
 
-/** Fra quanto il serbatoio sarà pieno, in millisecondi (0 se lo è già). */
+/** Fra quanto il carburante arriva al tetto, in millisecondi (0 se c'è già). */
 export function pienoTra(nave: Nave, ora: Date): number {
-  const ricarica = ricaricaQui(nave, tipoSettore(nave.posizione))
-  return Math.max(0, ((nave.serbatoio - carburanteOra(nave, ora)) / ricarica) * ORA_MS)
+  const mancante = tettoQui(nave, nave.posizione) - carburanteOra(nave, ora)
+  return Math.max(0, (mancante / ricaricaQui(nave, nave.posizione)) * ORA_MS)
 }
 
 export interface Rotta {
   /** Dove si arriva davvero. */
   a: Coordinate
-  /** I settori percorsi: anche il carburante consumato. */
+  /** I settori percorsi. */
+  percorsa: number
+  /** Il carburante consumato: i settori percorsi per la quota che si paga. */
   consumo: number
   /** Vero se il carburante finisce prima della meta. */
   fermata: boolean
@@ -80,14 +89,15 @@ export interface Rotta {
 const arrotonda = (v: number) => Math.floor(v + 0.5)
 
 /**
- * La rotta da `da` a `meta` con il carburante dato. Se non basta, la nave si
- * ferma nel settore della rotta più vicino al punto in cui il serbatoio si
- * svuota, senza superarlo. Stessi passi di `space.rotta` in SQL.
+ * La rotta da `da` a `meta` con il carburante dato, se ogni settore costa
+ * `quota` unità (1, o meno con la fionda). Se non basta, la nave si ferma nel
+ * settore della rotta più vicino al punto in cui il serbatoio si svuota, senza
+ * superarlo. Stessi passi di `space.rotta` in SQL.
  */
-export function rotta(da: Coordinate, meta: Coordinate, carburante: number): Rotta {
+export function rotta(da: Coordinate, meta: Coordinate, carburante: number, quota = 1): Rotta {
   const totale = distanza(da, meta)
-  if (carburante >= totale) return { a: meta, consumo: totale, fermata: false }
-  let t = carburante / totale
+  if (carburante >= totale * quota) return { a: meta, percorsa: totale, consumo: totale * quota, fermata: false }
+  let t = carburante / quota / totale
   while (t > 0) {
     const p = {
       x: arrotonda(da.x + (meta.x - da.x) * t),
@@ -95,10 +105,10 @@ export function rotta(da: Coordinate, meta: Coordinate, carburante: number): Rot
       z: arrotonda(da.z + (meta.z - da.z) * t),
     }
     const percorsa = distanza(da, p)
-    if (percorsa <= carburante) return { a: p, consumo: percorsa, fermata: true }
+    if (percorsa * quota <= carburante) return { a: p, percorsa, consumo: percorsa * quota, fermata: true }
     t -= 0.5 / totale
   }
-  return { a: da, consumo: 0, fermata: true }
+  return { a: da, percorsa: 0, consumo: 0, fermata: true }
 }
 
 export interface Anteprima extends Rotta {
@@ -112,20 +122,20 @@ export interface Anteprima extends Rotta {
 /** Cosa succederebbe partendo adesso verso `meta`. */
 export function anteprima(nave: Nave, meta: Coordinate, ora: Date): Anteprima {
   const fionda = tipoSettore(nave.posizione) === 'buconero'
-  const r = rotta(nave.posizione, meta, carburanteOra(nave, ora))
-  const velocita = nave.velocita * (fionda ? FIONDA : 1)
+  const r = rotta(nave.posizione, meta, carburanteOra(nave, ora), fionda ? 1 - FIONDA.gratis : 1)
+  const velocita = nave.velocita * (fionda ? FIONDA.velocita : 1)
   return {
     ...r,
-    durata: (r.consumo / velocita) * ORA_MS,
+    durata: (r.percorsa / velocita) * ORA_MS,
     fionda,
     possibile: !stessoSettore(r.a, nave.posizione),
   }
 }
 
 export function raggioScanner(tipoQui: TipoCorpo | null): number {
-  if (tipoQui === 'nebulosa') return Math.floor(RAGGIO_SCANNER / 2)
-  if (tipoQui === 'pulsar') return RAGGIO_SCANNER * 2
-  return RAGGIO_SCANNER
+  if (tipoQui === 'nebulosa') return Math.floor(SCANNER.raggio / 2)
+  if (tipoQui === 'pulsar') return SCANNER.raggio * 2
+  return SCANNER.raggio
 }
 
 export interface Rilevamento {

@@ -1,6 +1,7 @@
 import { Fuel, Navigation, Rocket } from 'lucide-react'
-import { carburanteOra, inViaggio, pienoTra, ricaricaQui, type Nave, type Viaggio } from '../dominio/navigazione'
-import { stessoSettore, tipoSettore } from '../dominio/settore'
+import { BILANCIAMENTO } from '../dominio/bilanciamento'
+import { carburanteOra, inViaggio, pienoTra, ricaricaQui, tettoQui, type Nave, type Viaggio } from '../dominio/navigazione'
+import { stessoSettore } from '../dominio/settore'
 import { coordinate, durata, numero, orario, rovescia } from './formato'
 
 interface Props {
@@ -14,7 +15,18 @@ export function StatoNave({ nave, viaggio, ora }: Props) {
   const volo = inViaggio(nave, ora)
   const carburante = carburanteOra(nave, ora)
   const pieno = pienoTra(nave, ora)
-  const accelerata = !volo && ricaricaQui(nave, tipoSettore(nave.posizione)) > nave.ricarica
+  const accelerata = !volo && ricaricaQui(nave, nave.posizione) > nave.ricarica
+  // Fuori dalle basi e lontano dalle stelle il serbatoio si ricarica solo in parte.
+  const tetto = tettoQui(nave, nave.posizione)
+  const parziale = tetto < nave.serbatoio
+  const percento = Math.round((tetto / nave.serbatoio) * 100)
+  const nota = volo
+    ? 'Si ricarica da ferma'
+    : pieno > 0
+      ? `${parziale ? `Al ${percento} % tra` : 'Pieno tra'} ${durata(pieno)}${accelerata ? ` · ricarica stellare ×${BILANCIAMENTO.carburante.ricaricaStella}` : ''}`
+      : carburante < nave.serbatoio
+        ? `Qui si ricarica fino al ${percento} %: il pieno in base o accanto a una stella`
+        : 'Serbatoio pieno'
 
   return (
     <section className="flex w-64 flex-col gap-2 rounded-2xl border border-bordo/70 bg-pannello/75 p-3 backdrop-blur">
@@ -55,7 +67,7 @@ export function StatoNave({ nave, viaggio, ora }: Props) {
           </span>
         </div>
         <div
-          className="mt-1 h-1.5 overflow-hidden rounded-full bg-bordo/60"
+          className="relative mt-1 h-1.5 overflow-hidden rounded-full bg-bordo/60"
           role="meter"
           aria-label="Carburante"
           aria-valuemin={0}
@@ -63,9 +75,12 @@ export function StatoNave({ nave, viaggio, ora }: Props) {
           aria-valuenow={Math.round(carburante * 10) / 10}
         >
           <div className="h-full rounded-full bg-nebula" style={{ width: `${(carburante / nave.serbatoio) * 100}%` }} />
+          {parziale && !volo && (
+            <div className="absolute inset-y-0 w-px bg-testo/60" style={{ left: `${percento}%` }} aria-hidden="true" />
+          )}
         </div>
         <p className="m-0 mt-1 text-[11px] text-testo-tenue">
-          {volo ? 'Si ricarica da ferma' : pieno > 0 ? `Pieno tra ${durata(pieno)}${accelerata ? ' · ricarica stellare ×3' : ''}` : 'Serbatoio pieno'}
+          {nota}
         </p>
       </div>
     </section>
