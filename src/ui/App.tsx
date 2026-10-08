@@ -9,7 +9,7 @@ import { Pallini } from './Barra'
 import { Catalogo, ContenutoCatalogo } from './Catalogo'
 import { Cornice } from './Cornice'
 import { Diario } from './Diario'
-import { apri, useDisposizione, type IdFinestra } from './finestre'
+import { apri, mostra, useDisposizione, type IdFinestra } from './finestre'
 import { novita, segnaLetto, useLetto, vociDiario } from './diario'
 import { Impostazioni } from './Impostazioni'
 import { useImpostazioni, type Movimento } from './impostazioni'
@@ -50,7 +50,7 @@ export function App() {
   // Su PC (doc/11-interfaccia.md#pc--plancia-a-finestre) le pagine sono finestre.
   const pc = usePC()
   const disposizione = useDisposizione()
-  const diarioAperto = pc ? disposizione.finestre.diario.stato === 'aperta' && pagina.pagina !== 'mappa' : pagina.pagina === 'diario'
+  const diarioAperto = pc ? disposizione.finestre.diario.stato === 'aperta' : pagina.pagina === 'diario'
   const lettoOra = useLetto()
   // Mentre il diario è aperto vale la lettura di quando si è aperto: le novità restano evidenziate.
   const [lettoCongelato, setLettoCongelato] = useState<Date | null>(null)
@@ -115,7 +115,7 @@ export function App() {
   )
   // Sul ponte, a nave ferma, l'arrivo è visto.
   useEffect(() => {
-    const ponte = pc ? disposizione.finestre.qui.stato === 'aperta' && pagina.pagina !== 'mappa' : pagina.pagina === 'ponte'
+    const ponte = pc ? disposizione.finestre.qui.stato === 'aperta' : pagina.pagina === 'ponte'
     if (ponte && arrivoNonVisto && nave) segnaPonteVisto(nave.dal)
   }, [pc, disposizione.finestre.qui.stato, pagina.pagina, arrivoNonVisto, nave])
 
@@ -123,8 +123,9 @@ export function App() {
   // finestra, poi l'indirizzo si pulisce: la disposizione non sta nell'URL.
   const [wikiPC, setWikiPC] = useState<{ voce?: string; numeri?: boolean }>({})
   useEffect(() => {
-    if (!pc || pagina.pagina === 'mappa' || pagina.pagina === 'osservatorio') return
+    if (!pc || pagina.pagina === 'osservatorio') return
     if (pagina.pagina === 'ponte' && !pagina.meta) return
+    if (pagina.pagina === 'mappa') mostra('mappa')
     const finestre: Partial<Record<Pagina['pagina'], IdFinestra>> = {
       diario: 'diario',
       wiki: 'wiki',
@@ -169,13 +170,14 @@ export function App() {
       )
     }
     const { viaggio } = stato
-    if (pc && pagina.pagina !== 'mappa') {
+    if (pc) {
       return (
         <Ponte
           nave={stato.nave}
           viaggio={viaggio}
           scarto={scarto}
           scoperte={scoperte}
+          scansioni={scansioni}
           meta={pagina.pagina === 'ponte' ? pagina.meta : undefined}
           onParti={parti}
           archivio={{
@@ -292,6 +294,7 @@ export function App() {
         viaggio={stato.viaggio}
         scarto={scarto}
         scoperte={scoperte}
+        scansioni={scansioni}
         meta={pagina.pagina === 'ponte' ? pagina.meta : undefined}
         onParti={parti}
       />

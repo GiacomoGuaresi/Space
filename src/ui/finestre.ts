@@ -18,10 +18,14 @@ export interface Finestra extends Riquadro {
   stato: StatoFinestra
 }
 
+export type Sfondo = 'scena' | 'mappa'
+
 export interface Disposizione {
   finestre: Record<IdFinestra, Finestra>
   /** Dal fondo al primo piano. */
   ordine: IdFinestra[]
+  /** Dietro le finestre: la scena del settore o la mappa 3D. */
+  sfondo: Sfondo
 }
 
 /**
@@ -64,6 +68,7 @@ export function disposizioneIniziale(larghezza: number): Disposizione {
       impostazioni: alCentro('impostazioni', 3),
     },
     ordine: ['diario', 'wiki', 'catalogo', 'impostazioni', 'qui', 'scanner', 'rotta'],
+    sfondo: 'scena',
   }
 }
 
@@ -104,7 +109,12 @@ export function primoPiano(id: IdFinestra) {
 
 /** Apre la finestra, o la riporta su se c'è già: una finestra per tipo. */
 export function apri(id: IdFinestra) {
-  cambia({ finestre: conStato(id, 'aperta'), ordine: [...attuale.ordine.filter((i) => i !== id), id] })
+  cambia({ ...attuale, finestre: conStato(id, 'aperta'), ordine: [...attuale.ordine.filter((i) => i !== id), id] })
+}
+
+/** Scena o mappa dietro le finestre (⇆, o Tab). */
+export function mostra(sfondo: Sfondo) {
+  if (attuale.sfondo !== sfondo) cambia({ ...attuale, sfondo })
 }
 
 export function riduci(id: IdFinestra) {

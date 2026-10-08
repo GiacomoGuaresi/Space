@@ -60,39 +60,15 @@ export function Mappa({ nave, viaggio, scarto, scoperte, scansioni }: Props) {
       }
     >
       <div className="mb-auto flex items-start gap-2 pointer-events-none!">
-        <div role="group" aria-label="Filtri" className="pointer-events-auto flex flex-1 flex-wrap gap-1.5">
-          {(Object.keys(FILTRI) as Filtro[]).map((f) => (
-            <button
-              key={f}
-              type="button"
-              aria-pressed={filtro === f}
-              className="etichetta h-8 rounded-plancia border border-linea bg-pannello/80 px-2.5 aria-pressed:border-ambra aria-pressed:bg-ambra/12 aria-pressed:text-ambra"
-              onClick={() => {
-                setFiltro(f)
-                setScelto(null)
-              }}
-            >
-              {FILTRI[f].nome}
-            </button>
-          ))}
-        </div>
+        <Filtri
+          filtro={filtro}
+          onFiltro={(f) => {
+            setFiltro(f)
+            setScelto(null)
+          }}
+        />
         <div className="pointer-events-auto flex flex-col gap-1.5">
-          {(
-            [
-              ['Nave', nave.posizione],
-              ['Madre', BASE],
-            ] as const
-          ).map(([nome, su]) => (
-            <button
-              key={nome}
-              type="button"
-              aria-label={`Centra su ${nome === 'Nave' ? 'la nave' : 'la base madre'}`}
-              className="etichetta h-11 w-16 rounded-plancia border border-linea bg-pannello/85 text-testo!"
-              onClick={() => setCentra({ su, volta: Date.now() })}
-            >
-              {nome}
-            </button>
-          ))}
+          <TastiCentra nave={nave.posizione} onCentra={setCentra} />
         </div>
       </div>
       {punto ? (
@@ -154,4 +130,103 @@ function Valore({ etichetta, children }: { etichetta: string; children: ReactNod
       <span className="cifre text-[15px]">{children}</span>
     </div>
   )
+}
+
+/** I filtri della mappa: tutti, sistemi, rari, non visitati. */
+function Filtri({ filtro, onFiltro, compatti = false }: { filtro: Filtro; onFiltro: (f: Filtro) => void; compatti?: boolean }) {
+  return (
+    <div role="group" aria-label="Filtri" className="pointer-events-auto flex flex-1 flex-wrap gap-1.5">
+      {(Object.keys(FILTRI) as Filtro[]).map((f) => (
+        <button
+          key={f}
+          type="button"
+          aria-pressed={filtro === f}
+          className={`etichetta rounded-plancia border border-linea bg-pannello/80 px-2.5 aria-pressed:border-ambra aria-pressed:bg-ambra/12 aria-pressed:text-ambra ${compatti ? 'h-7' : 'h-8'}`}
+          onClick={() => onFiltro(f)}
+        >
+          {FILTRI[f].nome}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+/** I tasti per riportare il centro della mappa sulla nave o sulla base madre. */
+function TastiCentra({
+  nave,
+  onCentra,
+  compatti = false,
+}: {
+  nave: Coordinate
+  onCentra: (c: { su: Coordinate; volta: number }) => void
+  compatti?: boolean
+}) {
+  return (
+    <>
+      {(
+        [
+          ['Nave', nave],
+          ['Madre', BASE],
+        ] as const
+      ).map(([nome, su]) => (
+        <button
+          key={nome}
+          type="button"
+          aria-label={`Centra su ${nome === 'Nave' ? 'la nave' : 'la base madre'}`}
+          className={`etichetta rounded-plancia border border-linea bg-pannello/85 text-testo! ${compatti ? 'h-7 px-2.5' : 'h-11 w-16'}`}
+          onClick={() => onCentra({ su, volta: Date.now() })}
+        >
+          {nome}
+        </button>
+      ))}
+    </>
+  )
+}
+
+/**
+ * La mappa come sfondo della plancia per PC (doc/11-interfaccia.md#pc--plancia-a-finestre):
+ * la mappa 3D dietro le finestre e la barretta con i filtri e i tasti per
+ * ricentrare. Un clic su un corpo lo mette nella Rotta.
+ */
+export function useSfondoMappa({
+  nave,
+  scoperte,
+  scansioni,
+  meta,
+  onScegli,
+}: {
+  nave: Coordinate
+  scoperte: readonly Scoperta[]
+  scansioni: readonly Scansione[]
+  /** La meta della rotta, evidenziata sulla mappa. */
+  meta: Coordinate | null
+  onScegli: (c: Coordinate) => void
+}): { fondo: ReactNode; barretta: ReactNode } {
+  const tutti = useMemo(() => corpiNoti(scansioni, scoperte), [scansioni, scoperte])
+  const [filtro, setFiltro] = useState<Filtro>('tutti')
+  const punti = useMemo(() => tutti.filter(FILTRI[filtro].tiene), [tutti, filtro])
+  const [centra, setCentra] = useState<{ su: Coordinate; volta: number } | null>(null)
+  const seleziona = (c: Coordinate | null) => {
+    const punto = c && punti.find((p) => stessoSettore(p.coordinate, c))
+    if (!punto) return
+    // Scegliere un raro spegne il suo pallino.
+    if (['rara', 'leggendaria'].includes(CATALOGO[punto.tipo].rarita)) segnaRaroVisto(`${c.x},${c.y},${c.z}`)
+    if (!stessoSettore(c, nave)) onScegli(c)
+  }
+  return {
+    fondo: (
+      <Suspense fallback={null}>
+        <Mappa3D punti={punti} soste={scansioni} nave={nave} centra={centra} selezionato={meta} onSeleziona={seleziona} />
+      </Suspense>
+    ),
+    barretta: (
+      <div className="flex items-center gap-1.5 border-b border-separatore bg-barra/80 px-3 py-1.5 backdrop-blur">
+        <Filtri filtro={filtro} onFiltro={setFiltro} compatti />
+        <span className="etichetta mr-2">
+          {punti.length} {punti.length === 1 ? 'corpo' : 'corpi'} · clic → Rotta
+        </span>
+        <TastiCentra nave={nave} onCentra={setCentra} compatti />
+      </div>
+    ),
+  }
 }

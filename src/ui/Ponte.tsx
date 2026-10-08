@@ -1,11 +1,12 @@
 import { Suspense, lazy, useEffect, useMemo, useState, type ReactNode } from 'react'
-import type { Scoperta } from '../dati'
+import type { Scansione, Scoperta } from '../dati'
 import { inViaggio, type Nave, type Viaggio } from '../dominio/navigazione'
 import { settore as calcolaSettore, type Coordinate } from '../dominio/settore'
 import { vaiA } from './indirizzo'
 import { Cornice } from './Cornice'
 import { Finestra } from './Finestra'
 import { apri, FINESTRE, inPrimoPiano, useDisposizione, type IdFinestra } from './finestre'
+import { useSfondoMappa } from './Mappa'
 import { Pannello } from './plancia'
 import { Rotta } from './Rotta'
 import { Scanner } from './Scanner'
@@ -22,6 +23,7 @@ interface Props {
   viaggio: Viaggio | null
   scarto: number
   scoperte: Scoperta[]
+  scansioni: Scansione[]
   /** Una meta scelta altrove (dalla mappa): apre la rotta. */
   meta?: Coordinate
   onParti: (meta: Coordinate) => Promise<void>
@@ -35,7 +37,7 @@ interface Props {
  * lo scanner e la rotta: sul telefono come schede di un pannello, su PC come
  * tre finestre (doc/11-interfaccia.md#finestre), insieme a quelle dell'archivio.
  */
-export function Ponte({ nave, viaggio, scarto, scoperte, meta: metaScelta, onParti, archivio = {} }: Props) {
+export function Ponte({ nave, viaggio, scarto, scoperte, scansioni, meta: metaScelta, onParti, archivio = {} }: Props) {
   const ora = useOra(scarto)
   const volo = inViaggio(nave, ora)
   const { x, y, z } = nave.posizione
@@ -66,6 +68,8 @@ export function Ponte({ nave, viaggio, scarto, scoperte, meta: metaScelta, onPar
       <Scena settore={settore} inViaggio={volo} />
     </Suspense>
   )
+  // Su PC dietro le finestre può esserci la mappa: un clic su un corpo apre la rotta.
+  const mappa = useSfondoMappa({ nave: nave.posizione, scoperte, scansioni, meta, onScegli: scegli })
   const rotta = (
     <Rotta
       nave={nave}
@@ -95,7 +99,15 @@ export function Ponte({ nave, viaggio, scarto, scoperte, meta: metaScelta, onPar
     }
     const attiva = inPrimoPiano(disposizione)
     return (
-      <Cornice pagina="ponte" nave={nave} viaggio={viaggio} scarto={scarto} fondo={fondo} finestre>
+      <Cornice
+        pagina="ponte"
+        nave={nave}
+        viaggio={viaggio}
+        scarto={scarto}
+        fondo={disposizione.sfondo === 'mappa' ? mappa.fondo : fondo}
+        barretta={disposizione.sfondo === 'mappa' ? mappa.barretta : undefined}
+        finestre
+      >
         {(Object.keys(FINESTRE) as IdFinestra[])
           .filter((id) => disposizione.finestre[id].stato === 'aperta' && contenuti[id])
           .map((id) => (

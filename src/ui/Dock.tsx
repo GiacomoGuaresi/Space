@@ -1,7 +1,6 @@
 import { Fragment, useContext, type ReactNode } from 'react'
 import { Pallini } from './Barra'
-import { alterna, apri, FINESTRE, useDisposizione, type IdFinestra, type StatoFinestra } from './finestre'
-import { indirizzo, vaiA, type Pagina } from './indirizzo'
+import { alterna, FINESTRE, mostra, useDisposizione, type IdFinestra, type StatoFinestra } from './finestre'
 
 // Nave, Rete, Base, Ricerche e Traguardi arrivano con le loro meccaniche (doc/06-roadmap.md).
 const GRUPPI: readonly { nome: string; voci: readonly IdFinestra[] }[] = [
@@ -26,14 +25,13 @@ const STILI: Readonly<Record<StatoFinestra, string>> = {
  * aperta è accesa, ridotta ha il contorno, chiusa è spenta; i pallini dicono
  * dove c'è qualcosa da vedere.
  */
-export function Dock({ attuale }: { attuale: Pagina['pagina'] }) {
-  const { finestre } = useDisposizione()
+export function Dock() {
+  const { finestre, sfondo } = useDisposizione()
   const pallini = useContext(Pallini)
-  const mappa = attuale === 'mappa'
-  // Sulla mappa le finestre non si vedono: una voce riporta alla plancia.
+  const mappa = sfondo === 'mappa'
   const voce = (id: IdFinestra, contenuto?: ReactNode) => {
     const { titolo, tasto } = FINESTRE[id]
-    const stato = mappa ? 'chiusa' : finestre[id].stato
+    const stato = finestre[id].stato
     const pallino = PALLINI[id] && stato !== 'aperta' ? pallini[PALLINI[id]] : undefined
     return (
       <button
@@ -42,11 +40,7 @@ export function Dock({ attuale }: { attuale: Pagina['pagina'] }) {
         aria-label={pallino ? `${titolo}, ${pallino}` : titolo}
         title={stato === 'ridotta' ? `${titolo}, ridotta` : titolo}
         className={`${CLASSI} ${STILI[stato]}`}
-        onClick={() => {
-          if (!mappa) return alterna(id)
-          apri(id)
-          vaiA({ pagina: 'ponte' })
-        }}
+        onClick={() => alterna(id)}
       >
         <Tasto>{id === 'impostazioni' ? '⚙' : tasto}</Tasto>
         {contenuto ?? NOMI_DOCK[id] ?? titolo}
@@ -70,16 +64,18 @@ export function Dock({ attuale }: { attuale: Pagina['pagina'] }) {
       ))}
       <ul aria-label="Comandi" className="m-0 ml-auto flex list-none items-stretch gap-0.5 p-0">
         <li className="flex">
-          <a
-            href={indirizzo({ pagina: mappa ? 'ponte' : 'mappa' })}
+          <button
+            type="button"
             title={mappa ? 'Torna alla scena del settore' : 'Mostra la mappa'}
-            aria-label={!mappa && pallini.mappa ? `Mappa, ${pallini.mappa}` : undefined}
+            aria-pressed={mappa}
+            aria-label={!mappa && pallini.mappa ? `Mappa, ${pallini.mappa}` : 'Mappa'}
             className={`${CLASSI} ${STILI[mappa ? 'aperta' : 'chiusa']}`}
+            onClick={() => mostra(mappa ? 'scena' : 'mappa')}
           >
             <Tasto>⇆</Tasto>
-            {mappa ? 'Scena' : 'Mappa'}
+            Mappa
             {!mappa && pallini.mappa && <span aria-hidden="true" className="absolute top-1.5 right-0.5 size-[6px] rounded-full bg-ambra" />}
-          </a>
+          </button>
         </li>
         <li className="flex">{voce('impostazioni', <span className="sr-only">Impostazioni</span>)}</li>
       </ul>
