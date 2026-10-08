@@ -2,7 +2,7 @@
 // ciò che è successo, ricostruita ogni volta da viaggi, scoperte, scansioni e
 // stato della nave. Non si salva nulla, salvo fin dove l'hai già letto.
 
-import { useSyncExternalStore } from 'react'
+import { createContext, useSyncExternalStore } from 'react'
 import type { Scansione, Scoperta } from '../dati'
 import { CATALOGO, type TipoCorpo } from '../dominio/catalogo'
 import {
@@ -27,6 +27,9 @@ export interface Voce {
   /** Il nome breve, per i gruppi: "3 arrivi: Kumion, Talir, Odressa". */
   breve: string
 }
+
+/** L'ultima voce e quante novità ci sono, per la barra di stato del PC: le calcola l'App. */
+export const UltimaVoce = createContext<{ voce: Voce | null; nuove: number }>({ voce: null, nuove: 0 })
 
 /** Il diario tiene gli ultimi 30 giorni. */
 export const GIORNI_DIARIO = 30

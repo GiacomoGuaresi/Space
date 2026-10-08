@@ -10,7 +10,7 @@ import { Catalogo, ContenutoCatalogo } from './Catalogo'
 import { Cornice } from './Cornice'
 import { Diario } from './Diario'
 import { apri, mostra, useDisposizione, type IdFinestra } from './finestre'
-import { novita, segnaLetto, useLetto, vociDiario } from './diario'
+import { novita, segnaLetto, UltimaVoce, useLetto, vociDiario } from './diario'
 import { Impostazioni } from './Impostazioni'
 import { useImpostazioni, type Movimento } from './impostazioni'
 import { apriDiario, chiudiDiario, indirizzo, usePagina, type Pagina } from './indirizzo'
@@ -66,6 +66,7 @@ export function App() {
     eraAperto.current = diarioAperto
   }, [pc, diarioAperto, scarto])
   const daLeggere = voci.filter((v) => novita(v, lettoAperto)).length
+  const ultima = useMemo(() => ({ voce: voci[0] ?? null, nuove: daLeggere }), [voci, daLeggere])
 
   // Pallini: Ponte se la nave è arrivata da quando l'hai visto, Mappa se c'è un
   // raro rilevato mai visitato né aperto, Altro se il diario ha novità.
@@ -300,7 +301,11 @@ export function App() {
       />
     )
   }
-  return <Pallini.Provider value={pallini}>{vista()}</Pallini.Provider>
+  return (
+    <Pallini.Provider value={pallini}>
+      <UltimaVoce.Provider value={ultima}>{vista()}</UltimaVoce.Provider>
+    </Pallini.Provider>
+  )
 }
 
 /**

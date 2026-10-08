@@ -48,11 +48,15 @@ export const FINESTRE: Readonly<
 const MARGINE = 12
 
 /**
- * La disposizione di partenza in un'area larga `larghezza`: Scanner e Qui a
- * sinistra, Rotta a destra; le altre chiuse, pronte ad aprirsi al centro.
+ * La disposizione di partenza in un'area `larghezza` × `altezza`: Scanner e Qui
+ * a sinistra, una sopra l'altra (più basse se lo schermo è basso), Rotta a
+ * destra; le altre chiuse, pronte ad aprirsi al centro.
  */
-export function disposizioneIniziale(larghezza: number): Disposizione {
+export function disposizioneIniziale(larghezza: number, altezza = 816): Disposizione {
   const { qui, scanner, rotta } = FINESTRE
+  const libera = altezza - MARGINE * 3
+  const altezzaScanner = Math.min(scanner.h, Math.max(scanner.minH, Math.round(libera * 0.58)))
+  const altezzaQui = Math.min(qui.h, Math.max(qui.minH, libera - altezzaScanner))
   // A cascata, perché aprendone più d'una si vedano tutti i titoli.
   const alCentro = (id: IdFinestra, n: number): Finestra => {
     const { w, h } = FINESTRE[id]
@@ -60,8 +64,8 @@ export function disposizioneIniziale(larghezza: number): Disposizione {
   }
   return {
     finestre: {
-      scanner: { stato: 'aperta', x: MARGINE, y: MARGINE, w: scanner.w, h: scanner.h },
-      qui: { stato: 'aperta', x: MARGINE, y: MARGINE * 2 + scanner.h, w: qui.w, h: qui.h },
+      scanner: { stato: 'aperta', x: MARGINE, y: MARGINE, w: scanner.w, h: altezzaScanner },
+      qui: { stato: 'aperta', x: MARGINE, y: MARGINE * 2 + altezzaScanner, w: qui.w, h: altezzaQui },
       rotta: { stato: 'aperta', x: Math.max(MARGINE, larghezza - rotta.w - MARGINE), y: MARGINE, w: rotta.w, h: rotta.h },
       wiki: alCentro('wiki', 0),
       catalogo: alCentro('catalogo', 1),
@@ -104,12 +108,15 @@ export function leggiDisposizione(salvata: unknown, iniziale: Disposizione): Dis
   }
 }
 
-function larghezza() {
-  return typeof window === 'undefined' ? 1440 : window.innerWidth
+// L'area delle finestre prima di misurarla: lo schermo meno la barra di stato e il dock.
+function schermo() {
+  return typeof window === 'undefined'
+    ? { larghezza: 1440, altezza: 816 }
+    : { larghezza: window.innerWidth, altezza: window.innerHeight - 84 }
 }
 
 function carica(): Disposizione {
-  const iniziale = disposizioneIniziale(larghezza())
+  const iniziale = disposizioneIniziale(schermo().larghezza, schermo().altezza)
   try {
     return leggiDisposizione(JSON.parse(localStorage.getItem(CHIAVE) ?? 'null'), iniziale)
   } catch {
@@ -135,7 +142,8 @@ let area: { larghezza: number; altezza: number } | null = null
 
 /** ↺ Riordina: la disposizione iniziale, con lo sfondo di adesso, dentro l'area. */
 export function riordina() {
-  cambia({ ...disposizioneIniziale(area?.larghezza ?? larghezza()), sfondo: attuale.sfondo })
+  const { larghezza, altezza } = area ?? schermo()
+  cambia({ ...disposizioneIniziale(larghezza, altezza), sfondo: attuale.sfondo })
   if (area) rientra(area.larghezza, area.altezza)
 }
 

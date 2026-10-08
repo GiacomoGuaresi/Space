@@ -1,7 +1,9 @@
+import { useContext } from 'react'
 import { BILANCIAMENTO } from '../dominio/bilanciamento'
 import { carburanteOra, inViaggio, pienoTra, ricaricaQui, tettoQui, type Nave, type Viaggio } from '../dominio/navigazione'
 import { BASE, settore, stessoSettore } from '../dominio/settore'
 import { coordinatePlancia, durata, numero, orario, rovescia } from './formato'
+import { NOMI_VOCI, UltimaVoce } from './diario'
 import { Etichetta, Info } from './plancia'
 
 interface Props {
@@ -23,6 +25,7 @@ const SEGMENTI = 10
  */
 export function StrisciaStato({ nave, viaggio, ora, onApri, riga = false }: Props) {
   const volo = inViaggio(nave, ora)
+  const ultima = useContext(UltimaVoce)
   const carburante = carburanteOra(nave, ora)
   const tetto = tettoQui(nave, nave.posizione)
   const pieno = pienoTra(nave, ora)
@@ -99,15 +102,33 @@ export function StrisciaStato({ nave, viaggio, ora, onApri, riga = false }: Prop
   // Su PC i pezzi stanno in fila, separati da una linea; sul telefono uno sotto l'altro.
   const contenuto = riga ? (
     <>
-      <div className="w-[360px] shrink-0">{luogo}</div>
+      <div className="w-[300px] shrink-0">{luogo}</div>
       <span aria-hidden="true" className="h-5 w-px shrink-0 bg-separatore" />
-      <div className="w-[380px] shrink-0">{serbatoio}</div>
-      {avviso && (
-        <>
-          <span aria-hidden="true" className="h-5 w-px shrink-0 bg-separatore" />
-          <div className="min-w-0 truncate">{avviso}</div>
-        </>
+      <div className="w-[340px] shrink-0">{serbatoio}</div>
+      <span aria-hidden="true" className="h-5 w-px shrink-0 bg-separatore" />
+      {avviso ? (
+        <div className="min-w-0 flex-1 truncate">{avviso}</div>
+      ) : (
+        <div className="flex min-w-0 flex-1 items-center gap-2">
+          {ultima.nuove > 0 ? (
+            <span className="flex shrink-0 items-center gap-1.5 text-ambra">
+              <span aria-hidden="true" className="size-[6px] rounded-full bg-ambra" />
+              <Etichetta className="text-ambra!">{ultima.nuove} novità</Etichetta>
+            </span>
+          ) : (
+            <Etichetta className="shrink-0">Diario</Etichetta>
+          )}
+          {ultima.voce && (
+            <span className="min-w-0 truncate text-xs text-testo-tenue">
+              {NOMI_VOCI[ultima.voce.tipo].uno} · {ultima.voce.breve} · {orario(ultima.voce.quando, ora)}
+            </span>
+          )}
+        </div>
       )}
+      <span aria-hidden="true" className="h-5 w-px shrink-0 bg-separatore" />
+      <span className="cifre shrink-0 text-[13px]" title="Ora del server">
+        {ora.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}
+      </span>
     </>
   ) : (
     <>

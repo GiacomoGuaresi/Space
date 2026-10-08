@@ -81,7 +81,7 @@ Porta l'interfaccia di M2-M3 nella struttura di [11](11-interfaccia.md), senza m
 
 **Si consegna**: la plancia, pronta ad accogliere le meccaniche.
 
-## MF · Plancia a finestre (PC) ← *prossimo*
+## MF · Plancia a finestre (PC) ✅
 
 Porta l'interfaccia su PC nella [plancia a finestre](11-interfaccia.md#pc--plancia-a-finestre). Sotto i 1024 px di larghezza il telefono resta com'è, a ogni step.
 
@@ -91,11 +91,11 @@ Porta l'interfaccia su PC nella [plancia a finestre](11-interfaccia.md#pc--planc
 - [x] **F.4 Mappa come sfondo**: ⇆ scena/mappa, barretta dei filtri, clic su un corpo → Rotta. (`useSfondoMappa` in `Mappa.tsx`; `#/mappa` su PC mostra la mappa dietro le finestre.)
 - [x] **F.5 Memoria della disposizione** sul dispositivo, ↺ Riordina, finestre che rientrano quando lo schermo si restringe; nelle impostazioni si forza finestre o pagine. (`space_finestre` nella memoria locale, `leggiDisposizione` scarta i valori strani e aggiunge le finestre nuove.)
 - [x] **F.6 Tastiera e densità**: lettere delle finestre, Tab, Esc, ? con l'elenco; bottoni compatti, tooltip al passaggio (anche ⓘ), menu col tasto destro sui corpi (`tastiera.tsx`, `MenuContesto.tsx`). Tab scambia lo sfondo solo se nessun comando ha il fuoco, per non togliere la navigazione da tastiera.
-- [ ] **F.7 Barra di stato completa**: ultima voce del diario con le novità, ora del server. Attività in corso e stiva in breve arrivano con M4-M5.
+- [x] **F.7 Barra di stato completa**: ultima voce del diario con le novità, ora del server. Attività in corso e stiva in breve arrivano con M4-M5.
 
 **Si consegna**: su PC la plancia a finestre, con tutto ciò che esiste oggi.
 
-## M4 · Risorse e prima colonia
+## M4 · Risorse e prima colonia ← *prossimo*
 
 - [ ] **4.1 Stiva per risorsa** (tabella `stiva`, sei risorse) e la **Nave** (finestra N su PC, sezione sul telefono), con la stiva; stiva in breve nella barra di stato del PC.
 - [ ] **4.2 Raccolta a mano**: sosta su un corpo con risorse, estrazione nel tempo fino alla stiva piena. *Si gioca: prime risorse.*

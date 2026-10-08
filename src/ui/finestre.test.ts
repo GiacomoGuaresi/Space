@@ -12,6 +12,10 @@ describe('disposizione delle finestre', () => {
     ).toEqual(['qui', 'rotta', 'scanner'])
     expect(d.finestre.rotta.x + d.finestre.rotta.w).toBeLessThanOrEqual(1440)
     expect(d.sfondo).toBe('scena')
+    // Su uno schermo basso Scanner e Qui si accorciano per stare una sopra l'altra.
+    const bassa = disposizioneIniziale(1024, 616)
+    expect(bassa.finestre.qui.y + bassa.finestre.qui.h).toBeLessThanOrEqual(616)
+    expect(bassa.finestre.scanner.y + bassa.finestre.scanner.h).toBeLessThan(bassa.finestre.qui.y)
   })
 
   it('legge quella salvata scartando i valori strani e completando le finestre mancanti', () => {

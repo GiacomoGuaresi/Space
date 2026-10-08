@@ -4,7 +4,7 @@ Piccolo gioco di esplorazione spaziale in tempo reale, nello spirito di OGame, c
 
 Si esplora, si fondano basi ed estrattori che producono fino a riempire il magazzino, si fanno i giri di raccolta e si potenzia la nave, che è il centro della progressione. Le ricerche sbloccano strutture come il ponte di curvatura, che collega le basi. I rari compaiono ad anelli allontanandosi da casa. La progressione dura più di un anno e il gioco non finisce: ci sono solo traguardi.
 
-> **Stato: MI completato.** Online su [giacomoguaresi.github.io/Space](https://giacomoguaresi.github.io/Space/), con la plancia ambra: striscia di stato in cima, barra Ponte · Mappa · Altro in fondo. Dal **ponte** si scelgono le mete e si parte, la **mappa** mostra i settori scansionati; in Altro ci sono il **diario di bordo**, la **wiki**, il **catalogo** e le impostazioni. Prossimo: M4, risorse e prima colonia ([roadmap](doc/06-roadmap.md)).
+> **Stato: MF completato.** Online su [giacomoguaresi.github.io/Space](https://giacomoguaresi.github.io/Space/), con la plancia ambra: su PC (da 1024 px) finestre trascinabili Qui, Scanner, Rotta, Diario, Wiki e Catalogo sopra la scena o la mappa, con dock e scorciatoie da tastiera; sul telefono striscia di stato in cima e barra Ponte · Mappa · Altro in fondo. Dal **ponte** si scelgono le mete e si parte, la **mappa** mostra i settori scansionati; in Altro ci sono il **diario di bordo**, la **wiki**, il **catalogo** e le impostazioni. Prossimo: M4, risorse e prima colonia ([roadmap](doc/06-roadmap.md)).
 
 ## Per iniziare
 
