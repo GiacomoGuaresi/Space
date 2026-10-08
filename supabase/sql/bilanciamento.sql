@@ -180,6 +180,252 @@ language sql immutable parallel safe set search_path = '' as $$
       "ore": 1
     }
   },
+  "ricerche": {
+    "base": 60,
+    "costo": 2,
+    "minuti": 6,
+    "oreMassime": 1,
+    "nodi": {
+      "P1": {
+        "gradino": 1,
+        "richiede": []
+      },
+      "P2": {
+        "gradino": 2,
+        "richiede": [
+          "P1"
+        ]
+      },
+      "P3": {
+        "gradino": 3,
+        "richiede": [
+          "P2",
+          "I3"
+        ]
+      },
+      "P4": {
+        "gradino": 4,
+        "richiede": [
+          "P3"
+        ]
+      },
+      "P5": {
+        "gradino": 5,
+        "richiede": [
+          "P4"
+        ]
+      },
+      "P6": {
+        "gradino": 6,
+        "richiede": [
+          "P5"
+        ]
+      },
+      "P7": {
+        "gradino": 7,
+        "richiede": [
+          "P6"
+        ]
+      },
+      "P8": {
+        "gradino": 8,
+        "richiede": [
+          "P7"
+        ]
+      },
+      "P9": {
+        "gradino": 9,
+        "richiede": [
+          "P8",
+          "S7"
+        ]
+      },
+      "P10": {
+        "gradino": 10,
+        "richiede": [
+          "P9"
+        ]
+      },
+      "C1": {
+        "gradino": 1,
+        "richiede": []
+      },
+      "C2": {
+        "gradino": 2,
+        "richiede": [
+          "C1"
+        ]
+      },
+      "C3": {
+        "gradino": 3,
+        "richiede": [
+          "C2"
+        ]
+      },
+      "C4": {
+        "gradino": 4,
+        "richiede": [
+          "C3"
+        ]
+      },
+      "C5": {
+        "gradino": 5,
+        "richiede": [
+          "C4"
+        ]
+      },
+      "C6": {
+        "gradino": 6,
+        "richiede": [
+          "C5"
+        ]
+      },
+      "C7": {
+        "gradino": 7,
+        "richiede": [
+          "C6",
+          "P6"
+        ]
+      },
+      "C8": {
+        "gradino": 8,
+        "richiede": [
+          "C7"
+        ]
+      },
+      "C9": {
+        "gradino": 9,
+        "richiede": [
+          "C8"
+        ]
+      },
+      "C10": {
+        "gradino": 10,
+        "richiede": [
+          "C9"
+        ]
+      },
+      "S1": {
+        "gradino": 1,
+        "richiede": []
+      },
+      "S2": {
+        "gradino": 2,
+        "richiede": [
+          "S1"
+        ]
+      },
+      "S3": {
+        "gradino": 3,
+        "richiede": [
+          "S2"
+        ]
+      },
+      "S4": {
+        "gradino": 4,
+        "richiede": [
+          "S3"
+        ]
+      },
+      "S5": {
+        "gradino": 5,
+        "richiede": [
+          "S4"
+        ]
+      },
+      "S6": {
+        "gradino": 6,
+        "richiede": [
+          "S5"
+        ]
+      },
+      "S7": {
+        "gradino": 7,
+        "richiede": [
+          "S6"
+        ]
+      },
+      "S8": {
+        "gradino": 8,
+        "richiede": [
+          "S7",
+          "S3"
+        ]
+      },
+      "S9": {
+        "gradino": 9,
+        "richiede": [
+          "S8"
+        ]
+      },
+      "S10": {
+        "gradino": 10,
+        "richiede": [
+          "S9"
+        ]
+      },
+      "I1": {
+        "gradino": 1,
+        "richiede": []
+      },
+      "I2": {
+        "gradino": 2,
+        "richiede": [
+          "I1"
+        ]
+      },
+      "I3": {
+        "gradino": 3,
+        "richiede": [
+          "I2"
+        ]
+      },
+      "I4": {
+        "gradino": 4,
+        "richiede": [
+          "I3"
+        ]
+      },
+      "I5": {
+        "gradino": 5,
+        "richiede": [
+          "I4"
+        ]
+      },
+      "I6": {
+        "gradino": 6,
+        "richiede": [
+          "I5"
+        ]
+      },
+      "I7": {
+        "gradino": 7,
+        "richiede": [
+          "I6"
+        ]
+      },
+      "I8": {
+        "gradino": 8,
+        "richiede": [
+          "I7"
+        ]
+      },
+      "I9": {
+        "gradino": 9,
+        "richiede": [
+          "I8"
+        ]
+      },
+      "I10": {
+        "gradino": 10,
+        "richiede": [
+          "I9"
+        ]
+      }
+    },
+    "attive": [],
+    "effetti": {}
+  },
   "deposito": {
     "idrogeno": 5,
     "crescita": 0.9

@@ -4,7 +4,8 @@
 
 import { useSyncExternalStore } from 'react'
 
-export type IdFinestra = 'qui' | 'scanner' | 'rotta' | 'nave' | 'rete' | 'base' | 'diario' | 'wiki' | 'catalogo' | 'impostazioni'
+export type IdFinestra =
+  'qui' | 'scanner' | 'rotta' | 'nave' | 'rete' | 'base' | 'ricerche' | 'diario' | 'wiki' | 'catalogo' | 'impostazioni'
 
 export type StatoFinestra = 'aperta' | 'ridotta' | 'chiusa'
 
@@ -41,6 +42,7 @@ export const FINESTRE: Readonly<
   rotta: { titolo: 'Rotta', tasto: 'R', w: 340, h: 320, minW: 280, minH: 220 },
   nave: { titolo: 'Nave', tasto: 'N', w: 420, h: 560, minW: 320, minH: 260, piena: true },
   base: { titolo: 'Base', tasto: 'B', w: 460, h: 560, minW: 340, minH: 260, piena: true },
+  ricerche: { titolo: 'Ricerche', tasto: 'T', w: 800, h: 600, minW: 420, minH: 300, piena: true },
   rete: { titolo: 'Rete', tasto: 'E', w: 460, h: 480, minW: 340, minH: 240, piena: true },
   diario: { titolo: 'Diario di bordo', tasto: 'D', w: 420, h: 520, minW: 320, minH: 260, piena: true },
   wiki: { titolo: 'Wiki', tasto: 'W', w: 720, h: 560, minW: 420, minH: 300, piena: true },
@@ -77,8 +79,9 @@ export function disposizioneIniziale(larghezza: number, altezza = 816): Disposiz
       nave: alCentro('nave', 4),
       rete: alCentro('rete', 5),
       base: alCentro('base', 6),
+      ricerche: alCentro('ricerche', 0),
     },
-    ordine: ['nave', 'rete', 'base', 'diario', 'wiki', 'catalogo', 'impostazioni', 'qui', 'scanner', 'rotta'],
+    ordine: ['nave', 'rete', 'base', 'ricerche', 'diario', 'wiki', 'catalogo', 'impostazioni', 'qui', 'scanner', 'rotta'],
     sfondo: 'scena',
   }
 }

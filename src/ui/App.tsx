@@ -6,6 +6,7 @@ import { caricoOra, capacitaStiva } from '../dominio/risorse'
 import { pienoIl, ritmoInsediamento } from '../dominio/insediamenti'
 import { BASE, settore as calcolaSettore } from '../dominio/settore'
 import { sottotipo } from '../dominio/sottotipi'
+import { AlberoRicerche, ricercheFatte } from './AlberoRicerche'
 import { Altro } from './Altro'
 import { AzioniNave } from './azioni'
 import { Pallini } from './Barra'
@@ -57,6 +58,8 @@ export function App() {
     potenzia,
     costruzioni,
     pieno,
+    avviaRicerca,
+    ricerche,
     ricarica,
   } = useNave()
   const ora = useOra(scarto)
@@ -65,8 +68,22 @@ export function App() {
   const minuto = Math.floor(ora.getTime() / 60_000)
   const nave = stato.fase === 'pronta' ? stato.nave : null
   const voci = useMemo(
-    () => (nave ? vociDiario({ viaggi, scoperte, scansioni, raccolti, prelievi, insediamenti, nave, ora: new Date(minuto * 60_000) }) : []),
-    [viaggi, scoperte, scansioni, raccolti, prelievi, insediamenti, nave, minuto],
+    () =>
+      nave
+        ? vociDiario({
+            viaggi,
+            scoperte,
+            scansioni,
+            raccolti,
+            prelievi,
+            insediamenti,
+            costruzioni,
+            ricerche,
+            nave,
+            ora: new Date(minuto * 60_000),
+          })
+        : [],
+    [viaggi, scoperte, scansioni, raccolti, prelievi, insediamenti, costruzioni, ricerche, nave, minuto],
   )
   // Su PC (doc/11-interfaccia.md#pc--plancia-a-finestre) le pagine sono finestre.
   const pc = usePC()
@@ -103,7 +120,10 @@ export function App() {
         : null,
     [carico, nave, secondo, raccolti, insediamenti],
   )
-  const azioni = useMemo(() => ({ fonda, potenzia, pieno, costruzioni }), [fonda, potenzia, pieno, costruzioni])
+  const azioni = useMemo(
+    () => ({ fonda, potenzia, pieno, avviaRicerca, ricerche, costruzioni }),
+    [fonda, potenzia, pieno, avviaRicerca, ricerche, costruzioni],
+  )
   const ultima = useMemo(() => ({ voce: voci[0] ?? null, nuove: daLeggere }), [voci, daLeggere])
 
   // Pallini: Ponte se la nave è arrivata da quando l'hai visto, Mappa se c'è un
@@ -182,6 +202,7 @@ export function App() {
       impostazioni: 'impostazioni',
       nave: 'nave',
       rete: 'rete',
+      ricerche: 'ricerche',
     }
     const id = finestre[pagina.pagina]
     if (id) apri(id)
@@ -235,11 +256,25 @@ export function App() {
             diario: { contenuto: <Diario voci={voci} letto={lettoAperto} ora={ora} /> },
             wiki: statoWiki ? { contenuto: <Wiki stato={statoWiki} voce={wikiPC.voce} numeri={wikiPC.numeri} affiancata /> } : undefined,
             catalogo: { contenuto: <ContenutoCatalogo scoperte={scoperte} /> },
+            ricerche: { contenuto: <AlberoRicerche nave={stato.nave} ora={ora} /> },
             rete: { contenuto: <Rete nave={stato.nave} insediamenti={insediamenti} ora={ora} /> },
             nave: { contenuto: <SchedaNave nave={stato.nave} quantita={bordo?.quantita ?? stato.carico.quantita} ora={ora} /> },
             impostazioni: { contenuto: <Impostazioni /> },
           }}
         />
+      )
+    }
+    if (pagina.pagina === 'ricerche') {
+      return (
+        <Cornice
+          pagina="ricerche"
+          nave={stato.nave}
+          viaggio={viaggio}
+          scarto={scarto}
+          fondo={<FondoNave nave={stato.nave} scarto={scarto} />}
+        >
+          <AlberoRicerche nave={stato.nave} ora={ora} />
+        </Cornice>
       )
     }
     if (pagina.pagina === 'rete') {
@@ -294,6 +329,14 @@ export function App() {
         <Cornice pagina="altro" nave={stato.nave} viaggio={viaggio} scarto={scarto} fondo={<FondoNave nave={stato.nave} scarto={scarto} />}>
           <Altro
             voci={[
+              {
+                titolo: 'Ricerche',
+                sottotitolo: (() => {
+                  const inCorso = ricerche.find((r) => r.fine > ora)
+                  return inCorso ? `In corso: ${inCorso.nodo}` : `${ricercheFatte(ricerche, ora).size} fatte`
+                })(),
+                pagina: { pagina: 'ricerche' },
+              },
               {
                 titolo: 'Diario di bordo',
                 sottotitolo: daLeggere ? `${daLeggere} novità` : 'Nessuna novità',

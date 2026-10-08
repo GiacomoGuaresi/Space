@@ -2,7 +2,7 @@
 // pannelli senza passarle di componente in componente: le dà l'App.
 
 import { createContext } from 'react'
-import type { Costruzione } from '../dati'
+import type { Costruzione, RicercaAvviata } from '../dati'
 import type { Lavoro } from '../dominio/cantiere'
 
 export interface Azioni {
@@ -12,6 +12,10 @@ export interface Azioni {
   potenzia: (lavoro: Lavoro) => Promise<void>
   /** Il pieno al deposito della base dove sta la nave. */
   pieno: () => Promise<void>
+  /** Avvia una ricerca nel laboratorio della base dove sta la nave. */
+  avviaRicerca: (nodo: string) => Promise<void>
+  /** Tutte le ricerche avviate, finite o in corso. */
+  ricerche: readonly RicercaAvviata[]
   /** I lavori del cantiere degli ultimi 30 giorni, in corso e in coda. */
   costruzioni: readonly Costruzione[]
 }
@@ -26,5 +30,9 @@ export const AzioniNave = createContext<Azioni>({
   pieno: async () => {
     throw new Error('azioni non disponibili')
   },
+  avviaRicerca: async () => {
+    throw new Error('azioni non disponibili')
+  },
+  ricerche: [],
   costruzioni: [],
 })

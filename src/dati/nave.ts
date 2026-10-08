@@ -61,6 +61,14 @@ export interface Costruzione {
   costo: Partial<Record<Risorsa, number>>
 }
 
+/** Una ricerca avviata: finita se `fine` è passata. */
+export interface RicercaAvviata {
+  nodo: string
+  livello: number
+  inizio: Date
+  fine: Date
+}
+
 /** I rifiuti delle funzioni, con il loro codice. */
 export type MotivoRifiuto =
   | 'in_viaggio'
@@ -78,6 +86,11 @@ export type MotivoRifiuto =
   | 'non_disponibile'
   | 'serve_deposito'
   | 'gia_pieno'
+  | 'ricerca_sconosciuta'
+  | 'gia_ricercata'
+  | 'ricerca_in_corso'
+  | 'prerequisiti'
+  | 'serve_laboratorio'
 
 export class ViaggioRifiutato extends Error {
   constructor(readonly motivo: MotivoRifiuto) {
@@ -172,6 +185,11 @@ const MOTIVI: readonly MotivoRifiuto[] = [
   'non_disponibile',
   'serve_deposito',
   'gia_pieno',
+  'ricerca_sconosciuta',
+  'gia_ricercata',
+  'ricerca_in_corso',
+  'prerequisiti',
+  'serve_laboratorio',
 ]
 
 export class NaveSupabase {
@@ -227,6 +245,27 @@ export class NaveSupabase {
       if (motivo) throw new ViaggioRifiutato(motivo)
       throw fallita('Pieno non riuscito', error)
     }
+  }
+
+  /** Avvia la ricerca `nodo` nel laboratorio della base dove sta la nave. */
+  async avviaRicerca(nodo: string): Promise<void> {
+    const { error } = await this.client.rpc('ricerca', { nodo })
+    if (error) {
+      const motivo = MOTIVI.find((m) => m === error.message)
+      if (motivo) throw new ViaggioRifiutato(motivo)
+      throw fallita('Ricerca non avviata', error)
+    }
+  }
+
+  /** Tutte le ricerche avviate, finite o in corso. */
+  async ricerche(): Promise<RicercaAvviata[]> {
+    const { data, error } = await this.client.from('ricerca').select('nodo, livello, inizio, fine').order('fine')
+    if (error) throw fallita('Ricerche non lette', error)
+    return (data as { nodo: string; livello: number; inizio: string; fine: string }[]).map((r) => ({
+      ...r,
+      inizio: new Date(r.inizio),
+      fine: new Date(r.fine),
+    }))
   }
 
   /** I lavori del cantiere finiti dopo `dal`, in corso o in coda. */

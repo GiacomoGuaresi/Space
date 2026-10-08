@@ -88,3 +88,5 @@
 | 2026-10-08 | Strutture come colonne dell'insediamento (`cantiere`, `deposito`, `laboratorio`), non una tabella `struttura`: una per tipo, con un livello | deciso |
 | 2026-10-08 | Cantiere: una coda per la nave e una per base, ogni lavoro parte alla fine del precedente; si paga subito, **prima dal magazzino della base**, poi dalla stiva; i nuovi valori valgono da subito per tutta la sosta | deciso |
 | 2026-10-08 | Deposito: il pieno è sempre fino al 100 % (in base il tetto è il serbatoio); se l'Idrogeno non basta si rifiuta, niente mezzi pieni | deciso |
+| 2026-10-08 | Ricerche: gradini e prerequisiti in `bilanciamento.ts` (il database li legge dallo stesso JSON), con l'elenco `attive` dei nodi già giocabili; si avviano dalla finestra Ricerche, attraccati a una base col laboratorio (la Base mostra il laboratorio e rimanda lì) | deciso |
+| 2026-10-08 | Laboratorio: livello L al costo di una ricerca di gradino L, tempo come le altre strutture | deciso |

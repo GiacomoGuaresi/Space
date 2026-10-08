@@ -18,4 +18,9 @@ export const RIFIUTI: Readonly<Record<MotivoRifiuto, string>> = {
   non_disponibile: 'Qui non si può: arriva con le ricerche.',
   serve_deposito: 'Questa base non ha un deposito carburante.',
   gia_pieno: 'Il serbatoio è già pieno.',
+  ricerca_sconosciuta: 'Questa ricerca non esiste.',
+  gia_ricercata: 'Questa ricerca è già fatta, o in corso.',
+  ricerca_in_corso: 'Una ricerca alla volta: aspetta che finisca quella in corso.',
+  prerequisiti: 'Mancano le ricerche che vengono prima.',
+  serve_laboratorio: 'Serve un laboratorio di livello pari almeno al gradino.',
 }

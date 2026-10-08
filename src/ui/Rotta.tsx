@@ -50,8 +50,10 @@ export function Rotta({ nave, ora, meta, scoperti, onMeta, onParti }: Props) {
   }
 
   // Durante un potenziamento la nave resta nel cantiere.
-  const cantiere = useContext(AzioniNave)
-    .costruzioni.filter((c) => c.coda === 'nave' && c.fine > ora)
+  const azioni = useContext(AzioniNave)
+  const cantiere = [...azioni.costruzioni.filter((c) => c.coda === 'nave'), ...azioni.ricerche]
+    .filter((c) => c.fine > ora)
+    .sort((a, b) => a.fine.getTime() - b.fine.getTime())
     .at(-1)
 
   const parti = async () => {
@@ -130,7 +132,7 @@ export function Rotta({ nave, ora, meta, scoperti, onMeta, onParti }: Props) {
         </p>
       )}
 
-      {cantiere && <p className="m-0 text-xs text-ambra">La nave è nel cantiere fino a {orario(cantiere.fine, ora)}.</p>}
+      {cantiere && <p className="m-0 text-xs text-ambra">La nave è ferma per un lavoro fino a {orario(cantiere.fine, ora)}.</p>}
       <BottonePrimario disabled={!prova?.possibile || inCorso || cantiere !== undefined} onClick={parti}>
         <Rocket className="size-4" aria-hidden="true" />
         {inCorso ? 'Partenza…' : 'Parti'}

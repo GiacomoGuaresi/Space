@@ -9,7 +9,9 @@ import { carburanteOra, inViaggio, type Nave } from '../dominio/navigazione'
 import { settore, stessoSettore } from '../dominio/settore'
 import { Coda, Potenziamenti } from './Cantiere'
 import { AzioniNave } from './azioni'
-import { coordinatePlancia, numero } from './formato'
+import { coordinatePlancia, numero, rovescia } from './formato'
+import { indirizzo } from './indirizzo'
+import { RICERCHE, type IdRicerca } from '../dominio/ricerche'
 import { BarreMagazzino, NOMI_INSEDIAMENTI } from './Magazzino'
 import { BottoneSecondario, Etichetta, Info, Pannello } from './plancia'
 import { RIFIUTI } from './rifiuti'
@@ -21,7 +23,7 @@ import { CaricoAttuale } from './SchedaNave'
  * con i loro step (doc/06-roadmap.md).
  */
 export function struttureAttive(base: Insediamento): Struttura[] {
-  const tutte: Struttura[] = ['produzione', 'magazzino', 'cantiere', 'deposito']
+  const tutte: Struttura[] = ['produzione', 'magazzino', 'cantiere', 'deposito', 'laboratorio']
   return base.tipo === 'madre' ? tutte : tutte.filter((s) => s !== 'cantiere' && s !== 'deposito')
 }
 
@@ -57,6 +59,7 @@ export function SchedaBase({ nave, ora, base }: { nave: Nave; ora: Date; base: I
         <Coda coda="base" base={base} ora={ora} />
       </section>
       {base.deposito > 0 && <Deposito nave={nave} ora={ora} base={base} />}
+      {base.laboratorio > 0 && <Laboratorio ora={ora} base={base} />}
       <section aria-label="Magazzino" className="p-3.5">
         <h2 className="etichetta m-0 mb-2">Magazzino</h2>
         <BarreMagazzino insediamento={base} ora={ora} />
@@ -116,6 +119,25 @@ function Deposito({ nave, ora, base }: { nave: Nave; ora: Date; base: Insediamen
           )}
         </>
       )}
+    </section>
+  )
+}
+
+/** Il laboratorio: il livello decide il gradino massimo; le ricerche si avviano dalla loro finestra. */
+function Laboratorio({ ora, base }: { ora: Date; base: Insediamento }) {
+  const { ricerche } = useContext(AzioniNave)
+  const inCorso = ricerche.find((r) => r.fine > ora)
+  return (
+    <section aria-label="Laboratorio" className="flex flex-col gap-1.5 border-b border-separatore p-3.5">
+      <h2 className="etichetta m-0">Laboratorio · liv. {base.laboratorio}</h2>
+      <p className="m-0 text-[13px]">
+        {inCorso
+          ? `In corso: ${RICERCHE[inCorso.nodo as IdRicerca]?.nome ?? inCorso.nodo}, ancora ${rovescia(inCorso.fine.getTime() - ora.getTime())}.`
+          : `Ricerche fino al gradino ${base.laboratorio}.`}
+      </p>
+      <a href={indirizzo({ pagina: 'ricerche' })} className="etichetta self-start no-underline text-ambra!">
+        Apri le ricerche ›
+      </a>
     </section>
   )
 }

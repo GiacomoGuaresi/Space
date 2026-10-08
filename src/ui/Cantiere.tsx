@@ -36,6 +36,8 @@ export function livelloAttuale(lavoro: Lavoro, nave: Nave, base: Insediamento | 
       return base?.cantiere ?? 0
     case 'deposito':
       return base?.deposito ?? 0
+    case 'laboratorio':
+      return base?.laboratorio ?? 0
   }
 }
 

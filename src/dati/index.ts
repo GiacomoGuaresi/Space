@@ -15,6 +15,7 @@ export {
   type NaveSupabase,
   type Prelievo,
   type Raccolto,
+  type RicercaAvviata,
   type Scansione,
   type Scoperta,
   type StatoRemoto,

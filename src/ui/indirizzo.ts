@@ -16,6 +16,7 @@ export type Pagina =
   | { pagina: 'catalogo' }
   | { pagina: 'nave' }
   | { pagina: 'rete' }
+  | { pagina: 'ricerche' }
   | { pagina: 'osservatorio'; coordinate: Coordinate }
 
 /** Le coordinate di un testo "x,y,z", o `null` se non lo sono. */
@@ -34,6 +35,7 @@ export function leggiPagina(hash: string): Pagina {
   if (percorso === 'catalogo') return { pagina: 'catalogo' }
   if (percorso === 'nave') return { pagina: 'nave' }
   if (percorso === 'rete') return { pagina: 'rete' }
+  if (percorso === 'ricerche') return { pagina: 'ricerche' }
   if (percorso === 'mappa') return { pagina: 'mappa' }
   if (percorso === 'altro') return { pagina: 'altro' }
   if (percorso === 'diario') return { pagina: 'diario' }
@@ -77,6 +79,8 @@ export function indirizzo(pagina: Pagina): string {
       return '#/nave'
     case 'rete':
       return '#/rete'
+    case 'ricerche':
+      return '#/ricerche'
     case 'osservatorio': {
       const { x, y, z } = pagina.coordinate
       return `#/osservatorio/${x},${y},${z}`

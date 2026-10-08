@@ -3,7 +3,9 @@
 // stato della nave. Non si salva nulla, salvo fin dove l'hai già letto.
 
 import { createContext, useSyncExternalStore } from 'react'
-import type { Prelievo, Raccolto, Scansione, Scoperta } from '../dati'
+import type { Costruzione, Prelievo, Raccolto, RicercaAvviata, Scansione, Scoperta } from '../dati'
+import { NOMI_LAVORI } from '../dominio/cantiere'
+import { RICERCHE, type IdRicerca } from '../dominio/ricerche'
 import { pienoIl, ritmoInsediamento, type Insediamento } from '../dominio/insediamenti'
 import { NOMI_RISORSE } from '../dominio/catalogo'
 import { RISORSE } from '../dominio/risorse'
@@ -12,7 +14,8 @@ import { carburanteOra, inViaggio, ricaricaQui, scansione, tettoQui, tipiRilevab
 import { BASE, distanza, settore, stessoSettore, type Coordinate } from '../dominio/settore'
 import { coordinatePlancia, numero, orario } from './formato'
 
-export type TipoVoce = 'partenza' | 'arrivo' | 'sosta' | 'ricarica' | 'rilevato' | 'scoperto' | 'raccolto' | 'fondazione' | 'pieno'
+export type TipoVoce =
+  'partenza' | 'arrivo' | 'sosta' | 'ricarica' | 'rilevato' | 'scoperto' | 'raccolto' | 'fondazione' | 'pieno' | 'lavoro' | 'ricerca'
 
 export interface Voce {
   quando: Date
@@ -39,6 +42,8 @@ export const NOMI_VOCI: Readonly<Record<TipoVoce, { uno: string; tanti: string }
   raccolto: { uno: 'Raccolta', tanti: 'raccolte' },
   fondazione: { uno: 'Fondazione', tanti: 'fondazioni' },
   pieno: { uno: 'Magazzino pieno', tanti: 'magazzini pieni' },
+  lavoro: { uno: 'Cantiere', tanti: 'lavori finiti' },
+  ricerca: { uno: 'Ricerca', tanti: 'ricerche completate' },
 }
 
 /** Come si chiama un settore nel diario: il nome del corpo, la base madre o le coordinate. */
@@ -58,6 +63,8 @@ interface Fonti {
   raccolti: readonly Raccolto[]
   prelievi: readonly Prelievo[]
   insediamenti: readonly Insediamento[]
+  costruzioni?: readonly Costruzione[]
+  ricerche?: readonly RicercaAvviata[]
   nave: Nave
   ora: Date
 }
@@ -220,8 +227,48 @@ function vociInsediamenti(insediamenti: readonly Insediamento[]): Voce[] {
   })
 }
 
+/** I lavori del cantiere finiti e le ricerche completate. */
+function vociLaboratorio(
+  costruzioni: readonly Costruzione[],
+  ricerche: readonly RicercaAvviata[],
+  insediamenti: readonly Insediamento[],
+): Voce[] {
+  return [
+    ...costruzioni.map((c): Voce => {
+      const i = insediamenti.find((k) => k.id === c.insediamento)
+      const dove = i ? (i.tipo === 'madre' ? 'base madre' : luogo(i.coordinate).breve) : 'base'
+      return {
+        quando: c.fine,
+        tipo: 'lavoro',
+        testo: `${NOMI_LAVORI[c.lavoro]} ${c.livello} pronto${c.coda === 'nave' ? ': la nave può ripartire' : `, a ${dove}`}.`,
+        breve: `${NOMI_LAVORI[c.lavoro].toLowerCase()} ${c.livello}`,
+      }
+    }),
+    ...ricerche.map((r): Voce => {
+      const nodo = RICERCHE[r.nodo as IdRicerca]
+      return {
+        quando: r.fine,
+        tipo: 'ricerca',
+        testo: nodo ? `Ricerca completata: ${nodo.nome}. ${nodo.effetto}.` : `Ricerca completata: ${r.nodo}.`,
+        breve: nodo?.nome ?? r.nodo,
+      }
+    }),
+  ]
+}
+
 /** Tutte le voci degli ultimi 30 giorni già successe, dalla più recente. */
-export function vociDiario({ viaggi, scoperte, scansioni, raccolti, prelievi, insediamenti, nave, ora }: Fonti): Voce[] {
+export function vociDiario({
+  viaggi,
+  scoperte,
+  scansioni,
+  raccolti,
+  prelievi,
+  insediamenti,
+  costruzioni = [],
+  ricerche = [],
+  nave,
+  ora,
+}: Fonti): Voce[] {
   const dal = ora.getTime() - GIORNI_DIARIO * 24 * ORA_MS
   return [
     ...vociViaggi(viaggi, ora),
@@ -231,6 +278,7 @@ export function vociDiario({ viaggi, scoperte, scansioni, raccolti, prelievi, in
     ...vociRaccolti(raccolti),
     ...vociPrelievi(prelievi, insediamenti),
     ...vociInsediamenti(insediamenti),
+    ...vociLaboratorio(costruzioni, ricerche, insediamenti),
   ]
     .filter((v) => v.quando.getTime() >= dal && v.quando <= ora)
     .sort((a, b) => b.quando.getTime() - a.quando.getTime())
