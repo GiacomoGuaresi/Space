@@ -50,7 +50,7 @@ export const CATALOGO: Readonly<Record<TipoCorpo, VoceCatalogo>> = {
     rarita: 'comune',
     risorse: [],
     colonia: null,
-    effetto: 'Carburante ricaricato più in fretta durante la sosta',
+    effetto: 'In sosta il serbatoio si ricarica fino al pieno, e più in fretta',
   },
   sistema: {
     nome: 'Sistema planetario',

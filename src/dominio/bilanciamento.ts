@@ -46,9 +46,9 @@ export const BILANCIAMENTO = {
   },
   carburante: {
     /** Fin dove si ricarica il serbatoio fuori dalle basi e lontano dalle stelle. */
-    tettoFuori: 1,
+    tettoFuori: 0.5,
     /** Accanto a una stella la ricarica è più veloce. */
-    ricaricaStella: 3,
+    ricaricaStella: 2,
   },
   fionda: {
     /** Partendo da un buco nero la nave va più veloce… */

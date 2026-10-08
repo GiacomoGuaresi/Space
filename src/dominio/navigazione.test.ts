@@ -9,6 +9,7 @@ import {
   raggioScanner,
   rotta,
   scansione,
+  tettoQui,
   type Nave,
 } from './navigazione'
 import { BASE, distanza, tipoSettore } from './settore'
@@ -39,10 +40,28 @@ describe('carburante', () => {
     expect(inViaggio(n, dopo(ORA))).toBe(false)
   })
 
-  it('accanto a una stella si ricarica più in fretta', () => {
+  it('accanto a una stella si ricarica più in fretta, fino al pieno', () => {
     const stella = piuVicino(BASE, 'stella')!
     const n = nave({ posizione: stella, carburante: 0 })
     expect(carburanteOra(n, dopo(ORA))).toBe(NAVE_INIZIALE.ricarica * RICARICA_STELLA)
+    expect(carburanteOra(n, dopo(100 * ORA))).toBe(NAVE_INIZIALE.serbatoio)
+  })
+
+  it('fuori dalla base e lontano dalle stelle si ricarica solo fino al tetto', () => {
+    const vuoto = { x: 0, y: 0, z: 1 }
+    expect(tipoSettore(vuoto)).toBeNull()
+    const tetto = NAVE_INIZIALE.serbatoio * BILANCIAMENTO.carburante.tettoFuori
+    expect(tetto).toBeLessThan(NAVE_INIZIALE.serbatoio)
+    expect(tettoQui(nave(), vuoto)).toBe(tetto)
+    expect(tettoQui(nave(), BASE)).toBe(NAVE_INIZIALE.serbatoio)
+    expect(carburanteOra(nave({ posizione: vuoto, carburante: 0 }), dopo(100 * ORA))).toBe(tetto)
+    expect(pienoTra(nave({ posizione: vuoto, carburante: tetto - 1 }), t0)).toBe((1 / NAVE_INIZIALE.ricarica) * ORA)
+  })
+
+  it('oltre il tetto non cala: smette solo di salire', () => {
+    const n = nave({ posizione: { x: 0, y: 0, z: 1 }, carburante: NAVE_INIZIALE.serbatoio * 0.9 })
+    expect(carburanteOra(n, dopo(10 * ORA))).toBe(NAVE_INIZIALE.serbatoio * 0.9)
+    expect(pienoTra(n, dopo(10 * ORA))).toBe(0)
   })
 
   it('dice fra quanto il serbatoio è pieno', () => {
