@@ -22,6 +22,7 @@ describe('leggiPagina', () => {
     expect(leggiPagina('#/mappa')).toEqual({ pagina: 'mappa' })
     expect(leggiPagina('#/altro')).toEqual({ pagina: 'altro' })
     expect(leggiPagina('#/diario')).toEqual({ pagina: 'diario' })
+    expect(leggiPagina('#/impostazioni')).toEqual({ pagina: 'impostazioni' })
     expect(leggiPagina('#/rotta/4,-1,0')).toEqual({ pagina: 'ponte', meta: { x: 4, y: -1, z: 0 } })
     expect(leggiPagina('#/rotta/4,a')).toEqual({ pagina: 'ponte' })
     expect(leggiPagina('#/osservatorio/3,-2,1')).toEqual({ pagina: 'osservatorio', coordinate: { x: 3, y: -2, z: 1 } })

@@ -71,3 +71,5 @@
 | 2026-10-08 | Macro step **MI · Ossatura dell'interfaccia** prima di M4; poi ogni step porta la sua interfaccia | deciso |
 | 2026-10-08 | Il **diario** non si salva: si ricostruisce da viaggi, scoperte, scansioni e stato della nave. Sul dispositivo resta solo fin dove l'hai letto | deciso |
 | 2026-10-08 | Nel diario le **partenze** non sono mai novità (le hai decise tu), e nemmeno gli arrivi visti dal vivo; alla primissima apertura non c'è nulla da raccontare | deciso |
+| 2026-10-08 | **Suoni** sintetizzati al momento (niente file), **spenti** finché non li accendi; impostazioni e pallini già visti valgono per dispositivo | deciso |
+| 2026-10-08 | Nelle impostazioni niente "esci": l'account è quello di casa, condiviso con le altre app | deciso |

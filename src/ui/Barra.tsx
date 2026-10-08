@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { createContext, useContext, type ReactNode } from 'react'
 import { indirizzo, type Pagina } from './indirizzo'
 
 export type Sezione = 'ponte' | 'mappa' | 'altro'
@@ -26,6 +26,9 @@ const ICONE: Readonly<Record<Sezione, ReactNode>> = {
   altro: <path d="M5 6h14M5 12h14M5 18h14" />,
 }
 
+/** I pallini accesi, con il motivo per le tecnologie assistive: li calcola l'App. */
+export const Pallini = createContext<Partial<Record<Sezione, string>>>({})
+
 const VOCI: readonly { sezione: Sezione; nome: string; pagina: Pagina }[] = [
   { sezione: 'ponte', nome: 'Ponte', pagina: { pagina: 'ponte' } },
   { sezione: 'mappa', nome: 'Mappa', pagina: { pagina: 'mappa' } },
@@ -37,7 +40,8 @@ const VOCI: readonly { sezione: Sezione; nome: string; pagina: Pagina }[] = [
  * La barra delle sezioni in fondo a ogni pagina (doc/11-interfaccia.md#ossatura),
  * con i pallini dove c'è qualcosa da vedere.
  */
-export function Barra({ attuale, pallini = {} }: { attuale: Sezione; pallini?: Partial<Record<Sezione, string>> }) {
+export function Barra({ attuale }: { attuale: Sezione }) {
+  const pallini = useContext(Pallini)
   return (
     <nav
       aria-label="Sezioni"
@@ -46,7 +50,8 @@ export function Barra({ attuale, pallini = {} }: { attuale: Sezione; pallini?: P
     >
       {VOCI.map(({ sezione, nome, pagina }) => {
         const qui = sezione === attuale
-        const pallino = pallini[sezione]
+        // Nella sezione dove sei il pallino non serve.
+        const pallino = qui ? undefined : pallini[sezione]
         return (
           <a
             key={sezione}

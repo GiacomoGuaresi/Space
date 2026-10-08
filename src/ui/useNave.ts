@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react'
 import { nave as datiNave, type Scansione, type Scoperta } from '../dati'
 import type { Nave, Viaggio } from '../dominio/navigazione'
 import type { Coordinate } from '../dominio/settore'
+import { tipoSettore } from '../dominio/settore'
+import { suona } from './suoni'
 import { GIORNI_DIARIO, letto, novita, segnaLetto, vociDiario } from './diario'
 
 export type StatoNave =
@@ -77,6 +79,7 @@ export function useNave() {
 
   // All'arrivo si rilegge: la posizione è già giusta, ma la scoperta compare solo ora.
   const dal = stato.fase === 'pronta' ? stato.nave.dal.getTime() : null
+  const arrivoSu = stato.fase === 'pronta' ? stato.nave.posizione : null
   useEffect(() => {
     if (dal === null) return
     const attesa = dal - (Date.now() + scarto)
@@ -86,12 +89,16 @@ export function useNave() {
       () => {
         // Arrivo visto dal vivo: nel diario c'è, ma non come novità. Se l'app
         // è in sottofondo invece sì, e al ritorno il diario si apre.
-        if (document.visibilityState === 'visible') segnaLetto(new Date(dal))
+        if (document.visibilityState === 'visible') {
+          segnaLetto(new Date(dal))
+          suona(arrivoSu && tipoSettore(arrivoSu) ? 'scoperta' : 'arrivo')
+        }
         void ricarica()
       },
       Math.min(attesa + 500, 2 ** 31 - 1),
     )
     return () => window.clearTimeout(id)
+    // La posizione cambia insieme a `dal`: basta quello.
   }, [dal, scarto, ricarica])
 
   // Tornando sull'app dopo un po' (telefono in tasca) si rilegge.
@@ -106,6 +113,7 @@ export function useNave() {
   const parti = useCallback(
     async (meta: Coordinate) => {
       await datiNave().viaggia(meta)
+      suona('partenza')
       await ricarica()
     },
     [ricarica],

@@ -10,6 +10,7 @@ import type { Settore } from '../dominio/settore'
 import { libera, type Contenuto } from './comune'
 import { GENERATORI } from './generatori'
 import { creaSfondo } from './sfondo'
+import { movimentoRidotto } from '../ui/impostazioni'
 
 /** Le sequenze della grafica, separate da quelle del dominio (dominio/settore.ts). */
 const PARTE_GRAFICA = 10
@@ -50,7 +51,7 @@ export function Scena({ settore, inViaggio = false }: { settore: Settore; inViag
     const controlli = new OrbitControls(camera, renderer.domElement)
     controlli.enableDamping = true
     controlli.enablePan = false
-    controlli.autoRotate = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    controlli.autoRotate = !movimentoRidotto()
     controlli.autoRotateSpeed = 0.25
 
     const composer = new EffectComposer(renderer)
@@ -127,7 +128,7 @@ export function Scena({ settore, inViaggio = false }: { settore: Settore; inViag
     m.controlli.maxDistance = lontano * allarga
     const fissa = contenuto.inquadratura.fissa === true
     m.controlli.enabled = !fissa
-    m.controlli.autoRotate = !fissa && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    m.controlli.autoRotate = !fissa && !movimentoRidotto()
     m.controlli.update()
   }, [settore, inViaggio])
 

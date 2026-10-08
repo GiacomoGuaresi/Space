@@ -2,6 +2,7 @@
 // ciò che è successo, ricostruita ogni volta da viaggi, scoperte, scansioni e
 // stato della nave. Non si salva nulla, salvo fin dove l'hai già letto.
 
+import { useSyncExternalStore } from 'react'
 import type { Scansione, Scoperta } from '../dati'
 import { CATALOGO, type TipoCorpo } from '../dominio/catalogo'
 import {
@@ -181,6 +182,26 @@ export function raggruppa(voci: readonly Voce[]): Voce[][] {
   return gruppi
 }
 
+const ascoltatori = new Set<() => void>()
+let ultimoLetto: { valore: string | null; data: Date | null } = { valore: null, data: null }
+
+/** Fin dove hai letto, come stato React: cambia quando lo segni. */
+export function useLetto(): Date | null {
+  return useSyncExternalStore(
+    (avvisa) => {
+      ascoltatori.add(avvisa)
+      return () => ascoltatori.delete(avvisa)
+    },
+    () => {
+      // Lo stesso oggetto finché il valore non cambia: React confronta per identità.
+      const data = letto()
+      const valore = data?.toISOString() ?? null
+      if (valore !== ultimoLetto.valore) ultimoLetto = { valore, data }
+      return ultimoLetto.data
+    },
+  )
+}
+
 const CHIAVE = 'space_diario_letto'
 // Prima del diario c'era il riepilogo, con la sua ultima visita.
 const CHIAVE_VECCHIA = 'space_ultima_visita'
@@ -201,6 +222,7 @@ export function segnaLetto(fino: Date) {
     if (prima && prima >= fino) return
     localStorage.setItem(CHIAVE, fino.toISOString())
     localStorage.removeItem(CHIAVE_VECCHIA)
+    for (const avvisa of ascoltatori) avvisa()
   } catch {
     // Senza memoria locale il diario mostra tutto come novità: pazienza.
   }

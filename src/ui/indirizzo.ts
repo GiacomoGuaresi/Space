@@ -1,6 +1,6 @@
 // Le pagine nell'indirizzo: `#/` il ponte (`#/rotta/x,y,z` con una meta già
 // scelta), `#/mappa` i settori scansionati, `#/altro` l'elenco delle altre
-// pagine, `#/diario` il diario di bordo, `#/catalogo` le scoperte,
+// pagine, `#/diario` il diario di bordo, `#/impostazioni`, `#/catalogo` le scoperte,
 // `#/osservatorio/x,y,z` l'osservatorio libero (solo in sviluppo, doc/06).
 
 import { useSyncExternalStore } from 'react'
@@ -11,6 +11,7 @@ export type Pagina =
   | { pagina: 'mappa' }
   | { pagina: 'altro' }
   | { pagina: 'diario' }
+  | { pagina: 'impostazioni' }
   | { pagina: 'catalogo' }
   | { pagina: 'osservatorio'; coordinate: Coordinate }
 
@@ -31,6 +32,7 @@ export function leggiPagina(hash: string): Pagina {
   if (percorso === 'mappa') return { pagina: 'mappa' }
   if (percorso === 'altro') return { pagina: 'altro' }
   if (percorso === 'diario') return { pagina: 'diario' }
+  if (percorso === 'impostazioni') return { pagina: 'impostazioni' }
   if (percorso.startsWith('rotta/')) {
     const meta = leggiCoordinate(percorso.slice('rotta/'.length))
     return meta ? { pagina: 'ponte', meta } : { pagina: 'ponte' }
@@ -54,6 +56,8 @@ export function indirizzo(pagina: Pagina): string {
       return '#/altro'
     case 'diario':
       return '#/diario'
+    case 'impostazioni':
+      return '#/impostazioni'
     case 'catalogo':
       return '#/catalogo'
     case 'osservatorio': {

@@ -5,6 +5,7 @@ import { useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type Rea
 import type { Rarita } from '../dominio/catalogo'
 import { COLORI_RARITA } from './colori'
 import { abbreviato } from './formato'
+import { suona } from './suoni'
 
 /** Un pannello sopra la scena: fondo scuro quasi pieno, bordo di 1 px, angoli piccoli. */
 export function Pannello({
@@ -46,8 +47,18 @@ export function SimboloRarita({ rarita, className = '' }: { rarita: Rarita; clas
 const BOTTONE = 'flex items-center justify-center gap-2 rounded-plancia px-3 text-[13px] font-semibold uppercase tracking-[0.16em] disabled:opacity-40'
 
 /** Il bottone dell'azione principale: pieno, ambra. */
-export function BottonePrimario({ className = '', ...resto }: ButtonHTMLAttributes<HTMLButtonElement>) {
-  return <button type="button" className={`${BOTTONE} min-h-12 bg-ambra text-su-ambra hover:bg-[#ffc46b] ${className}`} {...resto} />
+export function BottonePrimario({ className = '', onClick, ...resto }: ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button
+      type="button"
+      className={`${BOTTONE} min-h-12 bg-ambra text-su-ambra hover:bg-[#ffc46b] ${className}`}
+      onClick={(e) => {
+        suona('clic')
+        onClick?.(e)
+      }}
+      {...resto}
+    />
+  )
 }
 
 /** Il bottone delle azioni secondarie: solo il bordo. */

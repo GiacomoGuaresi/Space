@@ -1,4 +1,4 @@
-import { Suspense, lazy, useMemo, useState, type ReactNode } from 'react'
+import { Suspense, lazy, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Navigation } from 'lucide-react'
 import type { Scansione, Scoperta } from '../dati'
 import { CATALOGO } from '../dominio/catalogo'
@@ -9,6 +9,7 @@ import { COLORI_RARITA } from './colori'
 import { Cornice } from './Cornice'
 import { coordinatePlancia, durata, numero, orario } from './formato'
 import { vaiA } from './indirizzo'
+import { segnaRaroVisto } from './pallini'
 import { BottonePrimario, Etichetta, Pannello, SimboloRarita } from './plancia'
 import { useOra } from './useNave'
 
@@ -36,6 +37,12 @@ export function Mappa({ nave, viaggio, scarto, scoperte, scansioni }: Props) {
   const [centra, setCentra] = useState<{ su: Coordinate; volta: number } | null>(null)
   const [scelto, setScelto] = useState<Coordinate | null>(null)
   const punto = scelto && punti.find((p) => stessoSettore(p.coordinate, scelto))
+  // Aprire la scheda di un raro spegne il suo pallino sulla barra.
+  useEffect(() => {
+    if (punto && ['rara', 'leggendaria'].includes(CATALOGO[punto.tipo].rarita)) {
+      segnaRaroVisto(`${punto.coordinate.x},${punto.coordinate.y},${punto.coordinate.z}`)
+    }
+  }, [punto])
   const scoperta = scelto && scoperte.find((s) => stessoSettore(s.coordinate, scelto))
   const volo = inViaggio(nave, ora)
   const prova = punto && !volo && !stessoSettore(punto.coordinate, nave.posizione) ? anteprima(nave, punto.coordinate, ora) : null
