@@ -11,7 +11,12 @@ const GRUPPI: readonly { nome: string; voci: readonly IdFinestra[] }[] = [
 ]
 
 /** Le voci con un pallino, e quale (Barra.tsx): su PC Altro si scompone nelle sue voci. */
-const PALLINI: Partial<Record<IdFinestra, 'ponte' | 'diario' | 'wiki'>> = { qui: 'ponte', diario: 'diario', wiki: 'wiki' }
+const PALLINI: Partial<Record<IdFinestra, 'ponte' | 'rete' | 'diario' | 'wiki'>> = {
+  qui: 'ponte',
+  rete: 'rete',
+  diario: 'diario',
+  wiki: 'wiki',
+}
 
 const NOMI_DOCK: Partial<Record<IdFinestra, string>> = { diario: 'Diario' }
 

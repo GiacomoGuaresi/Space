@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Raccolto, Scansione, Scoperta } from '../dati'
+import type { Insediamento } from '../dominio/insediamenti'
 import { NAVE_INIZIALE, type Nave, type Viaggio } from '../dominio/navigazione'
 import { piuVicino } from '../dominio/ricerca'
 import { BASE } from '../dominio/settore'
@@ -35,6 +36,7 @@ const fonti = (p: {
   scoperte?: Scoperta[]
   scansioni?: Scansione[]
   raccolti?: Raccolto[]
+  insediamenti?: Insediamento[]
   nave?: Nave
   ora: Date
 }) => ({
@@ -130,5 +132,26 @@ describe('raccolti', () => {
     expect(voci.map((v) => v.tipo)).toEqual(['raccolto'])
     expect(voci[0].testo).toContain('+15 Ghiaccio')
     expect(voci[0].testo).not.toContain('Idrogeno')
+  })
+})
+
+describe('insediamenti', () => {
+  const madre: Insediamento = {
+    id: 1,
+    coordinate: BASE,
+    tipo: 'madre',
+    pianeta: null,
+    fondazione: dopo(0),
+    ultima: dopo(0),
+    scorte: {},
+    produzione: 1,
+    magazzino: 1,
+  }
+
+  it('dicono quando un magazzino è pieno, non prima', () => {
+    expect(vociDiario(fonti({ insediamenti: [madre], ora: dopo(167) }))).toEqual([])
+    const voci = vociDiario(fonti({ insediamenti: [madre], ora: dopo(169) }))
+    expect(voci.map((v) => v.tipo)).toEqual(['pieno'])
+    expect(voci[0].testo).toContain('base madre')
   })
 })

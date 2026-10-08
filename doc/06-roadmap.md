@@ -95,7 +95,7 @@ Porta l'interfaccia su PC nella [plancia a finestre](11-interfaccia.md#pc--planc
 
 **Si consegna**: su PC la plancia a finestre, con tutto ciò che esiste oggi.
 
-## M4 · Risorse e prima colonia ← *prossimo*
+## M4 · Risorse e prima colonia ✅
 
 - [x] **4.1 Stiva per risorsa** (tabella `stiva`, sei risorse) e la **Nave** (finestra N su PC, sezione sul telefono), con la stiva; stiva in breve nella barra di stato del PC. (`008_stiva.sql`: `nave.stiva` è il livello, `space.capacita_stiva` confrontata da `verifica-sql`; `src/dominio/risorse.ts`, `SchedaNave.tsx`.)
 - [x] **4.2 Raccolta a mano**: sosta su un corpo con risorse, estrazione nel tempo fino alla stiva piena. *Si gioca: prime risorse.* (`009_raccolta.sql`: ricchezza, sottotipo, pianeti e `ritmo_mano` in SQL, verificati su 240 corpi; la stiva si scrive alla partenza. Per ora solo le risorse comuni: Terre rare e Materia oscura con M8-M9.)
@@ -104,11 +104,11 @@ Porta l'interfaccia su PC nella [plancia a finestre](11-interfaccia.md#pc--planc
 - [x] **4.5 Raccolta di persona**: arrivando in un insediamento il magazzino passa da solo nella stiva; la **Rete** (finestra E su PC, sezione sul telefono). (`012_raccolta_di_persona.sql`: `space.preleva` all'arrivo e alla partenza, `nave.assestato`, tabella `prelievo` per il diario; `Rete.tsx`.)
 - [x] **4.6 Fondare la prima colonia** (gratis) su un sistema planetario, con il mix del pianeta. *Si gioca: il primo giro di raccolta.* (`013_colonie.sql`: `space.fonda(pianeta)`, il pianeta lo sceglie il giocatore in Qui; produzione delle colonie verificata da `verifica-sql`.)
 - [x] **4.7 Fondare altre basi**, pagando dalla stiva, fino al limite di 2. (`014_altre_basi.sql`; con la stiva di livello 1 la seconda base non è ancora pagabile: lo diventa potenziando la stiva in M5.)
-- [ ] **4.8 Eventi degli insediamenti nel diario** (pieno, fondazione) e pallino su Rete.
+- [x] **4.8 Eventi degli insediamenti nel diario** (pieno, fondazione) e pallino su Rete. (Anche i prelievi dai magazzini e i bottini delle comete sono nel diario.)
 
 **Si consegna**: il ciclo esplora → fonda → raccogli.
 
-## M5 · Cantiere e potenziamenti
+## M5 · Cantiere e potenziamenti ← *prossimo*
 
 - [ ] **5.1 Coda di costruzione** (tabella `costruzione`), con le ricette a gradini e il pagamento da stiva + magazzino della base.
 - [ ] **5.2 Motore, serbatoio, ricarica** nel cantiere della base madre; la nave resta ferma. *Si gioca: il primo potenziamento.*

@@ -4,7 +4,7 @@
 
 import { createContext, useSyncExternalStore } from 'react'
 import type { Prelievo, Raccolto, Scansione, Scoperta } from '../dati'
-import type { Insediamento } from '../dominio/insediamenti'
+import { pienoIl, ritmoInsediamento, type Insediamento } from '../dominio/insediamenti'
 import { NOMI_RISORSE } from '../dominio/catalogo'
 import { RISORSE } from '../dominio/risorse'
 import { CATALOGO, type TipoCorpo } from '../dominio/catalogo'
@@ -12,7 +12,7 @@ import { carburanteOra, inViaggio, ricaricaQui, scansione, tettoQui, tipiRilevab
 import { BASE, distanza, settore, stessoSettore, type Coordinate } from '../dominio/settore'
 import { coordinatePlancia, numero, orario } from './formato'
 
-export type TipoVoce = 'partenza' | 'arrivo' | 'sosta' | 'ricarica' | 'rilevato' | 'scoperto' | 'raccolto'
+export type TipoVoce = 'partenza' | 'arrivo' | 'sosta' | 'ricarica' | 'rilevato' | 'scoperto' | 'raccolto' | 'fondazione' | 'pieno'
 
 export interface Voce {
   quando: Date
@@ -37,6 +37,8 @@ export const NOMI_VOCI: Readonly<Record<TipoVoce, { uno: string; tanti: string }
   rilevato: { uno: 'Rilevato', tanti: 'corpi rilevati' },
   scoperto: { uno: 'Scoperta', tanti: 'nuovi nel catalogo' },
   raccolto: { uno: 'Raccolta', tanti: 'raccolte' },
+  fondazione: { uno: 'Fondazione', tanti: 'fondazioni' },
+  pieno: { uno: 'Magazzino pieno', tanti: 'magazzini pieni' },
 }
 
 /** Come si chiama un settore nel diario: il nome del corpo, la base madre o le coordinate. */
@@ -191,6 +193,33 @@ function vociPrelievi(prelievi: readonly Prelievo[], insediamenti: readonly Inse
   })
 }
 
+/** Le fondazioni delle basi e i magazzini arrivati al tetto. */
+function vociInsediamenti(insediamenti: readonly Insediamento[]): Voce[] {
+  return insediamenti.flatMap((i) => {
+    const dove = luogo(i.coordinate)
+    const voci: Voce[] = []
+    if (i.tipo === 'base') {
+      const d = settore(i.coordinate).corpo?.dettagli
+      const pianeta = d?.tipo === 'sistema' && i.pianeta !== null ? d.pianeti[i.pianeta] : null
+      voci.push({
+        quando: i.fondazione,
+        tipo: 'fondazione',
+        testo: `Fondata la base su ${dove.breve}${pianeta ? `, pianeta ${pianeta.nome} (${pianeta.tipo})` : ''}. Nuova voce nella Rete.`,
+        breve: dove.breve,
+      })
+    }
+    // Senza produzione (un pianeta che non c'è) non si riempie mai.
+    if (Object.keys(ritmoInsediamento(i)).length === 0) return voci
+    voci.push({
+      quando: pienoIl(i),
+      tipo: 'pieno',
+      testo: `Magazzino pieno: ${i.tipo === 'madre' ? 'base madre' : dove.breve}. La produzione è ferma finché non passi a raccogliere.`,
+      breve: i.tipo === 'madre' ? 'base madre' : dove.breve,
+    })
+    return voci
+  })
+}
+
 /** Tutte le voci degli ultimi 30 giorni già successe, dalla più recente. */
 export function vociDiario({ viaggi, scoperte, scansioni, raccolti, prelievi, insediamenti, nave, ora }: Fonti): Voce[] {
   const dal = ora.getTime() - GIORNI_DIARIO * 24 * ORA_MS
@@ -201,6 +230,7 @@ export function vociDiario({ viaggi, scoperte, scansioni, raccolti, prelievi, in
     ...vociRilevamenti(scansioni),
     ...vociRaccolti(raccolti),
     ...vociPrelievi(prelievi, insediamenti),
+    ...vociInsediamenti(insediamenti),
   ]
     .filter((v) => v.quando.getTime() >= dal && v.quando <= ora)
     .sort((a, b) => b.quando.getTime() - a.quando.getTime())

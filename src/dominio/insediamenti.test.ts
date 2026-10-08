@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { costoFondazione, magazzinoOra, mixColonia, pienoTra, ritmoInsediamento, tettoMagazzino, type Insediamento } from './insediamenti'
+import {
+  costoFondazione,
+  magazzinoOra,
+  pienoIl,
+  mixColonia,
+  pienoTra,
+  ritmoInsediamento,
+  tettoMagazzino,
+  type Insediamento,
+} from './insediamenti'
 import { BASE, settore, tipoSettore, type Coordinate } from './settore'
 
 const t0 = new Date('2026-10-08T12:00:00Z')
@@ -30,6 +39,7 @@ describe('base madre', () => {
     expect(magazzinoOra(madre(), ore(1000)).metallo).toBe(252)
     expect(magazzinoOra(madre({ scorte: { metallo: 300 } }), ore(10)).metallo).toBe(300)
     expect(pienoTra(madre(), ore(68))).toBeCloseTo(100, 10)
+    expect(pienoIl(madre()).getTime()).toBe(ore(168).getTime())
   })
 })
 

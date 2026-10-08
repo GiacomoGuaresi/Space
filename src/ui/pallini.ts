@@ -10,12 +10,14 @@ interface Visti {
   rari: string[]
   /** Le pagine della wiki già aperte. */
   wiki: string[]
+  /** Fino a quando hai visto la Rete: un magazzino pieno dopo accende il pallino. */
+  rete: string | null
   /** Le pagine della wiki sbloccate: restano aperte anche se i dati che le hanno sbloccate escono dai 30 giorni. */
   sbloccate: string[]
 }
 
 const CHIAVE = 'space_visti'
-const VUOTI: Visti = { ponte: null, rari: [], wiki: [], sbloccate: [] }
+const VUOTI: Visti = { ponte: null, rari: [], wiki: [], sbloccate: [], rete: null }
 let visti: Visti = leggi()
 const ascoltatori = new Set<() => void>()
 
@@ -50,6 +52,11 @@ export function useVisti(): Visti {
 export function segnaPonteVisto(fino: Date) {
   if (visti.ponte && new Date(visti.ponte) >= fino) return
   salva({ ...visti, ponte: fino.toISOString() })
+}
+
+export function segnaReteVista(fino: Date) {
+  if (visti.rete && new Date(visti.rete) >= fino) return
+  salva({ ...visti, rete: fino.toISOString() })
 }
 
 export function segnaRaroVisto(chiave: string) {

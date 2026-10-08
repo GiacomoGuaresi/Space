@@ -106,3 +106,8 @@ export function costoFondazione(fondate: number): Partial<Quantita> {
   const totale = aLivello(costo, crescita, fondate)
   return Object.fromEntries(risorse.map((r) => [r, totale / risorse.length]))
 }
+
+/** Quando il magazzino si riempie, per tutte le risorse che produce: da lì la produzione è ferma. */
+export function pienoIl(i: Insediamento): Date {
+  return new Date(i.ultima.getTime() + pienoTra(i, i.ultima) * 3_600_000)
+}

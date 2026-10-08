@@ -3,6 +3,7 @@ import { CATALOGO, TIPI, type TipoCorpo } from '../dominio/catalogo'
 import { corpiNoti } from '../dominio/mappa'
 import { inViaggio, type Nave } from '../dominio/navigazione'
 import { caricoOra, capacitaStiva } from '../dominio/risorse'
+import { pienoIl, ritmoInsediamento } from '../dominio/insediamenti'
 import { BASE, settore as calcolaSettore } from '../dominio/settore'
 import { sottotipo } from '../dominio/sottotipi'
 import { Altro } from './Altro'
@@ -19,7 +20,7 @@ import { apriDiario, chiudiDiario, indirizzo, usePagina, type Pagina } from './i
 import { Mappa } from './Mappa'
 import { Osservatorio } from './Osservatorio'
 import { PAGINE_WIKI, sbloccate, type StatoWiki } from './pagineWiki'
-import { segnaPonteVisto, segnaWikiSbloccate, useVisti } from './pallini'
+import { segnaPonteVisto, segnaReteVista, segnaWikiSbloccate, useVisti } from './pallini'
 import { Pannello } from './plancia'
 import { Ponte } from './Ponte'
 import { Rete } from './Rete'
@@ -125,6 +126,15 @@ export function App() {
   useEffect(() => segnaWikiSbloccate(wikiSbloccate), [wikiSbloccate])
   const wikiNuove = wikiSbloccate.filter((id) => !visti.wiki.includes(id))
 
+  // Rete: un magazzino arrivato al tetto da quando l'hai vista. Raccogliendolo si spegne da solo.
+  const pieni = insediamenti.filter((i) => {
+    const pieno = pienoIl(i)
+    return Object.keys(ritmoInsediamento(i)).length > 0 && pieno <= ora && (!visti.rete || pieno > new Date(visti.rete))
+  }).length
+  const reteAperta = pc ? disposizione.finestre.rete.stato === 'aperta' : pagina.pagina === 'rete'
+  useEffect(() => {
+    if (reteAperta && pieni) segnaReteVista(new Date(Date.now() + scarto))
+  }, [reteAperta, pieni, scarto])
   const pallini = useMemo(
     () => ({
       ponte: arrivoNonVisto ? 'la nave è arrivata' : undefined,
@@ -132,8 +142,9 @@ export function App() {
       altro: daLeggere ? `${daLeggere} novità nel diario` : wikiNuove.length ? 'nuove pagine nella wiki' : undefined,
       diario: daLeggere ? `${daLeggere} novità` : undefined,
       wiki: wikiNuove.length ? 'nuove pagine' : undefined,
+      rete: pieni ? `${pieni} ${pieni === 1 ? 'magazzino pieno' : 'magazzini pieni'}` : undefined,
     }),
-    [arrivoNonVisto, rariNuovi, daLeggere, wikiNuove.length],
+    [arrivoNonVisto, rariNuovi, daLeggere, wikiNuove.length, pieni],
   )
   // Sul ponte, a nave ferma, l'arrivo è visto.
   useEffect(() => {
