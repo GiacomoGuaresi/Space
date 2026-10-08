@@ -40,9 +40,9 @@ export const BILANCIAMENTO = {
   },
   nave: {
     /** La nave al livello 1: settori all'ora, unità di carburante, unità all'ora da ferma. */
-    velocita: 12,
-    serbatoio: 20,
-    ricarica: 2.5,
+    velocita: 0.25,
+    serbatoio: 4,
+    ricarica: 0.4,
   },
   carburante: {
     /** Fin dove si ricarica il serbatoio fuori dalle basi e lontano dalle stelle. */

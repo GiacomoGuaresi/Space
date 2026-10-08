@@ -13,6 +13,7 @@
     "icone": "pwa-assets-generator",
     "test": "vitest run",
     "test:watch": "vitest",
+    "bilanciamento": "node --import ./scripts/estensioni.mjs scripts/bilanciamento.ts",
     "campione": "node --import ./scripts/estensioni.mjs scripts/campione.ts",
     "verifica-sql": "node --import ./scripts/estensioni.mjs scripts/verifica-sql.ts"
   },

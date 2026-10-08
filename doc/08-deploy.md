@@ -38,7 +38,16 @@ Fatte il 2026-10-08 con la Management API:
 2. `space` aggiunto agli *Exposed schemas* (`PATCH /v1/projects/{ref}/postgrest`). La lista `db_schema` si manda sempre intera, con gli schemi delle altre app
 3. `https://giacomoguaresi.github.io/Space/` aggiunto agli URL di redirect di Auth (`PATCH /v1/projects/{ref}/config/auth`, `uri_allow_list`). Anche questa lista si manda intera
 
-Gli script successivi si applicano allo stesso modo, oppure dal SQL Editor. `002_navigazione.sql` e `003_bilanciamento.sql` applicati il 2026-10-08.
+Gli script successivi si applicano allo stesso modo, oppure dal SQL Editor. Applicati il 2026-10-08: `002_navigazione.sql`, `003_bilanciamento.sql`, `004_nave_v1.sql`.
+
+### Cambiare un valore del bilanciamento
+
+I numeri si cambiano solo in `src/dominio/bilanciamento.ts`. Poi:
+1. `npm run bilanciamento` riscrive `supabase/sql/bilanciamento.sql` (generato, non si modifica a mano);
+2. si applica quello script al database;
+3. `npm run verifica-sql` controlla che i due coincidano.
+
+Se il cambiamento tocca dati già salvati (per esempio le statistiche della nave), serve anche uno script numerato che li aggiorni.
 
 ### Verifica dell'universo in SQL
 

@@ -26,9 +26,9 @@ function nave(parziale: Partial<Nave> = {}): Nave {
 
 describe('carburante', () => {
   it('da fermo si ricarica col tempo, fino al serbatoio pieno', () => {
-    const n = nave({ carburante: 5 })
-    expect(carburanteOra(n, t0)).toBe(5)
-    expect(carburanteOra(n, dopo(2 * ORA))).toBe(5 + 2 * NAVE_INIZIALE.ricarica)
+    const n = nave({ carburante: 1 })
+    expect(carburanteOra(n, t0)).toBe(1)
+    expect(carburanteOra(n, dopo(2 * ORA))).toBe(1 + 2 * NAVE_INIZIALE.ricarica)
     expect(carburanteOra(n, dopo(100 * ORA))).toBe(NAVE_INIZIALE.serbatoio)
   })
 
@@ -47,7 +47,7 @@ describe('carburante', () => {
 
   it('dice fra quanto il serbatoio è pieno', () => {
     expect(pienoTra(nave(), t0)).toBe(0)
-    expect(pienoTra(nave({ carburante: NAVE_INIZIALE.serbatoio - 5 }), t0)).toBe((5 / NAVE_INIZIALE.ricarica) * ORA)
+    expect(pienoTra(nave({ carburante: NAVE_INIZIALE.serbatoio - 2 }), t0)).toBe((2 / NAVE_INIZIALE.ricarica) * ORA)
   })
 })
 
@@ -83,18 +83,18 @@ describe('rotta', () => {
 
 describe('anteprima', () => {
   it('calcola durata e consumo alla velocità della nave', () => {
-    const a = anteprima(nave(), { x: 12, y: 0, z: 0 }, t0)
-    expect(a.consumo).toBe(12)
-    expect(a.durata).toBe(ORA)
+    const a = anteprima(nave(), { x: 3, y: 0, z: 0 }, t0)
+    expect(a.consumo).toBe(3)
+    expect(a.durata).toBe((3 / NAVE_INIZIALE.velocita) * ORA)
     expect(a.possibile).toBe(true)
     expect(a.fionda).toBe(false)
   })
 
-  it('da un buco nero si va al doppio della velocità', () => {
+  it('da un buco nero si va più veloci', () => {
     const buco = piuVicino({ x: 2000, y: 0, z: 0 }, 'buconero', 40)!
-    const a = anteprima(nave({ posizione: buco }), { x: buco.x + 12, y: buco.y, z: buco.z }, t0)
+    const a = anteprima(nave({ posizione: buco }), { x: buco.x + 2, y: buco.y, z: buco.z }, t0)
     expect(a.fionda).toBe(true)
-    expect(a.durata).toBe(ORA / 2)
+    expect(a.durata).toBe((2 / (NAVE_INIZIALE.velocita * BILANCIAMENTO.fionda.velocita)) * ORA)
   })
 
   it('non è possibile con il serbatoio quasi vuoto', () => {
