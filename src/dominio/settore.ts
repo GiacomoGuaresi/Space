@@ -14,8 +14,16 @@ export interface Coordinate {
 
 export const BASE: Coordinate = { x: 0, y: 0, z: 0 }
 
+/**
+ * Distanza euclidea. Niente `Math.hypot`: può differire di un'unità
+ * nell'ultima cifra da `sqrt` di Postgres, che deve dare lo stesso risultato
+ * (supabase/sql/002_navigazione.sql).
+ */
 export function distanza(a: Coordinate, b: Coordinate): number {
-  return Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z)
+  const dx = a.x - b.x
+  const dy = a.y - b.y
+  const dz = a.z - b.z
+  return Math.sqrt(dx * dx + dy * dy + dz * dz)
 }
 
 export function stessoSettore(a: Coordinate, b: Coordinate): boolean {
@@ -211,7 +219,7 @@ export function tipoSettore({ x, y, z }: Coordinate): TipoCorpo | null {
   if (x === 0 && y === 0 && z === 0) return null
   const c = casuale(derivato(seedSettore(x, y, z), PARTE.tipo))
   if (!c.prova(PIENEZZA)) return null
-  return c.pesato(pesi(Math.hypot(x, y, z)))
+  return c.pesato(pesi(distanza({ x, y, z }, BASE)))
 }
 
 export function settore(coordinate: Coordinate): Settore {

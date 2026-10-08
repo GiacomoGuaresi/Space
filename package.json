@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "icone": "pwa-assets-generator",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "verifica-sql": "node scripts/verifica-sql.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
