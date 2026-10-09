@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
+import { qualitaIniziale, resa } from './qualita'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { CATALOGO, type Rarita } from '../dominio/catalogo'
 import type { PuntoMappa, Sosta } from '../dominio/mappa'
@@ -149,7 +150,8 @@ export function Mappa3D({ punti, soste, nave, centra, selezionato, onSeleziona, 
     if (!dove) return
 
     const renderer = new THREE.WebGLRenderer({ antialias: true })
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    // La stessa qualità della scena (qualita.ts): la mappa non ha bloom, conta solo la densità dei pixel.
+    renderer.setPixelRatio(resa(qualitaIniziale()).pixel)
     dove.appendChild(renderer.domElement)
     const scena = new THREE.Scene()
     scena.background = new THREE.Color('#030405')

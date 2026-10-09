@@ -11,6 +11,7 @@ import { libera, type Contenuto } from './comune'
 import { GENERATORI } from './generatori'
 import { creaSfondo } from './sfondo'
 import { movimentoRidotto } from '../ui/impostazioni'
+import { Misuratore, qualitaAutomatica, qualitaIniziale, resa, ricordaQualita } from './qualita'
 
 /** Le sequenze della grafica, separate da quelle del dominio (dominio/settore.ts). */
 const PARTE_GRAFICA = 10
@@ -39,8 +40,10 @@ export function Scena({ settore, inViaggio = false }: { settore: Settore; inViag
     const dove = contenitore.current
     if (!dove) return
 
+    // La qualità (qualita.ts): l'ultima scelta qui, che in automatico scende se i fotogrammi sono pochi.
+    const misura = new Misuratore(qualitaIniziale())
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' })
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.setPixelRatio(resa(misura.qualita).pixel)
     renderer.toneMapping = THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure = 1
     dove.appendChild(renderer.domElement)
@@ -57,13 +60,15 @@ export function Scena({ settore, inViaggio = false }: { settore: Settore; inViag
     const composer = new EffectComposer(renderer)
     composer.addPass(new RenderPass(scena, camera))
     const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.7, 0.5, 0.85)
+    bloom.enabled = resa(misura.qualita).bloom
     composer.addPass(bloom)
     composer.addPass(new OutputPass())
 
     const ridimensiona = () => {
       const { clientWidth: larghezza, clientHeight: altezza } = dove
+      renderer.setPixelRatio(resa(misura.qualita).pixel)
       renderer.setSize(larghezza, altezza)
-      composer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+      composer.setPixelRatio(resa(misura.qualita).pixel)
       composer.setSize(larghezza, altezza)
       camera.aspect = larghezza / altezza
       camera.updateProjectionMatrix()
@@ -75,13 +80,22 @@ export function Scena({ settore, inViaggio = false }: { settore: Settore; inViag
     const m: Motore = { renderer, composer, camera, controlli, scena, attuale: null }
     motore.current = m
     const orologio = new THREE.Clock()
+    let prima = 0
     renderer.setAnimationLoop(() => {
       const tempo = orologio.getElapsedTime()
+      // Fotogrammi troppo lenti: si scende di qualità, e qui lo si ricorda per la prossima volta.
+      const nuova = qualitaAutomatica() && prima > 0 ? misura.campione(tempo - prima) : null
+      prima = tempo
+      if (nuova) {
+        ricordaQualita(nuova)
+        bloom.enabled = resa(nuova).bloom
+        ridimensiona()
+      }
       controlli.update()
       if (m.attuale) {
         // Lo sfondo segue la camera: è "all'infinito", non ci si avvicina mai.
         m.attuale.sfondo.oggetto.position.copy(camera.position)
-        m.attuale.sfondo.aggiorna(tempo)
+        m.attuale.sfondo.aggiorna(tempo, renderer.getPixelRatio())
         m.attuale.contenuto.aggiorna(tempo, camera)
       }
       composer.render()

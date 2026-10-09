@@ -8,15 +8,19 @@ export type Movimento = 'sistema' | 'ridotto' | 'pieno'
 /** Finestre o pagine: "auto" sceglie dalla larghezza dello schermo (ui/schermo.ts). */
 export type Interfaccia = 'auto' | 'finestre' | 'pagine'
 
+/** La qualità della grafica: "auto" si regola da sola sui dispositivi lenti (grafica/qualita.ts). */
+export type Grafica = 'auto' | 'alta' | 'bassa'
+
 export interface Impostazioni {
   suoni: boolean
   /** "sistema" segue la preferenza del telefono o del computer. */
   movimento: Movimento
   interfaccia: Interfaccia
+  grafica: Grafica
 }
 
 const CHIAVE = 'space_impostazioni'
-const PARTENZA: Impostazioni = { suoni: false, movimento: 'sistema', interfaccia: 'auto' }
+const PARTENZA: Impostazioni = { suoni: false, movimento: 'sistema', interfaccia: 'auto', grafica: 'auto' }
 
 let attuali: Impostazioni = leggi()
 const ascoltatori = new Set<() => void>()

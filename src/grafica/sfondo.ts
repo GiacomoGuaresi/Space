@@ -47,7 +47,7 @@ function direzione(c: Casuale): THREE.Vector3 {
   return new THREE.Vector3(r * Math.cos(a), r * Math.sin(a), z)
 }
 
-export function creaSfondo(c: Casuale): { oggetto: THREE.Object3D; aggiorna(tempo: number): void } {
+export function creaSfondo(c: Casuale): { oggetto: THREE.Object3D; aggiorna(tempo: number, pixel: number): void } {
   const gruppo = new THREE.Group()
 
   // La fascia galattica: un piano a caso, con stelle più fitte vicino.
@@ -131,9 +131,9 @@ export function creaSfondo(c: Casuale): { oggetto: THREE.Object3D; aggiorna(temp
   const materiale = stelle.material as THREE.ShaderMaterial
   return {
     oggetto: gruppo,
-    aggiorna(tempo) {
+    aggiorna(tempo, pixel) {
       materiale.uniforms.uTempo.value = tempo
-      materiale.uniforms.uPixel.value = Math.min(window.devicePixelRatio, 2)
+      materiale.uniforms.uPixel.value = pixel
     },
   }
 }

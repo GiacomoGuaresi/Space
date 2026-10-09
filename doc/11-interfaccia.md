@@ -62,7 +62,7 @@ Prototipo approvato delle 7 schermate del telefono: [Space · Prototipo interfac
 | D | **Diario di bordo** | cronologia, novità evidenziate | ora | 420 × 520 |
 | W | **Wiki** | indice a sinistra, pagina a destra | ora | 720 × 560 |
 | C | **Catalogo** | album per tipo | ora | 640 × 520 |
-| , | **Impostazioni** | suoni, movimento, interfaccia (finestre o pagine) | ora | 380 × 360 |
+| , | **Impostazioni** | suoni, movimento, interfaccia (finestre o pagine), grafica | ora | 380 × 360 |
 | N | **Nave** | statistiche, stiva, potenziamenti, coda del cantiere | M4-M5 | 420 × 560 |
 | E | **Rete** | insediamenti per riempimento, VAI → Rotta | M4 | 460 × 480 |
 | B | **Base** | strutture, cantiere, laboratorio, pieno; nel dock **solo quando si è attraccati**, si apre da sola all'arrivo | M5 | 460 × 560 |
@@ -151,7 +151,7 @@ Ricerche · Catalogo · Wiki · Traguardi · Diario di bordo · Impostazioni.
 - **Ricerche**: grafo zoomabile dei 4 rami, da consultare. Si avviano dalla scheda BASE.
 - **Catalogo**: un album con una pagina per tipo. I sottotipi non ancora trovati sono sagome scure.
 - **Traguardi**: medaglie con data, divise per famiglia.
-- **Impostazioni**: suoni, animazioni (riduci movimento), account.
+- **Impostazioni**: suoni, animazioni (riduci movimento), interfaccia, grafica (automatica, sempre alta, sempre bassa), account.
 
 ## Wiki
 

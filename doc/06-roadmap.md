@@ -37,7 +37,7 @@ I macro step (M3, M4…) raggruppano gli step per tema. Si chiudono con una riga
 - [x] Scena three.js con bloom e sfondo comune seminato (`src/grafica/`)
 - [x] Un generatore grafico per ogni corpo (11, più il vuoto)
 - [x] **Osservatorio**: coordinate nell'indirizzo (`#/x,y,z`), spostamento per asse, ricerca del corpo più vicino di un tipo, scheda del corpo
-- [ ] Qualità ridotta automatica sui dispositivi lenti: rimandata, da valutare provando sul telefono
+- [x] Qualità ridotta automatica sui dispositivi lenti: rimandata, fatta con M10.3
 
 **Si consegna**: l'universo si esplora a vista.
 
@@ -161,11 +161,11 @@ Porta l'interfaccia su PC nella [plancia a finestre](11-interfaccia.md#pc--planc
 
 **Si consegna**: tutte le meccaniche.
 
-## M10 · Traguardi e rifinitura ← *prossimo*
+## M10 · Traguardi e rifinitura ← *in corso: 10.2 aspetta i dati di gioco*
 
 - [x] **10.1 Traguardi** (tabella `traguardo`), medaglie (finestra G su PC, voce di Altro sul telefono), voci nel diario. (`035_traguardi.sql`: `space.controlla_traguardi`, chiamata da `stato`, scrive le 53 medaglie con la data in cui sono state raggiunte, quando si ricava dai dati; `space.sottotipo_catalogo` per i sottotipi, confrontata da `verifica-sql`. Soglie in `bilanciamento.traguardi`, nomi in `traguardi.ts`, pagina `Traguardi.tsx`.)
 - [ ] **10.2 Rifinitura del bilanciamento** con i dati reali di gioco, aggiornando [09](09-bilanciamento.md) e `sim/`. (Pronto lo strumento: `npm run ritmo` mette i dati veri di ogni giocatore accanto al ritmo atteso, interpolato al suo giorno di gioco. La rifinitura vera aspetta settimane di gioco: il 2026-10-09 la nave è al giorno 1, ancora al livello 1.)
-- [ ] **10.3 Qualità grafica ridotta** in automatico sui dispositivi lenti (rimandata da M1).
+- [x] **10.3 Qualità grafica ridotta** in automatico sui dispositivi lenti (rimandata da M1). (`grafica/qualita.ts`: alta, media, bassa; la scena misura i fotogrammi ogni 3 secondi e sotto i 40 al secondo scende di un livello, meno pixel e poi niente bloom, e lo ricorda sul dispositivo. Nelle impostazioni: automatica, sempre alta, sempre bassa, e "Riprova dalla qualità alta". Provata con Chromium headless: da 5,5 a 13,5 fotogrammi al secondo.)
 
 **Si consegna**: il gioco completo per un giocatore.
 
