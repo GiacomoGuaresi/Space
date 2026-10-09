@@ -1,7 +1,7 @@
 import { useContext } from 'react'
 import { BILANCIAMENTO } from '../dominio/bilanciamento'
 import type { Nave } from '../dominio/navigazione'
-import { bottinoCometa, mixCorpo, RISORSE, ritmoMano, ritmoRisorsa, stivaPienaTra } from '../dominio/risorse'
+import { bottinoCometa, bottinoRelitto, mixCorpo, RISORSE, ritmoMano, ritmoRisorsa, stivaPienaTra } from '../dominio/risorse'
 import { NOMI_RISORSE } from '../dominio/catalogo'
 import { settore, stessoSettore } from '../dominio/settore'
 import { durata, numero, orario } from './formato'
@@ -17,7 +17,28 @@ export function Raccolta({ nave, ora }: { nave: Nave; ora: Date }) {
   const corpo = settore(nave.posizione).corpo
   const ritmi = ritmoMano(corpo)
   const mix = mixCorpo(corpo)
-  const cometa = bottinoCometa(corpo)
+  const cometa = bottinoCometa(corpo, bordo?.fatte)
+  const relitto = bottinoRelitto(nave.posizione, nave, bordo?.fatte)
+  if (bordo && relitto && nave.dal <= ora) {
+    const preso = bordo.raccolti.find((r) => stessoSettore(r.coordinate, nave.posizione))
+    return (
+      <section aria-label="Bottino del relitto" className="mt-3 flex flex-col gap-1.5 border-t border-separatore pt-3">
+        <h3 className="etichetta m-0 text-ambra!">Bottino del relitto</h3>
+        <p className="m-0 text-[13px]">
+          {preso
+            ? `Saccheggiato ${orario(preso.istante, ora)}: ${
+                RISORSE.filter((r) => (preso.bottino[r] ?? 0) > 0)
+                  .map((r) => `+${numero(preso.bottino[r]!, 0)} ${NOMI_RISORSE[r]}`)
+                  .join(', ') || 'la stiva era già piena'
+              }.${preso.progetto ? ' C’era un progetto: la prossima ricerca costa la metà.' : ''}`
+            : 'Si saccheggia arrivando: aggiorna tra un attimo.'}
+        </p>
+        <p className="m-0 text-xs text-testo-tenue">
+          Una volta sola: Materia oscura e un carico di risorse, fin dove entra nella stiva; a volte un progetto.
+        </p>
+      </section>
+    )
+  }
   if (bordo && cometa && nave.dal <= ora) {
     const preso = bordo.raccolti.find((r) => stessoSettore(r.coordinate, nave.posizione))
     return (

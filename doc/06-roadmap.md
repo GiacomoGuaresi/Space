@@ -154,7 +154,7 @@ Porta l'interfaccia su PC nella [plancia a finestre](11-interfaccia.md#pc--planc
 
 - [x] **9.1 Buchi neri**: raccolta a mano, Contenimento gravitazionale (C7), estrattori di Materia oscura. (`030_buchi_neri.sql`: `mix.buconero`, al ritmo della Materia oscura; i buchi neri entrano nel campione di `verifica-sql`.)
 - [x] **9.2 Fionda gravitazionale** (P6). (Anticipata in 8.4: la chiede *Contenimento gravitazionale*. `fiondaDi` e `space.viaggia` usano `fionda.gravitazionale`, ×2 e 30 % gratis.)
-- [ ] **9.3 Relitti**: bottino una volta per giocatore, progetti.
+- [x] **9.3 Relitti**: bottino una volta per giocatore, progetti. (`031_relitti.sql`: `space.bottino_relitto` dentro `assesta`, l'esito dalla quinta sequenza del seed (`esitoRelitto`, confrontato da `verifica-sql`); i progetti in `nave.progetti` dimezzano la prossima ricerca. Il raddoppio di *Recupero* su relitti e comete è già pronto, la ricerca arriva con 9.6.)
 - [ ] **9.4 Accelerare** viaggi, costruzioni e ricarica con la Materia oscura.
 - [ ] **9.5 Wormhole**: Navigazione dei varchi (P9), 50 MO, senso unico; Sonda di varco (S9).
 - [ ] **9.6 Ultime ricerche** (gradini 9-10) e i due **nodi infiniti**.

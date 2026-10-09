@@ -506,6 +506,7 @@ language sql immutable parallel safe set search_path = '' as $$
       "I7": 0.15,
       "I8": 0.15,
       "C8": 0.15,
+      "C9": 2,
       "I6": 0.25
     }
   },
@@ -525,6 +526,13 @@ language sql immutable parallel safe set search_path = '' as $$
     "ghiaccio": 200,
     "codaLunga": 0.8,
     "idrogeno": 50
+  },
+  "relitto": {
+    "materiaOscura": 30,
+    "carico": 0.5,
+    "progetto": 0.3,
+    "progettoRecupero": 0.5,
+    "sconto": 0.5
   },
   "mix": {
     "asteroidi": {

@@ -4,7 +4,8 @@
 import { BILANCIAMENTO } from './bilanciamento'
 import type { Risorsa } from './catalogo'
 import type { Nave } from './navigazione'
-import { settore, type Corpo } from './settore'
+import { casuale, derivato, seedSettore } from './casuale'
+import { settore, type Coordinate, type Corpo } from './settore'
 
 export type { Risorsa }
 
@@ -149,16 +150,61 @@ export function stivaPienaTra(carico: Carico, nave: Nave, ora: Date, fatte: Fatt
 
 /**
  * Il bottino di una cometa (doc/09-bilanciamento.md#comete-e-relitti), preso
- * all'arrivo una volta sola: Ghiaccio e, con la coda lunga, Idrogeno. Quello
- * che non entra nella stiva si perde. Come `space.bottino_cometa` in SQL.
+ * all'arrivo una volta sola: Ghiaccio e, con la coda lunga, Idrogeno; il
+ * doppio con *Recupero* (C9). Quello che non entra nella stiva si perde. Come
+ * `space.bottino_cometa` in SQL, più il raddoppio di `space.assesta`.
  */
-export function bottinoCometa(corpo: Corpo | null): Partial<Quantita> | null {
+export function bottinoCometa(corpo: Corpo | null, fatte: Fatte = NESSUNA): Partial<Quantita> | null {
   if (corpo?.dettagli.tipo !== 'cometa') return null
   const { ghiaccio, codaLunga, idrogeno } = BILANCIAMENTO.cometa
-  return {
+  const bottino: Partial<Quantita> = {
     ghiaccio: ghiaccio * corpo.ricchezza,
     ...(corpo.dettagli.coda >= codaLunga ? { idrogeno: idrogeno * corpo.ricchezza } : {}),
   }
+  if (!fatte.has('C9')) return bottino
+  for (const r of RISORSE) if (bottino[r] !== undefined) bottino[r] = bottino[r]! * BILANCIAMENTO.ricerche.effetti.C9
+  return bottino
+}
+
+/** Il livello più alto tra motore, serbatoio e ricarica: decide la ricetta del carico di un relitto. */
+export function livelloNave(nave: Pick<Nave, 'livelli'>): number {
+  return Math.max(nave.livelli.motore, nave.livelli.serbatoio, nave.livelli.ricarica)
+}
+
+/**
+ * L'esito di un relitto, uguale per tutti: un numero in [0, 1) dalla quinta
+ * sequenza del seed del settore (dopo tipo, nome, ricchezza e dettagli). Sotto
+ * la soglia c'è un progetto. Come `space.esito_relitto`.
+ */
+export function esitoRelitto(c: Coordinate): number {
+  return casuale(derivato(seedSettore(c.x, c.y, c.z), 4)).numero()
+}
+
+/**
+ * Il bottino di un relitto (doc/09-bilanciamento.md#comete-e-relitti), preso
+ * all'arrivo una volta sola: `30 × ricchezza` di Materia oscura e un carico
+ * del 50 % della capacità della stiva, diviso con la ricetta del livello più
+ * alto della nave; a volte un progetto. *Recupero* (C9) raddoppia il bottino e
+ * alza la probabilità del progetto. Come `space.bottino_relitto`.
+ */
+export function bottinoRelitto(
+  c: Coordinate,
+  nave: Pick<Nave, 'livelli' | 'stiva'>,
+  fatte: Fatte = NESSUNA,
+): { bottino: Partial<Quantita>; progetto: boolean } | null {
+  const corpo = settore(c).corpo
+  if (corpo?.dettagli.tipo !== 'relitto') return null
+  const { materiaOscura, carico, progetto, progettoRecupero } = BILANCIAMENTO.relitto
+  const recupero = fatte.has('C9')
+  const per = recupero ? BILANCIAMENTO.ricerche.effetti.C9 : 1
+  const livello = livelloNave(nave)
+  let mix: Partial<Quantita> = BILANCIAMENTO.cantiere.ricette[0].mix
+  for (const r of BILANCIAMENTO.cantiere.ricette) if (livello >= r.da) mix = r.mix
+  const totale = capacitaNave(nave.stiva, fatte) * carico * per
+  const bottino: Partial<Quantita> = {}
+  for (const r of RISORSE) if (mix[r]) bottino[r] = totale * mix[r]!
+  bottino.materiaOscura = (bottino.materiaOscura ?? 0) + materiaOscura * corpo.ricchezza * per
+  return { bottino, progetto: esitoRelitto(c) < (recupero ? progettoRecupero : progetto) }
 }
 
 /** Quanto di `bottino` entra davvero nella stiva, che ha già `quantita`. */

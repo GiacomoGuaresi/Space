@@ -16,7 +16,7 @@ Schema `space`. Le colonne arrivano con lo step che le usa ([06](06-roadmap.md))
 | ~~`struttura`~~ | le strutture sono colonne di `insediamento` (`cantiere`, `deposito`, `laboratorio`, `radar`; poi `ponte`), una per tipo con il suo livello | M5, M7, M8 |
 | `costruzione` ✅ | coda: cosa (statistica della nave, struttura, produzione), dove, inizio, fine | M5 |
 | `ricerca` ✅ | nodo, livello (1 per gli sblocchi, N per i nodi infiniti), completamento | M6 |
-| `raccolto` ✅ | settori a raccolta una tantum già svuotati da questo giocatore (comete, relitti), con istante e bottino entrato nella stiva | M4, M9 |
+| `raccolto` ✅ | settori a raccolta una tantum già svuotati da questo giocatore (comete, relitti), con istante, bottino entrato nella stiva e l'eventuale progetto | M4, M9 |
 | `traguardo` | codice, istante | M10 |
 
 Le tabelle si leggono e basta. Si scrive solo con le funzioni Postgres (`space.stato()`, `space.viaggia(x, y, z)` e, man mano, `raccogli`, `fonda`, `potenzia`, `ricerca`, `abbandona`, `accelera`…), che rifiutano con un codice (`in_viaggio`, `carburante_insufficiente`, `risorse_insufficienti`, `nave_occupata`…).

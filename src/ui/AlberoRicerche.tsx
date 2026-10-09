@@ -18,7 +18,8 @@ import {
   type Ramo,
   type Ricerche,
 } from '../dominio/ricerche'
-import { RISORSE } from '../dominio/risorse'
+import { RISORSE, type Quantita } from '../dominio/risorse'
+import { BILANCIAMENTO } from '../dominio/bilanciamento'
 import { stessoSettore } from '../dominio/settore'
 import { AzioniNave } from './azioni'
 import { durata, numero, rovescia } from './formato'
@@ -110,7 +111,11 @@ function Dettaglio({
   const [inCorso, setInCorso] = useState(false)
   const [errore, setErrore] = useState<string | null>(null)
   const g = gradino(id)
-  const costo = costoGradino(g, fatte)
+  // Un progetto trovato in un relitto dimezza la prossima ricerca.
+  const progetto = nave.progetti > 0
+  const costo = Object.fromEntries(
+    Object.entries(costoGradino(g, fatte)).map(([r, q]) => [r, progetto ? q * BILANCIAMENTO.relitto.sconto : q]),
+  ) as Partial<Quantita>
   const base = !inViaggio(nave, ora) ? bordo?.insediamenti.find((i) => stessoSettore(i.coordinate, nave.posizione)) : undefined
   const manca = bordo ? mancante(costo, bordo.quantita, base ? magazzinoOra(base, ora, fatte) : {}) : {}
   const motivo =
@@ -158,6 +163,11 @@ function Dettaglio({
         ))}
         <span className="text-testo-tenue"> · {durata(durataGradino(g) * 3_600_000)} · la nave resta ferma</span>
       </p>
+      {progetto && !fatte.has(id) && (
+        <p className="m-0 text-xs text-ambra">
+          Hai {nave.progetti === 1 ? 'un progetto' : `${nave.progetti} progetti`} da un relitto: questa ricerca costa la metà.
+        </p>
+      )}
       {motivo && fatte.has(id) === false && <span className="text-xs text-testo-tenue">{motivo}</span>}
       {errore && (
         <p className="m-0 text-xs text-pericolo" role="alert">

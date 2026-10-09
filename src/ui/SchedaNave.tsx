@@ -63,6 +63,7 @@ export function SchedaNave({ nave, quantita, ora }: { nave: Nave; quantita: Quan
               />
             </span>
           </Riga>
+          {nave.progetti > 0 && <Riga nome="Progetti">{nave.progetti} · la prossima ricerca costa la metà</Riga>}
         </dl>
       </section>
 

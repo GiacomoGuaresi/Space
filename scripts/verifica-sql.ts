@@ -15,7 +15,7 @@ import { BILANCIAMENTO } from '../src/dominio/bilanciamento.ts'
 import { raggioScanner } from '../src/dominio/navigazione.ts'
 import { aLivello, ricercaEstrattore, ritmoInsediamento } from '../src/dominio/insediamenti.ts'
 import { costoLavoro, durataLavoro, STATISTICHE, STRUTTURE } from '../src/dominio/cantiere.ts'
-import { bottinoCometa, capacitaStiva, ritmoMano } from '../src/dominio/risorse.ts'
+import { bottinoCometa, capacitaStiva, esitoRelitto, ritmoMano } from '../src/dominio/risorse.ts'
 import { settore, tipoSettore } from '../src/dominio/settore.ts'
 import { sottotipo } from '../src/dominio/sottotipi.ts'
 
@@ -180,7 +180,18 @@ const esitoCorpi = await interroga(`
     count(*) as totale
   from (values ${corpi.join(',')}) as c(x, y, z, ricchezza, sotto, pianeti, ritmo)`)
 
+// L'esito dei relitti, sui primi 40 lungo le stesse rette.
+const relitti: string[] = []
+for (let i = 1; relitti.length < 40 && i < 20000; i++) {
+  const c = i % 3 === 0 ? { x: i, y: 7, z: -3 } : i % 3 === 1 ? { x: -5, y: i, z: 11 } : { x: 2, y: -9, z: -i }
+  if (tipoSettore(c) === 'relitto') relitti.push(`(${c.x},${c.y},${c.z},${esitoRelitto(c)})`)
+}
+const esitoRelitti = await interroga(`
+  select count(*) filter (where space.esito_relitto(x, y, z) <> e) as esiti_diversi, count(*) as totale
+  from (values ${relitti.join(',')}) as r(x, y, z, e)`)
+
 console.log('Settori', esitoSettori)
+console.log('Relitti', esitoRelitti)
 console.log('Rotte', esitoRotte)
 console.log('Raggi dello scanner', esitoRaggi)
 console.log('Capacità della stiva', esitoStiva)
@@ -202,7 +213,8 @@ if (
   esitoCorpi.ricchezze_diverse ||
   esitoCorpi.sottotipi_diversi ||
   esitoCorpi.pianeti_diversi ||
-  esitoCorpi.ritmi_diversi
+  esitoCorpi.ritmi_diversi ||
+  esitoRelitti.esiti_diversi
 ) {
   console.error('TypeScript e SQL non danno lo stesso universo')
   process.exit(1)

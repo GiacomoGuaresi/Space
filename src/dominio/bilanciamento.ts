@@ -283,6 +283,8 @@ export const BILANCIAMENTO = {
       I8: 0.15,
       /** Estrazione profonda: produzione degli insediamenti +15 %. */
       C8: 0.15,
+      /** Recupero: relitti e comete rendono per tanto. */
+      C9: 2,
       /** Riciclo: abbandonando un insediamento torna questa parte di quanto vi si è speso. */
       I6: 0.25,
     },
@@ -309,6 +311,17 @@ export const BILANCIAMENTO = {
     /** …e, se la coda è lunga almeno così, anche Idrogeno. */
     codaLunga: 0.8,
     idrogeno: 50,
+  },
+  relitto: {
+    /** Saccheggiando un relitto, una volta sola: tanta Materia oscura per la ricchezza… */
+    materiaOscura: 30,
+    /** …e un carico pari a questa parte della capacità della stiva, con la ricetta del livello più alto della nave. */
+    carico: 0.5,
+    /** In questa parte dei relitti c'è anche un progetto (in quest'altra con *Recupero*)… */
+    progetto: 0.3,
+    progettoRecupero: 0.5,
+    /** …e la prossima ricerca costa per tanto. */
+    sconto: 0.5,
   },
   /**
    * Come si divide la produzione di un corpo tra le risorse, per sottotipo

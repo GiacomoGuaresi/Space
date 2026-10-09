@@ -18,6 +18,7 @@ const nave = (parziale: Partial<Nave> = {}): Nave => ({
   scanner: 1,
   stiva: 1,
   livelli: { motore: 1, serbatoio: 1, ricarica: 1 },
+  progetti: 0,
   ...parziale,
 })
 
@@ -129,7 +130,7 @@ describe('novità e gruppi', () => {
 describe('raccolti', () => {
   it('raccontano il bottino entrato nella stiva', () => {
     const voci = vociDiario(
-      fonti({ raccolti: [{ coordinate: { x: 3, y: 0, z: 0 }, istante: dopo(1), bottino: { ghiaccio: 15, idrogeno: 0 } }], ora: dopo(2) }),
+      fonti({ raccolti: [{ coordinate: { x: 3, y: 0, z: 0 }, istante: dopo(1), bottino: { ghiaccio: 15, idrogeno: 0 }, progetto: false }], ora: dopo(2) }),
     )
     expect(voci.map((v) => v.tipo)).toEqual(['raccolto'])
     expect(voci[0].testo).toContain('+15 Ghiaccio')

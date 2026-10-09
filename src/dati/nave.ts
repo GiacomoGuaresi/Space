@@ -35,11 +35,13 @@ export interface Scansione {
   istante: Date
 }
 
-/** Un corpo a raccolta una tantum già preso (una cometa), con quello che è entrato nella stiva. */
+/** Un corpo a raccolta una tantum già preso (una cometa, un relitto), con quello che è entrato nella stiva. */
 export interface Raccolto {
   coordinate: Coordinate
   istante: Date
   bottino: Partial<Record<Risorsa, number>>
+  /** Vero se nel relitto c'era un progetto. */
+  progetto: boolean
 }
 
 /** Il magazzino di un insediamento passato nella stiva, arrivando o ripartendo. */
@@ -117,6 +119,7 @@ interface RigaNave {
   liv_motore: number
   liv_serbatoio: number
   liv_ricarica: number
+  progetti: number
 }
 
 interface RigaViaggio {
@@ -147,6 +150,7 @@ function nave(r: RigaNave): Nave {
     scanner: r.scanner,
     stiva: r.stiva,
     livelli: { motore: r.liv_motore, serbatoio: r.liv_serbatoio, ricarica: r.liv_ricarica },
+    progetti: r.progetti ?? 0,
   }
 }
 
@@ -402,12 +406,15 @@ export class NaveSupabase {
 
   /** I corpi a raccolta una tantum già presi. */
   async raccolti(): Promise<Raccolto[]> {
-    const { data, error } = await this.client.from('raccolto').select('x, y, z, istante, bottino')
+    const { data, error } = await this.client.from('raccolto').select('x, y, z, istante, bottino, progetto')
     if (error) throw fallita('Raccolti non letti', error)
-    return (data as { x: number; y: number; z: number; istante: string; bottino: Partial<Record<Risorsa, number>> }[]).map((r) => ({
+    return (
+      data as { x: number; y: number; z: number; istante: string; bottino: Partial<Record<Risorsa, number>>; progetto: boolean }[]
+    ).map((r) => ({
       coordinate: { x: r.x, y: r.y, z: r.z },
       istante: new Date(r.istante),
       bottino: r.bottino,
+      progetto: r.progetto,
     }))
   }
 

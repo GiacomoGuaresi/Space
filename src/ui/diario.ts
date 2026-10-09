@@ -193,9 +193,11 @@ function vociRaccolti(raccolti: readonly Raccolto[]): Voce[] {
     return {
       quando: r.istante,
       tipo: 'raccolto',
-      testo: preso
-        ? `Bottino di ${dove.breve}: ${preso}. Quello che non entrava nella stiva è perso.`
-        : `Bottino di ${dove.breve}: la stiva era già piena.`,
+      testo:
+        (preso
+          ? `Bottino di ${dove.breve}: ${preso}. Quello che non entrava nella stiva è perso.`
+          : `Bottino di ${dove.breve}: la stiva era già piena.`) +
+        (r.progetto ? ' Dentro c’era un progetto: la prossima ricerca costa la metà.' : ''),
       breve: dove.breve,
     }
   })

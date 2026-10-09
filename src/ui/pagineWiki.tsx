@@ -130,6 +130,10 @@ const GUIDA: PaginaWiki[] = [
         </P>
         <P>Ripartendo, quello che hai raccolto resta a bordo.</P>
         <P>Le comete si raccolgono arrivando, una volta sola: quello che non entra nella stiva si perde.</P>
+        <P>
+          Anche i relitti alieni si saccheggiano arrivando, una volta sola: danno Materia oscura e un carico di risorse, e a volte un
+          progetto, che dimezza il costo della prossima ricerca. La ricerca Recupero raddoppia comete e relitti.
+        </P>
       </>
     ),
     numeri: () => {
@@ -149,6 +153,10 @@ const GUIDA: PaginaWiki[] = [
         [
           'Pianeti',
           `rocciosi ${mix(pianeti.roccioso)} · oceanici ${mix(pianeti.oceanico)} · ghiacciati ${mix(pianeti.ghiacciato)} · gassosi ${mix(pianeti.gassoso)}`,
+        ],
+        [
+          'Relitto',
+          `${BILANCIAMENTO.relitto.materiaOscura} × ricchezza di Materia oscura e il ${Math.round(BILANCIAMENTO.relitto.carico * 100)} % della capacità della stiva, con la ricetta del livello più alto della nave; progetto nel ${Math.round(BILANCIAMENTO.relitto.progetto * 100)} % dei relitti (${Math.round(BILANCIAMENTO.relitto.progettoRecupero * 100)} % con Recupero)`,
         ],
         [
           'Cometa',
@@ -372,10 +380,10 @@ const DESCRIZIONI: Readonly<Record<TipoCorpo, string>> = {
   stella: 'Una stella senza pianeti. In sosta accanto a lei il serbatoio si riempie fino in fondo, e più in fretta.',
   sistema: "Una stella con i suoi pianeti: l'unico posto dove si potrà fondare una base.",
   gigante: 'Un pianeta gassoso senza stella, alla deriva tra i settori.',
-  cometa: 'Un nucleo di ghiaccio con la sua coda. Si raccoglierà una volta sola.',
+  cometa: 'Un nucleo di ghiaccio con la sua coda. Si raccoglie una volta sola.',
   pulsar: 'Il cuore spento di una stella, che gira e lampeggia. In sosta qui lo scanner vede il doppio, e si raccolgono Terre rare.',
   buconero: 'Niente esce da qui, tranne chi parte con la fionda. Attorno si raccoglie Materia oscura.',
-  relitto: 'I resti di qualcuno arrivato prima. Si saccheggerà una volta sola.',
+  relitto: 'I resti di qualcuno arrivato prima. Si saccheggia una volta sola, e a volte nasconde un progetto.',
   wormhole: 'Un varco a senso unico verso un settore lontano.',
 }
 

@@ -2,7 +2,19 @@ import { describe, expect, it } from 'vitest'
 import type { TipoCorpo } from './catalogo'
 import type { Nave } from './navigazione'
 import { BILANCIAMENTO } from './bilanciamento'
-import { bottinoCometa, capacitaNave, caricoOra, capacitaStiva, inStiva, mixCorpo, nessuna, ritmoMano, stivaPienaTra } from './risorse'
+import {
+  bottinoCometa,
+  bottinoRelitto,
+  capacitaNave,
+  caricoOra,
+  capacitaStiva,
+  esitoRelitto,
+  inStiva,
+  mixCorpo,
+  nessuna,
+  ritmoMano,
+  stivaPienaTra,
+} from './risorse'
 import { BASE, settore, tipoSettore, type Coordinate } from './settore'
 
 /** Il primo settore di un tipo lungo l'asse x. */
@@ -25,6 +37,7 @@ const nave = (posizione: Coordinate, parziale: Partial<Nave> = {}): Nave => ({
   scanner: 1,
   stiva: 1,
   livelli: { motore: 1, serbatoio: 1, ricarica: 1 },
+  progetti: 0,
   ...parziale,
 })
 
@@ -110,5 +123,33 @@ describe('Materia oscura', () => {
     for (let x = 80; tipoSettore(c) !== 'buconero'; x++) c = { x, y: 7, z: -3 }
     const corpo = settore(c).corpo!
     expect(ritmoMano(corpo)!.materiaOscura).toBeCloseTo(3 * 1.2 * corpo.ricchezza, 12)
+  })
+})
+
+describe('relitti', () => {
+  const trova = (sotto: (e: number) => boolean) => {
+    for (let x = 80; ; x++) {
+      const c = { x, y: 7, z: -3 }
+      if (tipoSettore(c) === 'relitto' && sotto(esitoRelitto(c))) return c
+    }
+  }
+  const navicella = { livelli: { motore: 5, serbatoio: 1, ricarica: 1 }, stiva: 3 }
+
+  it('danno 30 × ricchezza di Materia oscura e metà stiva con la ricetta del livello più alto', () => {
+    const c = trova(() => true)
+    const { bottino } = bottinoRelitto(c, navicella)!
+    const capacita = capacitaStiva(3)
+    expect(bottino.metallo).toBeCloseTo(capacita * 0.5 * 0.5, 12)
+    expect(bottino.ghiaccio).toBeCloseTo(capacita * 0.5 * 0.2, 12)
+    expect(bottino.materiaOscura).toBeCloseTo(30 * settore(c).corpo!.ricchezza, 12)
+  })
+
+  it('un progetto sotto il 30 %, sotto il 50 % con Recupero, che raddoppia tutto', () => {
+    const c = trova((e) => e >= 0.3 && e < 0.5)
+    expect(bottinoRelitto(c, navicella)!.progetto).toBe(false)
+    const recupero = bottinoRelitto(c, navicella, new Set(['C9']))!
+    expect(recupero.progetto).toBe(true)
+    expect(recupero.bottino.materiaOscura).toBeCloseTo(2 * bottinoRelitto(c, navicella)!.bottino.materiaOscura!, 12)
+    expect(bottinoRelitto(BASE, navicella)).toBeNull()
   })
 })

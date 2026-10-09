@@ -28,6 +28,8 @@ export interface Nave {
   stiva: number
   /** I livelli di motore, serbatoio e ricarica (cantiere.ts): i valori sono già sopra. */
   livelli: { motore: number; serbatoio: number; ricarica: number }
+  /** I progetti trovati nei relitti e non ancora usati: ognuno dimezza una ricerca. */
+  progetti: number
 }
 
 export interface Viaggio {
