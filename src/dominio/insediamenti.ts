@@ -46,18 +46,24 @@ export function mixColonia(coordinate: Coordinate, pianeta: number): Partial<Qua
 
 type Produttore = Pick<Insediamento, 'tipo' | 'coordinate' | 'pianeta' | 'produzione'>
 
-/** Quanto produce all'ora per risorsa, al livello di produzione `livello`. */
-export function ritmoInsediamento(i: Produttore, livello = i.produzione): Partial<Quantita> {
+/** Di quanto le ricerche moltiplicano la produzione: *Estrazione profonda* (C8) +15 %. Come `space.ritmo_insediamento`. */
+export function bonusProduzione(fatte: Fatte = new Set()): number {
+  return fatte.has('C8') ? 1 + BILANCIAMENTO.ricerche.effetti.C8 : 1
+}
+
+/** Quanto produce all'ora per risorsa, al livello di produzione `livello`, con le ricerche `fatte`. */
+export function ritmoInsediamento(i: Produttore, livello = i.produzione, fatte: Fatte = new Set()): Partial<Quantita> {
   const { madre, crescita, ritmo } = BILANCIAMENTO.produzione
   const ritmi: Partial<Quantita> = {}
+  const bonus = bonusProduzione(fatte)
   if (i.tipo === 'madre') {
-    for (const r of RISORSE.slice(0, 4)) ritmi[r] = aLivello(madre / 4, crescita, livello)
+    for (const r of RISORSE.slice(0, 4)) ritmi[r] = aLivello(madre / 4, crescita, livello) * bonus
   } else if (i.tipo === 'base' && i.pianeta !== null) {
     const mix = mixColonia(i.coordinate, i.pianeta)
     const ricchezza = settore(i.coordinate).corpo?.ricchezza ?? 0
     for (const r of RISORSE) {
       const parte = mix?.[r]
-      if (parte) ritmi[r] = aLivello(ritmo.comune * ricchezza * parte, crescita, livello)
+      if (parte) ritmi[r] = aLivello(ritmo.comune * ricchezza * parte, crescita, livello) * bonus
     }
   } else if (i.tipo === 'estrattore') {
     // Un estrattore produce col mix del corpo, al ritmo di ogni risorsa (doc/09-bilanciamento.md#produzione).
@@ -66,7 +72,7 @@ export function ritmoInsediamento(i: Produttore, livello = i.produzione): Partia
     const ricchezza = corpo?.ricchezza ?? 0
     for (const r of RISORSE) {
       const parte = mix?.[r]
-      if (parte) ritmi[r] = aLivello(ritmoRisorsa(r) * ricchezza * parte, crescita, livello)
+      if (parte) ritmi[r] = aLivello(ritmoRisorsa(r) * ricchezza * parte, crescita, livello) * bonus
     }
   }
   return ritmi
@@ -76,7 +82,7 @@ export function ritmoInsediamento(i: Produttore, livello = i.produzione): Partia
 export function tettoMagazzino(i: Produttore & Pick<Insediamento, 'magazzino'>, fatte: Fatte = new Set()): Partial<Quantita> {
   const { ore, crescita } = BILANCIAMENTO.magazzino
   const tetti: Partial<Quantita> = {}
-  const base = ritmoInsediamento(i, 1)
+  const base = ritmoInsediamento(i, 1, fatte)
   for (const r of RISORSE) {
     const ritmo = base[r]
     // *Magazzini modulari* (C4) alzano il tetto del 20 %.
@@ -87,7 +93,7 @@ export function tettoMagazzino(i: Produttore & Pick<Insediamento, 'magazzino'>, 
 
 /** Il magazzino a `ora`: le scorte più la produzione da `ultima`, fino al tetto (oltre non si toglie nulla). */
 export function magazzinoOra(i: Insediamento, ora: Date, fatte: Fatte = new Set()): Partial<Quantita> {
-  const ritmi = ritmoInsediamento(i)
+  const ritmi = ritmoInsediamento(i, i.produzione, fatte)
   const tetti = tettoMagazzino(i, fatte)
   const ore = Math.max(0, ora.getTime() - i.ultima.getTime()) / 3_600_000
   const quantita: Partial<Quantita> = {}
@@ -103,7 +109,7 @@ export function magazzinoOra(i: Insediamento, ora: Date, fatte: Fatte = new Set(
 
 /** Tra quante ore il magazzino è pieno per tutte le risorse che produce (0 se lo è già). */
 export function pienoTra(i: Insediamento, ora: Date, fatte: Fatte = new Set()): number {
-  const ritmi = ritmoInsediamento(i)
+  const ritmi = ritmoInsediamento(i, i.produzione, fatte)
   const tetti = tettoMagazzino(i, fatte)
   const adesso = magazzinoOra(i, ora, fatte)
   let ore = 0

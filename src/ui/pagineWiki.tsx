@@ -352,8 +352,11 @@ const MECCANICHE: PaginaWiki[] = [
       </P>
     ),
     numeri: () => [
-      ['Velocità', `×${numero(fionda.velocita, 1)}`],
-      ['Gratis', `${numero(fionda.gratis * 100)} % dei settori percorsi`],
+      ['Velocità', `×${numero(fionda.velocita, 1)} · ×${numero(fionda.gravitazionale.velocita, 1)} con Fionda gravitazionale`],
+      [
+        'Gratis',
+        `${numero(fionda.gratis * 100)} % dei settori percorsi · ${numero(fionda.gravitazionale.gratis * 100)} % con Fionda gravitazionale`,
+      ],
     ],
   },
 ]

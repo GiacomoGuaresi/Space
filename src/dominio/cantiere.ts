@@ -48,12 +48,26 @@ export function costoLavoro(lavoro: Lavoro, livello: number, fatte: Fatte = new 
   return conLeghe(costoBase(lavoro, livello), fatte)
 }
 
-/** *Leghe* toglie il 10 % di Metallo e Silicio dalle ricette. Come `space.con_leghe`. */
+/**
+ * Le ricerche che tolgono una parte di qualche risorsa dalle ricette: *Leghe*
+ * (I4) Metallo e Silicio, *Superleghe* (I8) Terre rare, *Materia esotica* (I10)
+ * Materia oscura.
+ */
+const SCONTI: readonly [ricerca: 'I4' | 'I8' | 'I10', risorse: readonly (keyof Quantita)[]][] = [
+  ['I4', ['metallo', 'silicio']],
+  ['I8', ['terreRare']],
+  ['I10', ['materiaOscura']],
+]
+
+/** Un costo con gli sconti delle ricerche fatte (`SCONTI`). Come `space.con_leghe`. */
 export function conLeghe(costo: Partial<Quantita>, fatte: Fatte): Partial<Quantita> {
-  if (!fatte.has('I4')) return costo
-  const sconto = 1 - BILANCIAMENTO.ricerche.effetti.I4
+  const effetti: Partial<Record<string, number>> = BILANCIAMENTO.ricerche.effetti
   const risultato = { ...costo }
-  for (const r of ['metallo', 'silicio'] as const) if (risultato[r] !== undefined) risultato[r] = risultato[r]! * sconto
+  for (const [ricerca, risorse] of SCONTI) {
+    const parte = effetti[ricerca]
+    if (!fatte.has(ricerca) || parte === undefined) continue
+    for (const r of risorse) if (risultato[r] !== undefined) risultato[r] = risultato[r]! * (1 - parte)
+  }
   return risultato
 }
 
@@ -82,9 +96,13 @@ export function durataLavoro(lavoro: Lavoro, livello: number, livelloCantiere: n
   const fino = lavoro === 'ponte' ? BILANCIAMENTO.ponte.livello : livello
   let ore: number = cantiere.ore
   for (let i = 2; i < fino; i++) ore *= cantiere.crescitaTempo
-  // *Automazione* accorcia del 10 %.
-  const automazione = fatte.has('I1') ? 1 - BILANCIAMENTO.ricerche.effetti.I1 : 1
-  return (ore / (1 + cantiere.riduzione * (Math.max(1, livelloCantiere) - 1))) * automazione
+  // *Automazione* accorcia del 10 %, *Automazione II* del 15 %.
+  const { I1, I7 } = BILANCIAMENTO.ricerche.effetti
+  return (
+    (ore / (1 + cantiere.riduzione * (Math.max(1, livelloCantiere) - 1))) *
+    (fatte.has('I1') ? 1 - I1 : 1) *
+    (fatte.has('I7') ? 1 - I7 : 1)
+  )
 }
 
 /** Il valore di motore (settori/h), serbatoio (unità) o ricarica (unità/h) al livello `livello`. */

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { basiFondabili } from './insediamenti'
-import { costoLavoro, costoPieno, durataLavoro, mancante, ricetta, valoreNave } from './cantiere'
+import { conLeghe, costoLavoro, costoPieno, durataLavoro, mancante, ricetta, valoreNave } from './cantiere'
 import { capacitaStiva, nessuna } from './risorse'
 
 describe('cantiere', () => {
@@ -87,6 +87,7 @@ describe('ritmo atteso', () => {
     [60, 9, 5, ['I1'], 0.5],
     [90, 13, 7, ['I1'], 1.3],
     [180, 17, 9, ['I1'], 3.3],
+    [365, 20, 10, ['I1', 'I7'], 5.9],
   ]
 
   it.each(righe)('giorno %i: il livello %i dura come nella simulazione', (_, livello, cantiere, ricerche, giorni) => {
@@ -101,5 +102,16 @@ describe('ritmo atteso', () => {
       // Nella simulazione la stiva tiene il passo della nave (livello 13 al giorno 90).
       for (const q of Object.values(costo)) expect(q).toBeLessThanOrEqual(capacitaStiva(livello))
     }
+  })
+})
+
+describe('ricerche dei gradini 7-8', () => {
+  it('Superleghe tolgono il 15 % delle Terre rare, Leghe il 10 % di Metallo e Silicio', () => {
+    const costo = conLeghe({ metallo: 100, terreRare: 100, ghiaccio: 100 }, new Set(['I4', 'I8']))
+    expect(costo).toEqual({ metallo: 90, terreRare: 85, ghiaccio: 100 })
+  })
+
+  it('Raffinazione III: il pieno a 2 Idrogeno per unità', () => {
+    expect(costoPieno(1, 1, new Set(['P1', 'P4', 'P7']))).toBe(2)
   })
 })

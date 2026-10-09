@@ -53,7 +53,11 @@ language sql immutable parallel safe set search_path = '' as $$
   },
   "fionda": {
     "velocita": 1.5,
-    "gratis": 0.2
+    "gratis": 0.2,
+    "gravitazionale": {
+      "velocita": 2,
+      "gratis": 0.3
+    }
   },
   "ponte": {
     "fattore": 3,
@@ -472,7 +476,16 @@ language sql immutable parallel safe set search_path = '' as $$
       "P2",
       "P3",
       "P4",
-      "P5"
+      "P5",
+      "P6",
+      "P7",
+      "P8",
+      "C7",
+      "C8",
+      "S7",
+      "S8",
+      "I7",
+      "I8"
     ],
     "effetti": {
       "I1": 0.1,
@@ -485,7 +498,13 @@ language sql immutable parallel safe set search_path = '' as $$
       "P4": 1,
       "P5": 3,
       "C6": 2,
+      "P7": 1,
       "P8": 4,
+      "S7": 3,
+      "S8": 2,
+      "I7": 0.15,
+      "I8": 0.15,
+      "C8": 0.15,
       "I6": 0.25
     }
   },

@@ -161,7 +161,9 @@ function Laboratorio({ ora, base }: { ora: Date; base: Insediamento }) {
 
 /** Il radar: uno scanner fisso attorno alla base, con i tipi che rileva lo scanner della nave. */
 function Radar({ nave, base }: { nave: Nave; base: Insediamento }) {
-  const raggio = raggioRadar(base.radar)
+  const fatte = useContext(CaricoAttuale)?.fatte
+  const profondo = fatte?.has('S8') ?? false
+  const raggio = raggioRadar(base.radar, fatte)
   const tipi = tipiRilevabili(nave.scanner)
   const trovati = scansione(base.coordinate, raggio, tipi).length
   const { raggio: iniziale, crescita } = BILANCIAMENTO.radar
@@ -173,7 +175,7 @@ function Radar({ nave, base }: { nave: Nave; base: Insediamento }) {
         <Info
           titolo="Raggio del radar"
           wiki="scanner"
-          formula={`${iniziale} × ${crescita}^(${base.radar} − 1)`}
+          formula={`${iniziale} × ${crescita}^(${base.radar} − 1)${profondo ? ` × ${BILANCIAMENTO.ricerche.effetti.S8} (Radar profondo)` : ''}`}
           esatto={`${numero(raggio, 3)} settori`}
         />
       </p>

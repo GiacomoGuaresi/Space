@@ -47,7 +47,9 @@ export function Scanner({ centro, livello, scoperti, onScegli }: Props) {
             ? ' · la nebulosa non lo riduce (Filtri nebulari)'
             : ' · ridotto dalla nebulosa'
           : tipoQui === 'pulsar'
-            ? ' · raddoppiato dalla pulsar'
+            ? fatte?.has('S7')
+              ? ' · triplicato dalla pulsar (Interferometria)'
+              : ' · raddoppiato dalla pulsar'
             : ''}
         {' · rileva: '}
         {[...tipi].map((t) => CATALOGO[t].nome.toLowerCase()).join(', ')}

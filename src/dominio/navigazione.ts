@@ -148,7 +148,7 @@ export function anteprima(nave: Nave, meta: Coordinate, ora: Date, dintorni: Din
   const fionda = tipoSettore(nave.posizione) === 'buconero'
   const ponte = viaPonte(nave.posizione, meta, dintorni.ponti)
   const r = rotta(nave.posizione, meta, carburanteOra(nave, ora, dintorni), quotaConsumo(fionda, fatte, ponte))
-  const velocita = nave.velocita * (fionda ? FIONDA.velocita : 1) * (ponte ? fattorePonte(fatte) : 1)
+  const velocita = nave.velocita * (fionda ? fiondaDi(fatte).velocita : 1) * (ponte ? fattorePonte(fatte) : 1)
   return {
     ...r,
     durata: (r.percorsa / velocita) * ORA_MS,
@@ -173,7 +173,12 @@ export function fattorePonte(fatte: ReadonlySet<string>): number {
  * con *Iniettori* (P2) e tra due ponti. Come in `space.viaggia`, negli stessi passi.
  */
 export function quotaConsumo(fionda: boolean, fatte: ReadonlySet<string>, ponte = false): number {
-  return ((fionda ? 1 - FIONDA.gratis : 1) * (fatte.has('P2') ? 1 - BILANCIAMENTO.ricerche.effetti.P2 : 1)) / (ponte ? fattorePonte(fatte) : 1)
+  return ((fionda ? 1 - fiondaDi(fatte).gratis : 1) * (fatte.has('P2') ? 1 - BILANCIAMENTO.ricerche.effetti.P2 : 1)) / (ponte ? fattorePonte(fatte) : 1)
+}
+
+/** La fionda dei buchi neri: ×1,5 e 20 % gratis, ×2 e 30 % con *Fionda gravitazionale* (P6). */
+export function fiondaDi(fatte: ReadonlySet<string>): { velocita: number; gratis: number } {
+  return fatte.has('P6') ? FIONDA.gravitazionale : FIONDA
 }
 
 const LIVELLI_SCANNER: readonly (TipoCorpo | 'raggio')[] = SCANNER.livelli
@@ -201,6 +206,8 @@ export function raggioScanner(livello: number, tipoQui: TipoCorpo | null): numbe
  */
 export function raggioQui(livello: number, qui: Coordinate, fatte: ReadonlySet<string> = new Set()): number {
   const tipo = tipoSettore(qui)
+  // *Interferometria* (S7): presso una pulsar ×3 invece di ×2.
+  if (tipo === 'pulsar' && fatte.has('S7')) return raggioScanner(livello, null) * BILANCIAMENTO.ricerche.effetti.S7
   return raggioScanner(livello, tipo === 'nebulosa' && fatte.has('S5') ? null : tipo)
 }
 
@@ -230,11 +237,11 @@ export function scansione(centro: Coordinate, raggio: number, tipi?: ReadonlySet
   return trovati.sort((a, b) => a.distanza - b.distanza)
 }
 
-/** Il raggio del radar di una base al livello dato (doc/09-bilanciamento.md#strutture): 0 se non c'è. */
-export function raggioRadar(livello: number): number {
+/** Il raggio del radar di una base al livello dato (doc/09-bilanciamento.md#strutture), ×2 con *Radar profondo* (S8): 0 se non c'è. */
+export function raggioRadar(livello: number, fatte: ReadonlySet<string> = new Set()): number {
   if (livello < 1) return 0
   const { raggio, crescita } = BILANCIAMENTO.radar
   let valore: number = raggio
   for (let i = 1; i < livello; i++) valore *= crescita
-  return valore
+  return valore * (fatte.has('S8') ? BILANCIAMENTO.ricerche.effetti.S8 : 1)
 }

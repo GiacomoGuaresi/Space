@@ -41,14 +41,20 @@ export function useOra(scarto: number): Date {
  * finito l'ultimo lavoro al radar o allo scanner della nave, se è tra quelli
  * letti, se no alla fondazione della base.
  */
-function radar(basi: readonly Insediamento[], nave: Nave, lavori: readonly Costruzione[]): Scansione[] {
+function radar(basi: readonly Insediamento[], nave: Nave, lavori: readonly Costruzione[], studi: readonly RicercaAvviata[]): Scansione[] {
   const ora = Date.now()
-  return sosteRadar(basi, nave.scanner, (b) => {
-    const ultimi = lavori
-      .filter((c) => c.fine.getTime() <= ora && (c.lavoro === 'scanner' || (c.lavoro === 'radar' && c.insediamento === b.id)))
-      .map((c) => c.fine.getTime())
-    return new Date(Math.max(b.fondazione.getTime(), ...ultimi))
-  })
+  const fatte = new Set(studi.filter((r) => r.fine.getTime() <= ora).map((r) => r.nodo))
+  return sosteRadar(
+    basi,
+    nave.scanner,
+    (b) => {
+      const ultimi = lavori
+        .filter((c) => c.fine.getTime() <= ora && (c.lavoro === 'scanner' || (c.lavoro === 'radar' && c.insediamento === b.id)))
+        .map((c) => c.fine.getTime())
+      return new Date(Math.max(b.fondazione.getTime(), ...ultimi))
+    },
+    fatte,
+  )
 }
 
 /**
@@ -92,7 +98,7 @@ export function useNave() {
       setScarto(scartoNuovo)
       setStato({ fase: 'pronta', nave: remoto.nave, viaggio: remoto.viaggio, carico: remoto.carico })
       setScoperte(elenco)
-      setScansioni([...soste, ...radar(basi, remoto.nave, lavori)])
+      setScansioni([...soste, ...radar(basi, remoto.nave, lavori, studi)])
       setViaggi(recenti)
       setRaccolti(presi)
       setInsediamenti(basi)
@@ -104,7 +110,7 @@ export function useNave() {
         const voci = vociDiario({
           viaggi: recenti,
           scoperte: elenco,
-          scansioni: [...soste, ...radar(basi, remoto.nave, lavori)],
+          scansioni: [...soste, ...radar(basi, remoto.nave, lavori, studi)],
           raccolti: presi,
           prelievi: prelevati,
           insediamenti: basi,

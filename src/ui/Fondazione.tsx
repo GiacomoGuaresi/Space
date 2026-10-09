@@ -66,7 +66,7 @@ export function Fondazione({ nave, ora }: { nave: Nave; ora: Date }) {
       <fieldset className="m-0 flex flex-col gap-1 border-0 p-0">
         <legend className="mb-1 p-0 text-xs text-testo-tenue">La base produce col mix del pianeta che scegli:</legend>
         {pianeti.map((p, n) => {
-          const ritmi = ritmoInsediamento({ tipo: 'base', coordinate: nave.posizione, pianeta: n, produzione: 1 })
+          const ritmi = ritmoInsediamento({ tipo: 'base', coordinate: nave.posizione, pianeta: n, produzione: 1 }, 1, bordo.fatte)
           return (
             <label key={p.nome} className="flex min-h-9 items-center gap-2.5 text-[13px]">
               <input type="radio" name="pianeta" className="size-4 accent-ambra" checked={scelto === n} onChange={() => setScelto(n)} />
@@ -132,7 +132,7 @@ export function FondaEstrattore({ nave, ora }: { nave: Nave; ora: Date }) {
   const costo = costoEstrattore(fondati)
   const voci = RISORSE.filter((r) => costo[r])
   const manca = voci.some((r) => bordo.quantita[r] < costo[r]!)
-  const ritmi = ritmoInsediamento({ tipo: 'estrattore', coordinate: nave.posizione, pianeta: null, produzione: 1 })
+  const ritmi = ritmoInsediamento({ tipo: 'estrattore', coordinate: nave.posizione, pianeta: null, produzione: 1 }, 1, bordo?.fatte)
 
   const conferma = async () => {
     setInCorso(true)

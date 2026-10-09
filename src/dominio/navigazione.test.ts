@@ -12,6 +12,7 @@ import {
   scansione,
   tettoQui,
   raggioQui,
+  raggioRadar,
   ricaricaQui,
   tipiRilevabili,
   type Nave,
@@ -218,5 +219,23 @@ describe('ponte di curvatura', () => {
     expect(con.durata).toBeCloseTo(senza.durata / 3, 6)
     expect(anteprima(nave(), meta, t0, { ponti, fatte: new Set(['P8']) }).consumo).toBeCloseTo(senza.consumo / 4, 12)
     expect(anteprima(nave(), { x: 3, y: 0, z: 0 }, t0, { ponti }).ponte).toBe(false)
+  })
+})
+
+describe('ricerche dei gradini 6-8', () => {
+  it('Fionda gravitazionale: ×2 e il 30 % gratis', () => {
+    let buco = { x: 80, y: 7, z: -3 }
+    for (let x = 80; tipoSettore(buco) !== 'buconero'; x++) buco = { x, y: 7, z: -3 }
+    const a = anteprima(nave({ posizione: buco }), { x: buco.x + 2, y: buco.y, z: buco.z }, t0, { fatte: new Set(['P6']) })
+    expect(a.consumo).toBeCloseTo(1.4, 12)
+    expect(a.durata).toBeCloseTo((2 / (NAVE_INIZIALE.velocita * 2)) * ORA, 6)
+  })
+
+  it('Interferometria: presso una pulsar lo scanner è ×3; Radar profondo raddoppia il radar', () => {
+    let pulsar = { x: 30, y: 7, z: -3 }
+    for (let x = 30; tipoSettore(pulsar) !== 'pulsar'; x++) pulsar = { x, y: 7, z: -3 }
+    expect(raggioQui(1, pulsar)).toBe(8)
+    expect(raggioQui(1, pulsar, new Set(['S7']))).toBe(12)
+    expect(raggioRadar(1, new Set(['S8']))).toBe(8)
   })
 })

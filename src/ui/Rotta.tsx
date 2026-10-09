@@ -1,9 +1,8 @@
 import { useContext, useEffect, useState, type FormEvent } from 'react'
 import { Rocket } from 'lucide-react'
 import { ViaggioRifiutato } from '../dati'
-import { BILANCIAMENTO } from '../dominio/bilanciamento'
 import { CATALOGO } from '../dominio/catalogo'
-import { anteprima, fattorePonte, tipiRilevabili, type Nave } from '../dominio/navigazione'
+import { anteprima, fattorePonte, fiondaDi, tipiRilevabili, type Nave } from '../dominio/navigazione'
 import { distanza, stessoSettore, tipoSettore, type Coordinate } from '../dominio/settore'
 import { coordinate, durata, numero, orario, settori } from './formato'
 import { AzioniNave } from './azioni'
@@ -40,6 +39,7 @@ export function Rotta({ nave, ora, meta, scoperti, onMeta, onParti }: Props) {
   const valida = scritta !== null && !stessoSettore(scritta, nave.posizione)
   const dintorni = useDintorni()
   const prova = valida ? anteprima(nave, scritta, ora, dintorni) : null
+  const fionda = fiondaDi(dintorni.fatte ?? new Set())
   // Lo scanner non rivela i tipi che non rileva: si sa cosa c'è solo se è
   // rilevabile o già scoperto.
   const tipoVero = scritta ? tipoSettore(scritta) : null
@@ -106,13 +106,13 @@ export function Rotta({ nave, ora, meta, scoperti, onMeta, onParti }: Props) {
           <dt className="text-testo-tenue">Durata</dt>
           <dd className="m-0">
             {durata(prova.durata)} · arrivo alle {orario(new Date(ora.getTime() + prova.durata), ora)}
-            {prova.fionda ? ` · fionda ×${numero(BILANCIAMENTO.fionda.velocita, 1)}` : ''}
+            {prova.fionda ? ` · fionda ×${numero(fionda.velocita, 1)}` : ''}
             {prova.ponte ? ` · ponte di curvatura ×${fattorePonte(dintorni.fatte ?? new Set())}` : ''}{' '}
             <Info
               titolo="Durata"
               wiki="viaggio"
               formula={`${numero(prova.percorsa, 2)} settori / (${numero(nave.velocita, 2)} settori/h${
-                prova.fionda ? ` × ${numero(BILANCIAMENTO.fionda.velocita, 1)}` : ''
+                prova.fionda ? ` × ${numero(fionda.velocita, 1)}` : ''
               }${prova.ponte ? ` × ${fattorePonte(dintorni.fatte ?? new Set())}` : ''})`}
               esatto={`${numero(prova.durata / 3_600_000, 2)} h`}
             />
@@ -120,7 +120,7 @@ export function Rotta({ nave, ora, meta, scoperti, onMeta, onParti }: Props) {
           <dt className="text-testo-tenue">Consumo</dt>
           <dd className="m-0">
             {numero(prova.consumo, 1)} di carburante
-            {prova.fionda ? ` · il ${numero(BILANCIAMENTO.fionda.gratis * 100)} % gratis` : ''}
+            {prova.fionda ? ` · il ${numero(fionda.gratis * 100)} % gratis` : ''}
             {prova.ponte ? ` · diviso ${fattorePonte(dintorni.fatte ?? new Set())} dal ponte` : ''}
           </dd>
         </dl>

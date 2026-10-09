@@ -51,8 +51,9 @@ export function sosteRadar<B extends { coordinate: Coordinate; radar: number }>(
   basi: readonly B[],
   scanner: number,
   dal: (base: B) => Date,
+  fatte: ReadonlySet<string> = new Set(),
 ): (Sosta & { istante: Date })[] {
   return basi
     .filter((b) => b.radar > 0)
-    .map((b) => ({ centro: b.coordinate, raggio: raggioRadar(b.radar), livello: scanner, istante: dal(b) }))
+    .map((b) => ({ centro: b.coordinate, raggio: raggioRadar(b.radar, fatte), livello: scanner, istante: dal(b) }))
 }

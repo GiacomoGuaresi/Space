@@ -72,6 +72,8 @@ export const BILANCIAMENTO = {
      * ferma prima, e il tratto gratis non cresce.
      */
     gratis: 0.2,
+    /** Con *Fionda gravitazionale* (P6) velocità e parte gratis diventano queste. */
+    gravitazionale: { velocita: 2, gratis: 0.3 },
   },
   ponte: {
     /** Tra due basi col ponte di curvatura la nave va tanto più veloce, e il carburante si divide per tanto. */
@@ -242,7 +244,8 @@ export const BILANCIAMENTO = {
       'I1', 'I2', 'I3', 'I4', 'I5', 'I6',
       'C1', 'C2', 'C3', 'C4', 'C5', 'C6',
       'S1', 'S2', 'S3', 'S4', 'S5', 'S6',
-      'P1', 'P2', 'P3', 'P4', 'P5',
+      'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8',
+      'C7', 'C8', 'S7', 'S8', 'I7', 'I8',
     ] as string[],
     /** Gli effetti, con i loro numeri. */
     effetti: {
@@ -266,8 +269,20 @@ export const BILANCIAMENTO = {
       P5: 3,
       /** Astrofisica II: basi fondabili in più. */
       C6: 2,
+      /** Raffinazione III: un'altra unità di Idrogeno in meno. */
+      P7: 1,
       /** Ponte risonante: il fattore del ponte diventa tanto. */
       P8: 4,
+      /** Interferometria: presso una pulsar lo scanner vale tanto (invece di `scanner.pulsar`). */
+      S7: 3,
+      /** Radar profondo: il raggio del radar per tanto. */
+      S8: 2,
+      /** Automazione II: tempi di costruzione −15 %. */
+      I7: 0.15,
+      /** Superleghe: Terre rare nelle ricette −15 %. */
+      I8: 0.15,
+      /** Estrazione profonda: produzione degli insediamenti +15 %. */
+      C8: 0.15,
       /** Riciclo: abbandonando un insediamento torna questa parte di quanto vi si è speso. */
       I6: 0.25,
     },

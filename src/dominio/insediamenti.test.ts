@@ -121,3 +121,11 @@ describe('estrattori', () => {
     expect(costoEstrattore(2).metallo).toBeCloseTo(58.8, 10)
   })
 })
+
+describe('Estrazione profonda', () => {
+  it('alza la produzione del 15 %, e con lei il tetto', () => {
+    const fatte = new Set(['C8'])
+    expect(ritmoInsediamento(madre(), 1, fatte).metallo).toBeCloseTo(1.725, 12)
+    expect(tettoMagazzino(madre(), fatte).metallo).toBeCloseTo(252 * 1.15, 9)
+  })
+})

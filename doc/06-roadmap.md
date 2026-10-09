@@ -141,19 +141,19 @@ Porta l'interfaccia su PC nella [plancia a finestre](11-interfaccia.md#pc--planc
 
 **Si consegna**: l'infrastruttura.
 
-## M8 · Ponte di curvatura e Terre rare ← *prossimo*
+## M8 · Ponte di curvatura e Terre rare ✅
 
 - [x] **8.1 Ponte di curvatura** (P3): rete libera tra le basi, ×3 velocità e ⅓ carburante. *Si gioca: spostarsi nella propria rete.* (`027_ponte.sql`: colonne `insediamento.ponte` e `viaggio.ponte`; il ponte si costruisce una volta sola, come un livello 8 di base 40, ~15 h col cantiere 1. Il viaggio da una base col ponte a un'altra ha `fattore` 3, 4 con P8 (già pronto); Rotta, Rete e diario lo mostrano.)
 - [x] **8.2 Terre rare**: raccolta a mano presso le pulsar, Estrattori stellari (C5). (`028_terre_rare.sql`: `mix.pulsar`, raccolta a mano e produzione al ritmo di ogni risorsa (`ritmoRisorsa`, `space.ritmo_risorsa`); le pulsar entrano nel campione di `verifica-sql`.)
 - [x] **8.3 Ricette fino al gradino 10-14** in gioco, con un controllo dei tempi reali contro [09](09-bilanciamento.md#ritmo-atteso). (Con le Terre rare di 8.2 i livelli 10-14 si pagano; `cantiere.test.ts` controlla che i tempi del codice siano quelli della simulazione ai giorni 30, 60, 90 e 180, col cantiere a ⌈livello / 2⌉, e che le ricette 10-14 stiano nella stiva di quei giorni.)
-- [ ] **8.4 Ricerche dei gradini 7-8**: Ponte risonante, Interferometria, Radar profondo, Automazione II, Estrazione profonda…
+- [x] **8.4 Ricerche dei gradini 7-8**: Ponte risonante, Interferometria, Radar profondo, Automazione II, Estrazione profonda… (`029_ricerche_8.sql`: attivi P6-P8, C7-C8, S7-S8, I7-I8. P6 arriva da 9.2 perché la chiede C7; C7 dà +2 estrattori, quelli sui buchi neri con 9.1. `space.ritmo_insediamento` ora legge le ricerche del giocatore (C8), `space.con_leghe` fa tutti gli sconti. Dal gradino 8 le ricerche chiedono Materia oscura: si pagano da M9.)
 
 **Si consegna**: la frontiera si sposta in avanti con le basi.
 
-## M9 · Materia oscura e rari
+## M9 · Materia oscura e rari ← *prossimo*
 
 - [ ] **9.1 Buchi neri**: raccolta a mano, Contenimento gravitazionale (C7), estrattori di Materia oscura.
-- [ ] **9.2 Fionda gravitazionale** (P6).
+- [x] **9.2 Fionda gravitazionale** (P6). (Anticipata in 8.4: la chiede *Contenimento gravitazionale*. `fiondaDi` e `space.viaggia` usano `fionda.gravitazionale`, ×2 e 30 % gratis.)
 - [ ] **9.3 Relitti**: bottino una volta per giocatore, progetti.
 - [ ] **9.4 Accelerare** viaggi, costruzioni e ricarica con la Materia oscura.
 - [ ] **9.5 Wormhole**: Navigazione dei varchi (P9), 50 MO, senso unico; Sonda di varco (S9).
