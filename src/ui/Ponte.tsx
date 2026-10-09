@@ -8,7 +8,7 @@ import { Finestra } from './Finestra'
 import { apri, FINESTRE, inPrimoPiano, useDisposizione, type IdFinestra } from './finestre'
 import { useSfondoMappa } from './Mappa'
 import { DentroFinestra, Pannello } from './plancia'
-import { Fondazione } from './Fondazione'
+import { FondaEstrattore, Fondazione } from './Fondazione'
 import { MagazzinoQui } from './Magazzino'
 import { Raccolta } from './Raccolta'
 import { Rotta } from './Rotta'
@@ -110,6 +110,7 @@ export function Ponte({ nave, viaggio, scarto, scoperte, scansioni, meta: metaSc
             <Raccolta nave={nave} ora={ora} />
             <MagazzinoQui nave={nave} ora={ora} />
             <Fondazione nave={nave} ora={ora} />
+            <FondaEstrattore nave={nave} ora={ora} />
           </>
         ),
       },
@@ -189,6 +190,7 @@ export function Ponte({ nave, viaggio, scarto, scoperte, scansioni, meta: metaSc
                 <Raccolta nave={nave} ora={ora} />
                 <MagazzinoQui nave={nave} ora={ora} />
                 <Fondazione nave={nave} ora={ora} />
+                <FondaEstrattore nave={nave} ora={ora} />
               </>
             ) : scheda === 'scanner' ? (
               <Scanner centro={nave.posizione} livello={nave.scanner} scoperti={scoperti} onScegli={scegli} />

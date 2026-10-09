@@ -91,6 +91,8 @@ export type MotivoRifiuto =
   | 'ricerca_in_corso'
   | 'prerequisiti'
   | 'serve_laboratorio'
+  | 'non_estraibile'
+  | 'limite_estrattori'
 
 export class ViaggioRifiutato extends Error {
   constructor(readonly motivo: MotivoRifiuto) {
@@ -190,6 +192,8 @@ const MOTIVI: readonly MotivoRifiuto[] = [
   'ricerca_in_corso',
   'prerequisiti',
   'serve_laboratorio',
+  'non_estraibile',
+  'limite_estrattori',
 ]
 
 export class NaveSupabase {
@@ -220,6 +224,16 @@ export class NaveSupabase {
   /** Fonda una base sul sistema dove sta la nave, col pianeta `pianeta`. */
   async fonda(pianeta: number): Promise<void> {
     const { error } = await this.client.rpc('fonda', { pianeta })
+    if (error) {
+      const motivo = MOTIVI.find((m) => m === error.message)
+      if (motivo) throw new ViaggioRifiutato(motivo)
+      throw fallita('Fondazione non riuscita', error)
+    }
+  }
+
+  /** Fonda un estrattore sul corpo dove sta la nave. */
+  async fondaEstrattore(): Promise<void> {
+    const { error } = await this.client.rpc('fonda_estrattore')
     if (error) {
       const motivo = MOTIVI.find((m) => m === error.message)
       if (motivo) throw new ViaggioRifiutato(motivo)

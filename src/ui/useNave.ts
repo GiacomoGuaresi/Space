@@ -181,6 +181,12 @@ export function useNave() {
     [ricarica],
   )
 
+  const fondaEstrattore = useCallback(async () => {
+    await datiNave().fondaEstrattore()
+    suona('scoperta')
+    await ricarica()
+  }, [ricarica])
+
   const potenzia = useCallback(
     async (lavoro: Lavoro) => {
       await datiNave().potenzia(lavoro)
@@ -221,6 +227,7 @@ export function useNave() {
     aperturaDiario,
     parti,
     fonda,
+    fondaEstrattore,
     potenzia,
     ricarica,
   }

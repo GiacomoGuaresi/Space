@@ -18,13 +18,14 @@ import { RIFIUTI } from './rifiuti'
 import { CaricoAttuale } from './SchedaNave'
 
 /**
- * Le strutture che si costruiscono in una base: cantiere e deposito solo nella
- * base madre, nelle colonie arrivano con le ricerche (M7). Le altre arrivano
- * con i loro step (doc/06-roadmap.md).
+ * Le strutture che si costruiscono in un insediamento: la base madre le ha
+ * tutte, nelle colonie cantiere e deposito arrivano con le ricerche, un
+ * estrattore ha solo produzione e magazzino (doc/02-meccaniche.md#strutture-di-base).
  */
 export function struttureAttive(base: Insediamento, fatte: ReadonlySet<string>): Struttura[] {
   const tutte: Struttura[] = ['produzione', 'magazzino', 'cantiere', 'deposito', 'laboratorio']
   if (base.tipo === 'madre') return tutte
+  if (base.tipo === 'estrattore') return ['produzione', 'magazzino']
   // Nelle colonie il cantiere arriva con *Cantiere orbitale* (I3), il deposito con *Deposito* (I5).
   return tutte.filter((s) => (s !== 'cantiere' || fatte.has('I3')) && (s !== 'deposito' || fatte.has('I5')))
 }
@@ -51,14 +52,15 @@ export function SchedaBase({ nave, ora, base }: { nave: Nave; ora: Date; base: I
       <header className="flex flex-col gap-1 border-b border-linea p-3.5">
         <h1 className="m-0 text-base font-semibold tracking-[0.2em] uppercase">{nome}</h1>
         <Etichetta>
-          {NOMI_INSEDIAMENTI[base.tipo]} · produzione {base.produzione} · magazzino {base.magazzino} · cantiere {base.cantiere}
+          {NOMI_INSEDIAMENTI[base.tipo]} · produzione {base.produzione} · magazzino {base.magazzino}
+          {base.tipo !== 'estrattore' ? ` · cantiere ${base.cantiere}` : ''}
           {base.deposito > 0 ? ` · deposito ${base.deposito}` : ''}
         </Etichetta>
       </header>
       <section aria-label="Strutture" className="border-b border-separatore p-3.5">
-        <h2 className="etichetta m-0 mb-1">Strutture</h2>
+        <h2 className="etichetta m-0 mb-1">{base.tipo === 'estrattore' ? 'Livelli' : 'Strutture'}</h2>
         <Potenziamenti nave={nave} ora={ora} lavori={struttureAttive(base, fatte)} base={base} />
-        <h3 className="etichetta m-0 mt-3 mb-2">Coda della base</h3>
+        <h3 className="etichetta m-0 mt-3 mb-2">{base.tipo === 'estrattore' ? 'Coda' : 'Coda della base'}</h3>
         <Coda coda="base" base={base} ora={ora} />
       </section>
       {base.deposito > 0 && <Deposito nave={nave} ora={ora} base={base} />}

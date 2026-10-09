@@ -87,6 +87,15 @@ export function mixCorpo(corpo: Corpo | null): Partial<Quantita> | null {
   }
 }
 
+/**
+ * Il ritmo di un estrattore di livello 1 su un corpo di ricchezza 1, per la
+ * risorsa `r`: le rare si producono più piano. Come `space.ritmo_risorsa`.
+ */
+export function ritmoRisorsa(r: Risorsa): number {
+  const { ritmo } = BILANCIAMENTO.produzione
+  return r === 'terreRare' ? ritmo.terreRare : r === 'materiaOscura' ? ritmo.materiaOscura : ritmo.comune
+}
+
 /** Quanto raccoglie la nave all'ora, a mano, in sosta su `corpo`: `null` se lì non c'è nulla da raccogliere. */
 export function ritmoMano(corpo: Corpo | null): Partial<Quantita> | null {
   const mix = mixCorpo(corpo)

@@ -8,6 +8,8 @@ import type { Lavoro } from '../dominio/cantiere'
 export interface Azioni {
   /** Fonda una base sul sistema dove sta la nave, col pianeta `pianeta`. */
   fonda: (pianeta: number) => Promise<void>
+  /** Fonda un estrattore sul corpo dove sta la nave. */
+  fondaEstrattore: () => Promise<void>
   /** Avvia un lavoro nel cantiere della base dove sta la nave. */
   potenzia: (lavoro: Lavoro) => Promise<void>
   /** Il pieno al deposito della base dove sta la nave. */
@@ -22,6 +24,9 @@ export interface Azioni {
 
 export const AzioniNave = createContext<Azioni>({
   fonda: async () => {
+    throw new Error('azioni non disponibili')
+  },
+  fondaEstrattore: async () => {
     throw new Error('azioni non disponibili')
   },
   potenzia: async () => {

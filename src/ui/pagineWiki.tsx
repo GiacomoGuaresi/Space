@@ -166,6 +166,11 @@ const GUIDA: PaginaWiki[] = [
           Su un sistema planetario si fonda una base scegliendo il pianeta: produce col suo mix. La prima è gratis, le altre si pagano dalla
           stiva.
         </P>
+        <P>
+          Con le ricerche di Colonizzazione si fondano gli estrattori: sugli asteroidi con Estrattori minerari, su nebulose e giganti gassosi
+          con Raccoglitori di gas. Producono col mix del corpo e hanno solo produzione e magazzino: niente strutture, niente ricarica
+          piena. Hanno un loro limite, separato da quello delle basi.
+        </P>
       </>
     ),
     numeri: () => {
@@ -179,6 +184,16 @@ const GUIDA: PaginaWiki[] = [
         [
           'Fondazione',
           `la prima gratis, poi ${BILANCIAMENTO.fondazione.costo} × ${BILANCIAMENTO.fondazione.crescita}^(basi fondate − 1) in parti uguali di Metallo, Silicio e Ghiaccio; al massimo ${BILANCIAMENTO.fondazione.basi} basi`,
+        ],
+        [
+          'Estrattore',
+          `${BILANCIAMENTO.fondazione.estrattore.costo} × ${BILANCIAMENTO.fondazione.estrattore.crescita}^(estrattori fondati) in parti uguali di Metallo e Silicio; ${BILANCIAMENTO.produzione.ritmo.comune}/h × ricchezza col mix del corpo`,
+        ],
+        [
+          'Limite degli estrattori',
+          Object.entries(BILANCIAMENTO.fondazione.estrattore.limite)
+            .map(([r, n]) => `${r} +${n}`)
+            .join(' · '),
         ],
       ]
     },

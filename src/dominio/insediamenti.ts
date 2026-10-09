@@ -3,7 +3,8 @@
 // raccolgono di persona. Tutto alla lettura, come in `supabase/sql/011_insediamenti.sql`.
 
 import { BILANCIAMENTO } from './bilanciamento'
-import { RISORSE, type Fatte, type Quantita } from './risorse'
+import type { TipoCorpo } from './catalogo'
+import { mixCorpo, RISORSE, ritmoRisorsa, type Fatte, type Quantita } from './risorse'
 import { settore, type Coordinate } from './settore'
 
 export type TipoInsediamento = 'madre' | 'base' | 'estrattore'
@@ -54,6 +55,15 @@ export function ritmoInsediamento(i: Produttore, livello = i.produzione): Partia
     for (const r of RISORSE) {
       const parte = mix?.[r]
       if (parte) ritmi[r] = aLivello(ritmo.comune * ricchezza * parte, crescita, livello)
+    }
+  } else if (i.tipo === 'estrattore') {
+    // Un estrattore produce col mix del corpo, al ritmo di ogni risorsa (doc/09-bilanciamento.md#produzione).
+    const corpo = settore(i.coordinate).corpo
+    const mix = mixCorpo(corpo)
+    const ricchezza = corpo?.ricchezza ?? 0
+    for (const r of RISORSE) {
+      const parte = mix?.[r]
+      if (parte) ritmi[r] = aLivello(ritmoRisorsa(r) * ricchezza * parte, crescita, livello)
     }
   }
   return ritmi
@@ -120,4 +130,28 @@ export function pienoIl(i: Insediamento, fatte: Fatte = new Set()): Date {
 /** Quante basi si possono fondare: 2, più quelle di *Astrofisica I* (C1). Come `space.basi_fondabili`. */
 export function basiFondabili(fatte: Fatte = new Set()): number {
   return BILANCIAMENTO.fondazione.basi + (fatte.has('C1') ? BILANCIAMENTO.ricerche.effetti.C1 : 0)
+}
+
+/** I tipi di corpo su cui si fonda un estrattore, con le ricerche fatte. Come `space.fonda_estrattore`. */
+export function tipiEstrattori(fatte: Fatte = new Set()): TipoCorpo[] {
+  return Object.entries(BILANCIAMENTO.fondazione.estrattore.tipi)
+    .filter(([, ricerca]) => fatte.has(ricerca))
+    .map(([tipo]) => tipo as TipoCorpo)
+}
+
+/** La ricerca che apre gli estrattori sul tipo `tipo`, o `null` se lì non se ne fondano. */
+export function ricercaEstrattore(tipo: TipoCorpo): string | null {
+  return BILANCIAMENTO.fondazione.estrattore.tipi[tipo] ?? null
+}
+
+/** Quanti estrattori si possono fondare: la somma di quelli dati dalle ricerche fatte. Come `space.estrattori_fondabili`. */
+export function estrattoriFondabili(fatte: Fatte = new Set()): number {
+  return Object.entries(BILANCIAMENTO.fondazione.estrattore.limite).reduce((n, [ricerca, piu]) => n + (fatte.has(ricerca) ? piu : 0), 0)
+}
+
+/** Quanto costa un estrattore avendone già fondati `fondati`: `60 × 1,4^fondati` in parti uguali di Metallo e Silicio. */
+export function costoEstrattore(fondati: number): Partial<Quantita> {
+  const { costo, crescita, risorse } = BILANCIAMENTO.fondazione.estrattore
+  const totale = aLivello(costo, crescita, fondati + 1)
+  return Object.fromEntries(risorse.map((r) => [r, totale / risorse.length]))
 }

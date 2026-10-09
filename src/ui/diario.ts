@@ -216,6 +216,13 @@ function vociInsediamenti(insediamenti: readonly Insediamento[], fatte: Readonly
         testo: `Fondata la base su ${dove.breve}${pianeta ? `, pianeta ${pianeta.nome} (${pianeta.tipo})` : ''}. Nuova voce nella Rete.`,
         breve: dove.breve,
       })
+    } else if (i.tipo === 'estrattore') {
+      voci.push({
+        quando: i.fondazione,
+        tipo: 'fondazione',
+        testo: `Fondato un estrattore su ${dove.lungo}. Nuova voce nella Rete.`,
+        breve: dove.breve,
+      })
     }
     // Senza produzione (un pianeta che non c'è) non si riempie mai.
     if (Object.keys(ritmoInsediamento(i)).length === 0) return voci

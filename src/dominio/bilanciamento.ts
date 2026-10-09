@@ -133,6 +133,17 @@ export const BILANCIAMENTO = {
     /** …per tanto alla (basi già fondate − 1), in parti uguali di queste risorse. */
     crescita: 1.6,
     risorse: ['metallo', 'silicio', 'ghiaccio'],
+    /** Gli estrattori (doc/09-bilanciamento.md#insediamenti), pagati dalla stiva. */
+    estrattore: {
+      /** Costano `costo × crescita^(estrattori già fondati)`, in parti uguali di queste risorse. */
+      costo: 60,
+      crescita: 1.4,
+      risorse: ['metallo', 'silicio'],
+      /** La ricerca che apre gli estrattori su ogni tipo di corpo (pulsar e buchi neri arrivano con M8-M9). */
+      tipi: { asteroidi: 'C2', nebulosa: 'C3', gigante: 'C3' } as Record<string, string>,
+      /** Quanti estrattori in più dà ogni ricerca. */
+      limite: { C2: 3, C3: 2, C5: 2, C7: 2 } as Record<string, number>,
+    },
   },
   cantiere: {
     /** Il costo di un livello è `base × crescita^(livello − 1)`, diviso secondo la ricetta. */

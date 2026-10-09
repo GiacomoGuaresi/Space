@@ -92,3 +92,4 @@
 | 2026-10-08 | Laboratorio: livello L al costo di una ricerca di gradino L, tempo come le altre strutture | deciso |
 | 2026-10-08 | *Scansione in volo*: un punto di scansione ogni raggio dello scanner lungo la rotta, visibile quando la nave ci passa | deciso |
 | 2026-10-08 | *Telemetria*: senza, la Rete mostra degli insediamenti lontani solo quando saranno pieni (calcolato); con, le barre del magazzino in diretta. Diario e pallino del magazzino pieno restano per tutti | deciso |
+| 2026-10-09 | Estrattori: costo in parti uguali di Metallo e Silicio, dalla stiva; quale ricerca apre ogni tipo di corpo e quanti estrattori dà sta in `bilanciamento.fondazione.estrattore`. Un estrattore ha **solo produzione e magazzino**, che si potenziano attraccati come nelle basi | deciso |

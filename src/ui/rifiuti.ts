@@ -23,4 +23,6 @@ export const RIFIUTI: Readonly<Record<MotivoRifiuto, string>> = {
   ricerca_in_corso: 'Una ricerca alla volta: aspetta che finisca quella in corso.',
   prerequisiti: 'Mancano le ricerche che vengono prima.',
   serve_laboratorio: 'Serve un laboratorio di livello pari almeno al gradino.',
+  non_estraibile: 'Qui non si può fondare un estrattore.',
+  limite_estrattori: 'Hai già tutti gli estrattori che puoi fondare.',
 }

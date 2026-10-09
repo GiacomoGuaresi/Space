@@ -133,7 +133,7 @@ Porta l'interfaccia su PC nella [plancia a finestre](11-interfaccia.md#pc--planc
 
 ## M7 · Rete di basi ed estrattori ← *prossimo*
 
-- [ ] **7.1 Estrattori** su asteroidi, nebulose e giganti, con il loro limite. *Si gioca: la rete di raccolta.*
+- [x] **7.1 Estrattori** su asteroidi, nebulose e giganti, con il loro limite. *Si gioca: la rete di raccolta.* (`022_estrattori.sql`: `space.fonda_estrattore()`, `space.estrattori_fondabili`; sblocchi e limiti in `bilanciamento.fondazione.estrattore`. Si fondano da Qui; un estrattore ha solo produzione e magazzino, e la sua produzione è verificata da `verifica-sql`.)
 - [ ] **7.2 Strutture nelle colonie**: magazzino e laboratorio subito, cantiere (I3) e deposito (I5) dopo la ricerca.
 - [ ] **7.3 Radar** a livelli nelle basi.
 - [ ] **7.4 Abbandono** di basi ed estrattori.

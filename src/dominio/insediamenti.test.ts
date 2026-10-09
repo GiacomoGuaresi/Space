@@ -1,13 +1,16 @@
 import { describe, expect, it } from 'vitest'
 import {
   basiFondabili,
+  costoEstrattore,
   costoFondazione,
+  estrattoriFondabili,
   magazzinoOra,
   pienoIl,
   mixColonia,
   pienoTra,
   ritmoInsediamento,
   tettoMagazzino,
+  tipiEstrattori,
   type Insediamento,
 } from './insediamenti'
 import { BASE, settore, tipoSettore, type Coordinate } from './settore'
@@ -84,5 +87,35 @@ describe('ricerche di Colonizzazione', () => {
     expect(tettoMagazzino(madre(), new Set(['C4'])).metallo).toBeCloseTo(302.4, 10)
     expect(basiFondabili()).toBe(2)
     expect(basiFondabili(new Set(['C1']))).toBe(4)
+  })
+})
+
+describe('estrattori', () => {
+  const trova = (tipo: string): Coordinate => {
+    for (let x = 1; ; x++) if (tipoSettore({ x, y: -9, z: 2 }) === tipo) return { x, y: -9, z: 2 }
+  }
+
+  it('producono 7/h × ricchezza col mix del corpo', () => {
+    for (const tipo of ['asteroidi', 'nebulosa', 'gigante']) {
+      const dove = trova(tipo)
+      const ritmi = ritmoInsediamento(madre({ tipo: 'estrattore', coordinate: dove }))
+      const totale = Object.values(ritmi).reduce((a, b) => a + b, 0)
+      expect(totale).toBeCloseTo(7 * settore(dove).corpo!.ricchezza, 9)
+    }
+    expect(ritmoInsediamento(madre({ tipo: 'estrattore', coordinate: trova('nebulosa') })).idrogeno).toBeGreaterThan(0)
+  })
+
+  it('si aprono con Estrattori minerari e Raccoglitori di gas', () => {
+    expect(tipiEstrattori()).toEqual([])
+    expect(tipiEstrattori(new Set(['C2']))).toEqual(['asteroidi'])
+    expect(tipiEstrattori(new Set(['C2', 'C3'])).sort()).toEqual(['asteroidi', 'gigante', 'nebulosa'])
+    expect(estrattoriFondabili()).toBe(0)
+    expect(estrattoriFondabili(new Set(['C2']))).toBe(3)
+    expect(estrattoriFondabili(new Set(['C2', 'C3']))).toBe(5)
+  })
+
+  it('costano 60 × 1,4^fondati in Metallo e Silicio', () => {
+    expect(costoEstrattore(0)).toEqual({ metallo: 30, silicio: 30 })
+    expect(costoEstrattore(2).metallo).toBeCloseTo(58.8, 10)
   })
 })

@@ -55,6 +55,7 @@ export function App() {
     aperturaDiario,
     parti,
     fonda,
+    fondaEstrattore,
     potenzia,
     costruzioni,
     pieno,
@@ -129,8 +130,8 @@ export function App() {
     [carico, nave, secondo, raccolti, insediamenti, fatte],
   )
   const azioni = useMemo(
-    () => ({ fonda, potenzia, pieno, avviaRicerca, ricerche, costruzioni }),
-    [fonda, potenzia, pieno, avviaRicerca, ricerche, costruzioni],
+    () => ({ fonda, fondaEstrattore, potenzia, pieno, avviaRicerca, ricerche, costruzioni }),
+    [fonda, fondaEstrattore, potenzia, pieno, avviaRicerca, ricerche, costruzioni],
   )
   const ultima = useMemo(() => ({ voce: voci[0] ?? null, nuove: daLeggere }), [voci, daLeggere])
 
