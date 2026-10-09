@@ -19,7 +19,7 @@ npm test
 npm run build
 ```
 
-`npm run icone` rigenera le icone della PWA da `public/icona.svg`; il risultato è versionato. `npm run verifica-sql` controlla che il database calcoli l'universo come il browser (doc/08). `python3 sim/economia.py` simula un anno di gioco con i valori di [doc/09](doc/09-bilanciamento.md). In sviluppo c'è anche l'osservatorio libero, su `#/osservatorio`. A ogni push su `main` il workflow [`pubblica.yml`](.github/workflows/pubblica.yml) esegue i test e pubblica su GitHub Pages.
+`npm run icone` rigenera le icone della PWA da `public/icona.svg`; il risultato è versionato. `npm run verifica-sql` controlla che il database calcoli l'universo come il browser (doc/08). `python3 sim/economia.py` simula un anno di gioco con i valori di [doc/09](doc/09-bilanciamento.md), e `npm run ritmo` mette accanto i dati veri. In sviluppo c'è anche l'osservatorio libero, su `#/osservatorio`. A ogni push su `main` il workflow [`pubblica.yml`](.github/workflows/pubblica.yml) esegue i test e pubblica su GitHub Pages.
 
 ## In breve
 

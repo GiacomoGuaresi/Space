@@ -164,7 +164,7 @@ Porta l'interfaccia su PC nella [plancia a finestre](11-interfaccia.md#pc--planc
 ## M10 · Traguardi e rifinitura ← *prossimo*
 
 - [x] **10.1 Traguardi** (tabella `traguardo`), medaglie (finestra G su PC, voce di Altro sul telefono), voci nel diario. (`035_traguardi.sql`: `space.controlla_traguardi`, chiamata da `stato`, scrive le 53 medaglie con la data in cui sono state raggiunte, quando si ricava dai dati; `space.sottotipo_catalogo` per i sottotipi, confrontata da `verifica-sql`. Soglie in `bilanciamento.traguardi`, nomi in `traguardi.ts`, pagina `Traguardi.tsx`.)
-- [ ] **10.2 Rifinitura del bilanciamento** con i dati reali di gioco, aggiornando [09](09-bilanciamento.md) e `sim/`.
+- [ ] **10.2 Rifinitura del bilanciamento** con i dati reali di gioco, aggiornando [09](09-bilanciamento.md) e `sim/`. (Pronto lo strumento: `npm run ritmo` mette i dati veri di ogni giocatore accanto al ritmo atteso, interpolato al suo giorno di gioco. La rifinitura vera aspetta settimane di gioco: il 2026-10-09 la nave è al giorno 1, ancora al livello 1.)
 - [ ] **10.3 Qualità grafica ridotta** in automatico sui dispositivi lenti (rimandata da M1).
 
 **Si consegna**: il gioco completo per un giocatore.

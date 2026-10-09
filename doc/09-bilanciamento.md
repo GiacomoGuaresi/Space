@@ -10,6 +10,12 @@ python3 sim/economia.py gc=1.5 t0=2    # stessa cosa cambiando dei parametri
 
 `sim/economia.py` è il caso migliore: il giocatore non sbaglia mai, e la raccolta è descritta in media (~1-2 visite al giorno), non giro per giro.
 
+Per confrontare il gioco vero con questa pagina:
+
+```sh
+SUPABASE_ACCESS_TOKEN=sbp_... npm run ritmo   # i dati di ogni giocatore accanto al ritmo atteso, al suo giorno
+```
+
 ## Ritmo atteso
 
 | Giorno | Livello nave | Settori al giorno | Frontiera | Basi | Estrattori | Ricerche | Livello più lungo |
