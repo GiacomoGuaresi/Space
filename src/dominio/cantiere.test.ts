@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { basiFondabili } from './insediamenti'
 import { costoLavoro, costoPieno, durataLavoro, mancante, ricetta, valoreNave } from './cantiere'
-import { nessuna } from './risorse'
+import { capacitaStiva, nessuna } from './risorse'
 
 describe('cantiere', () => {
   it('ricette a gradini', () => {
@@ -75,5 +75,31 @@ describe('Raffinazione II e Astrofisica II', () => {
 
   it('Astrofisica II dà altre 2 basi', () => {
     expect(basiFondabili(new Set(['C1', 'C6']))).toBe(6)
+  })
+})
+
+// doc/09-bilanciamento.md#ritmo-atteso: il livello più lungo della nave nei giorni
+// della simulazione (sim/economia.py), col cantiere a ⌈livello / 2⌉ e le
+// Automazioni fatte in quei giorni. Il codice deve dare gli stessi tempi.
+describe('ritmo atteso', () => {
+  const righe: [giorno: number, livello: number, cantiere: number, ricerche: string[], giorni: number][] = [
+    [30, 5, 3, ['I1'], 0.2],
+    [60, 9, 5, ['I1'], 0.5],
+    [90, 13, 7, ['I1'], 1.3],
+    [180, 17, 9, ['I1'], 3.3],
+  ]
+
+  it.each(righe)('giorno %i: il livello %i dura come nella simulazione', (_, livello, cantiere, ricerche, giorni) => {
+    expect(durataLavoro('motore', livello, cantiere, new Set(ricerche)) / 24).toBeCloseTo(giorni, 1)
+  })
+
+  it('le ricette dei livelli 10-14 chiedono Terre rare e stanno nella stiva di quei giorni', () => {
+    for (let livello = 10; livello <= 14; livello++) {
+      const costo = costoLavoro('motore', livello)
+      expect(costo.terreRare).toBeGreaterThan(0)
+      expect(costo.materiaOscura).toBeUndefined()
+      // Nella simulazione la stiva tiene il passo della nave (livello 13 al giorno 90).
+      for (const q of Object.values(costo)) expect(q).toBeLessThanOrEqual(capacitaStiva(livello))
+    }
   })
 })

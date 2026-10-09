@@ -145,7 +145,7 @@ Porta l'interfaccia su PC nella [plancia a finestre](11-interfaccia.md#pc--planc
 
 - [x] **8.1 Ponte di curvatura** (P3): rete libera tra le basi, ×3 velocità e ⅓ carburante. *Si gioca: spostarsi nella propria rete.* (`027_ponte.sql`: colonne `insediamento.ponte` e `viaggio.ponte`; il ponte si costruisce una volta sola, come un livello 8 di base 40, ~15 h col cantiere 1. Il viaggio da una base col ponte a un'altra ha `fattore` 3, 4 con P8 (già pronto); Rotta, Rete e diario lo mostrano.)
 - [x] **8.2 Terre rare**: raccolta a mano presso le pulsar, Estrattori stellari (C5). (`028_terre_rare.sql`: `mix.pulsar`, raccolta a mano e produzione al ritmo di ogni risorsa (`ritmoRisorsa`, `space.ritmo_risorsa`); le pulsar entrano nel campione di `verifica-sql`.)
-- [ ] **8.3 Ricette fino al gradino 10-14** in gioco, con un controllo dei tempi reali contro [09](09-bilanciamento.md#ritmo-atteso).
+- [x] **8.3 Ricette fino al gradino 10-14** in gioco, con un controllo dei tempi reali contro [09](09-bilanciamento.md#ritmo-atteso). (Con le Terre rare di 8.2 i livelli 10-14 si pagano; `cantiere.test.ts` controlla che i tempi del codice siano quelli della simulazione ai giorni 30, 60, 90 e 180, col cantiere a ⌈livello / 2⌉, e che le ricette 10-14 stiano nella stiva di quei giorni.)
 - [ ] **8.4 Ricerche dei gradini 7-8**: Ponte risonante, Interferometria, Radar profondo, Automazione II, Estrazione profonda…
 
 **Si consegna**: la frontiera si sposta in avanti con le basi.
