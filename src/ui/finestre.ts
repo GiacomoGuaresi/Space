@@ -5,7 +5,18 @@
 import { useSyncExternalStore } from 'react'
 
 export type IdFinestra =
-  'qui' | 'scanner' | 'rotta' | 'nave' | 'rete' | 'base' | 'ricerche' | 'diario' | 'wiki' | 'catalogo' | 'impostazioni'
+  | 'qui'
+  | 'scanner'
+  | 'rotta'
+  | 'nave'
+  | 'rete'
+  | 'base'
+  | 'ricerche'
+  | 'diario'
+  | 'wiki'
+  | 'catalogo'
+  | 'traguardi'
+  | 'impostazioni'
 
 export type StatoFinestra = 'aperta' | 'ridotta' | 'chiusa'
 
@@ -47,6 +58,7 @@ export const FINESTRE: Readonly<
   diario: { titolo: 'Diario di bordo', tasto: 'D', w: 420, h: 520, minW: 320, minH: 260, piena: true },
   wiki: { titolo: 'Wiki', tasto: 'W', w: 720, h: 560, minW: 420, minH: 300, piena: true },
   catalogo: { titolo: 'Catalogo', tasto: 'C', w: 640, h: 520, minW: 360, minH: 260, piena: true },
+  traguardi: { titolo: 'Traguardi', tasto: 'G', w: 520, h: 480, minW: 340, minH: 240, piena: true },
   impostazioni: { titolo: 'Impostazioni', tasto: ',', w: 380, h: 560, minW: 320, minH: 240, piena: true },
 }
 
@@ -80,8 +92,9 @@ export function disposizioneIniziale(larghezza: number, altezza = 816): Disposiz
       rete: alCentro('rete', 5),
       base: alCentro('base', 6),
       ricerche: alCentro('ricerche', 0),
+      traguardi: alCentro('traguardi', 1),
     },
-    ordine: ['nave', 'rete', 'base', 'ricerche', 'diario', 'wiki', 'catalogo', 'impostazioni', 'qui', 'scanner', 'rotta'],
+    ordine: ['nave', 'rete', 'base', 'ricerche', 'diario', 'wiki', 'catalogo', 'traguardi', 'impostazioni', 'qui', 'scanner', 'rotta'],
     sfondo: 'scena',
   }
 }

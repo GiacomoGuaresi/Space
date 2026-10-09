@@ -19,6 +19,7 @@ export {
   type Scansione,
   type Scoperta,
   type StatoRemoto,
+  type TraguardoRaggiunto,
 } from './nave'
 
 let connessione: { accesso: Accesso; nave: NaveSupabase } | null = null

@@ -71,6 +71,12 @@ export interface RicercaAvviata {
   fine: Date
 }
 
+/** Un traguardo raggiunto: il codice (dominio/traguardi.ts) e quando. */
+export interface TraguardoRaggiunto {
+  codice: string
+  istante: Date
+}
+
 /** I rifiuti delle funzioni, con il loro codice. */
 export type MotivoRifiuto =
   | 'in_viaggio'
@@ -329,6 +335,13 @@ export class NaveSupabase {
       inizio: new Date(r.inizio),
       fine: new Date(r.fine),
     }))
+  }
+
+  /** I traguardi raggiunti, dal primo. */
+  async traguardi(): Promise<TraguardoRaggiunto[]> {
+    const { data, error } = await this.client.from('traguardo').select('codice, istante').order('istante')
+    if (error) throw fallita('Traguardi non letti', error)
+    return (data as { codice: string; istante: string }[]).map((r) => ({ codice: r.codice, istante: new Date(r.istante) }))
   }
 
   /** I lavori del cantiere finiti dopo `dal`, in corso o in coda. */

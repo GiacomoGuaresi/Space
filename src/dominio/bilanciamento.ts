@@ -345,6 +345,25 @@ export const BILANCIAMENTO = {
     codaLunga: 0.8,
     idrogeno: 50,
   },
+  /** Le soglie dei traguardi (doc/09-bilanciamento.md#traguardi): medaglie con data, senza ricompense. */
+  traguardi: {
+    /** Settori dalla base madre. */
+    distanza: [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000],
+    /** Corpi nel catalogo. */
+    corpi: [10, 100, 1000],
+    /** Basi fondate (la prima ha la sua medaglia). */
+    basi: [3, 5, 10],
+    /** Distanza tra le due basi col ponte più lontane. */
+    ponti: [100, 500],
+    /** Settori di un viaggio solo. */
+    viaggio: [10, 50, 200],
+    /** Settori percorsi in tutto. */
+    percorsi: [1000, 10000, 100000],
+    /** Il livello più alto di una statistica della nave. */
+    statistica: [10, 20, 30],
+    /** Quanti sottotipi ha ogni tipo che ne ha (sottotipi.ts, `SOTTOTIPI`): trovarli tutti vale una medaglia. */
+    sottotipi: { asteroidi: 3, nebulosa: 4, stella: 5, sistema: 5, gigante: 2, relitto: 3 } as Record<string, number>,
+  },
   relitto: {
     /** Saccheggiando un relitto, una volta sola: tanta Materia oscura per la ricchezza… */
     materiaOscura: 30,

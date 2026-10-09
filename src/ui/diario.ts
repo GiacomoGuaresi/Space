@@ -3,7 +3,8 @@
 // stato della nave. Non si salva nulla, salvo fin dove l'hai già letto.
 
 import { createContext, useSyncExternalStore } from 'react'
-import type { Costruzione, Prelievo, Raccolto, RicercaAvviata, Scansione, Scoperta } from '../dati'
+import type { Costruzione, Prelievo, Raccolto, RicercaAvviata, Scansione, Scoperta, TraguardoRaggiunto } from '../dati'
+import { traguardo } from '../dominio/traguardi'
 import { NOMI_LAVORI } from '../dominio/cantiere'
 import { infinito, RICERCHE, type IdRicerca } from '../dominio/ricerche'
 import { coordinateBasi, pienoIl, ritmoInsediamento, type Insediamento } from '../dominio/insediamenti'
@@ -25,7 +26,18 @@ import { BASE, distanza, settore, stessoSettore, type Coordinate } from '../domi
 import { coordinatePlancia, numero, orario } from './formato'
 
 export type TipoVoce =
-  'partenza' | 'arrivo' | 'sosta' | 'ricarica' | 'rilevato' | 'scoperto' | 'raccolto' | 'fondazione' | 'pieno' | 'lavoro' | 'ricerca'
+  | 'partenza'
+  | 'arrivo'
+  | 'sosta'
+  | 'ricarica'
+  | 'rilevato'
+  | 'scoperto'
+  | 'raccolto'
+  | 'fondazione'
+  | 'pieno'
+  | 'lavoro'
+  | 'ricerca'
+  | 'traguardo'
 
 export interface Voce {
   quando: Date
@@ -54,6 +66,7 @@ export const NOMI_VOCI: Readonly<Record<TipoVoce, { uno: string; tanti: string }
   pieno: { uno: 'Magazzino pieno', tanti: 'magazzini pieni' },
   lavoro: { uno: 'Cantiere', tanti: 'lavori finiti' },
   ricerca: { uno: 'Ricerca', tanti: 'ricerche completate' },
+  traguardo: { uno: 'Traguardo', tanti: 'traguardi' },
 }
 
 /** Come si chiama un settore nel diario: il nome del corpo, la base madre o le coordinate. */
@@ -75,6 +88,7 @@ interface Fonti {
   insediamenti: readonly Insediamento[]
   costruzioni?: readonly Costruzione[]
   ricerche?: readonly RicercaAvviata[]
+  traguardi?: readonly TraguardoRaggiunto[]
   /** Le ricerche completate: cambiano i tetti dei magazzini. */
   fatte?: ReadonlySet<string>
   nave: Nave
@@ -291,6 +305,15 @@ function vociLaboratorio(
   ]
 }
 
+/** Le medaglie raggiunte. */
+function vociTraguardi(traguardi: readonly TraguardoRaggiunto[]): Voce[] {
+  return traguardi.flatMap((t) => {
+    const d = traguardo(t.codice)
+    if (!d) return []
+    return [{ quando: t.istante, tipo: 'traguardo' as const, testo: `Traguardo: ${d.nome}. ${d.chiede}`, breve: d.nome }]
+  })
+}
+
 /** Tutte le voci degli ultimi 30 giorni già successe, dalla più recente. */
 export function vociDiario({
   viaggi,
@@ -301,6 +324,7 @@ export function vociDiario({
   insediamenti,
   costruzioni = [],
   ricerche = [],
+  traguardi = [],
   fatte = new Set(),
   nave,
   ora,
@@ -315,6 +339,7 @@ export function vociDiario({
     ...vociPrelievi(prelievi, insediamenti),
     ...vociInsediamenti(insediamenti, fatte),
     ...vociLaboratorio(costruzioni, ricerche, insediamenti),
+    ...vociTraguardi(traguardi),
   ]
     .filter((v) => v.quando.getTime() >= dal && v.quando <= ora)
     .sort((a, b) => b.quando.getTime() - a.quando.getTime())

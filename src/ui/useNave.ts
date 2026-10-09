@@ -7,6 +7,7 @@ import {
   type Raccolto,
   type Scansione,
   type Scoperta,
+  type TraguardoRaggiunto,
 } from '../dati'
 import type { Nave, Viaggio } from '../dominio/navigazione'
 import type { Carico } from '../dominio/risorse'
@@ -74,6 +75,7 @@ export function useNave() {
   const [prelievi, setPrelievi] = useState<Prelievo[]>([])
   const [costruzioni, setCostruzioni] = useState<Costruzione[]>([])
   const [ricerche, setRicerche] = useState<RicercaAvviata[]>([])
+  const [traguardi, setTraguardi] = useState<TraguardoRaggiunto[]>([])
   /** Cresce ogni volta che il diario va aperto da solo: all'apertura con delle novità. */
   const [aperturaDiario, setAperturaDiario] = useState(0)
 
@@ -84,7 +86,7 @@ export function useNave() {
       const remoto = await datiNave().stato()
       const dopo = Date.now()
       const dal = new Date(remoto.ora.getTime() - GIORNI_DIARIO * 24 * 3_600_000)
-      const [elenco, soste, recenti, presi, basi, prelevati, lavori, studi] = await Promise.all([
+      const [elenco, soste, recenti, presi, basi, prelevati, lavori, studi, medaglie] = await Promise.all([
         datiNave().scoperte(),
         datiNave().scansioni(),
         datiNave().viaggiDal(dal),
@@ -93,6 +95,7 @@ export function useNave() {
         datiNave().prelieviDal(dal),
         datiNave().costruzioniDal(dal),
         datiNave().ricerche(),
+        datiNave().traguardi(),
       ])
       // Lo scarto si misura a metà della richiesta: la risposta ha viaggiato.
       const scartoNuovo = remoto.ora.getTime() - (prima + dopo) / 2
@@ -106,6 +109,7 @@ export function useNave() {
       setPrelievi(prelevati)
       setCostruzioni(lavori)
       setRicerche(studi)
+      setTraguardi(medaglie)
 
       if (apriDiario) {
         const voci = vociDiario({
@@ -117,6 +121,7 @@ export function useNave() {
           insediamenti: basi,
           costruzioni: lavori,
           ricerche: studi,
+          traguardi: medaglie,
           nave: remoto.nave,
           ora: remoto.ora,
         })
@@ -262,6 +267,7 @@ export function useNave() {
   return {
     avviaRicerca,
     ricerche,
+    traguardi,
     pieno,
     stato,
     scarto,

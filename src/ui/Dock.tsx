@@ -4,11 +4,10 @@ import { Attraccata } from './SchedaBase'
 import { mostraAiuto } from './tastiera'
 import { alterna, FINESTRE, mostra, riordina, useDisposizione, type IdFinestra, type StatoFinestra } from './finestre'
 
-// Rete, Base, Ricerche e Traguardi arrivano con le loro meccaniche (doc/06-roadmap.md).
 const GRUPPI: readonly { nome: string; voci: readonly IdFinestra[] }[] = [
   { nome: 'Navigazione', voci: ['qui', 'scanner', 'rotta'] },
   { nome: 'Nave e rete', voci: ['nave', 'rete', 'base', 'ricerche'] },
-  { nome: 'Archivio', voci: ['diario', 'wiki', 'catalogo'] },
+  { nome: 'Archivio', voci: ['diario', 'wiki', 'catalogo', 'traguardi'] },
 ]
 
 /** Le voci con un pallino, e quale (Barra.tsx): su PC Altro si scompone nelle sue voci. */

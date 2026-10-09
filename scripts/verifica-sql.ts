@@ -201,7 +201,23 @@ const esitoVarchi = await interroga(`
   select count(*) filter (where (u.ux, u.uy, u.uz) <> (v.ux, v.uy, v.uz)) as uscite_diverse, count(*) as totale
   from (values ${varchi.join(',')}) as v(x, y, z, ux, uy, uz), lateral space.uscita_varco(v.x, v.y, v.z) u`)
 
+// I sottotipi del catalogo (per i traguardi), sui primi 40 corpi di ogni tipo che ne ha.
+const sottotipi: string[] = []
+for (const tipo of ['asteroidi', 'nebulosa', 'stella', 'sistema', 'gigante', 'relitto'] as const) {
+  let trovati = 0
+  for (let i = 1; trovati < 40 && i < 40000; i++) {
+    const c = i % 3 === 0 ? { x: i, y: 7, z: -3 } : i % 3 === 1 ? { x: -5, y: i, z: 11 } : { x: 2, y: -9, z: -i }
+    if (tipoSettore(c) !== tipo) continue
+    trovati++
+    sottotipi.push(`(${c.x},${c.y},${c.z},'${sottotipo(settore(c).corpo!.dettagli)}')`)
+  }
+}
+const esitoSottotipi = await interroga(`
+  select count(*) filter (where space.sottotipo_catalogo(x, y, z) is distinct from s) as sottotipi_diversi, count(*) as totale
+  from (values ${sottotipi.join(',')}) as v(x, y, z, s)`)
+
 console.log('Settori', esitoSettori)
+console.log('Sottotipi del catalogo', esitoSottotipi)
 console.log('Wormhole', esitoVarchi)
 console.log('Relitti', esitoRelitti)
 console.log('Rotte', esitoRotte)
@@ -227,7 +243,8 @@ if (
   esitoCorpi.pianeti_diversi ||
   esitoCorpi.ritmi_diversi ||
   esitoRelitti.esiti_diversi ||
-  esitoVarchi.uscite_diverse
+  esitoVarchi.uscite_diverse ||
+  esitoSottotipi.sottotipi_diversi
 ) {
   console.error('TypeScript e SQL non danno lo stesso universo')
   process.exit(1)

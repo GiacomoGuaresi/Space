@@ -567,6 +567,57 @@ language sql immutable parallel safe set search_path = '' as $$
     "codaLunga": 0.8,
     "idrogeno": 50
   },
+  "traguardi": {
+    "distanza": [
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000
+    ],
+    "corpi": [
+      10,
+      100,
+      1000
+    ],
+    "basi": [
+      3,
+      5,
+      10
+    ],
+    "ponti": [
+      100,
+      500
+    ],
+    "viaggio": [
+      10,
+      50,
+      200
+    ],
+    "percorsi": [
+      1000,
+      10000,
+      100000
+    ],
+    "statistica": [
+      10,
+      20,
+      30
+    ],
+    "sottotipi": {
+      "asteroidi": 3,
+      "nebulosa": 4,
+      "stella": 5,
+      "sistema": 5,
+      "gigante": 2,
+      "relitto": 3
+    }
+  },
   "relitto": {
     "materiaOscura": 30,
     "carico": 0.5,

@@ -1,6 +1,6 @@
 // Le pagine nell'indirizzo: `#/` il ponte (`#/rotta/x,y,z` con una meta già
 // scelta), `#/mappa` i settori scansionati, `#/altro` l'elenco delle altre
-// pagine, `#/nave` statistiche e stiva, `#/rete` gli insediamenti, `#/diario` il diario di bordo, `#/impostazioni`, `#/wiki/voce/numeri` la wiki, `#/catalogo` le scoperte,
+// pagine, `#/nave` statistiche e stiva, `#/rete` gli insediamenti, `#/diario` il diario di bordo, `#/impostazioni`, `#/wiki/voce/numeri` la wiki, `#/catalogo` le scoperte, `#/traguardi` le medaglie,
 // `#/osservatorio/x,y,z` l'osservatorio libero (solo in sviluppo, doc/06).
 
 import { useSyncExternalStore } from 'react'
@@ -17,6 +17,7 @@ export type Pagina =
   | { pagina: 'nave' }
   | { pagina: 'rete' }
   | { pagina: 'ricerche' }
+  | { pagina: 'traguardi' }
   | { pagina: 'osservatorio'; coordinate: Coordinate }
 
 /** Le coordinate di un testo "x,y,z", o `null` se non lo sono. */
@@ -36,6 +37,7 @@ export function leggiPagina(hash: string): Pagina {
   if (percorso === 'nave') return { pagina: 'nave' }
   if (percorso === 'rete') return { pagina: 'rete' }
   if (percorso === 'ricerche') return { pagina: 'ricerche' }
+  if (percorso === 'traguardi') return { pagina: 'traguardi' }
   if (percorso === 'mappa') return { pagina: 'mappa' }
   if (percorso === 'altro') return { pagina: 'altro' }
   if (percorso === 'diario') return { pagina: 'diario' }
@@ -81,6 +83,8 @@ export function indirizzo(pagina: Pagina): string {
       return '#/rete'
     case 'ricerche':
       return '#/ricerche'
+    case 'traguardi':
+      return '#/traguardi'
     case 'osservatorio': {
       const { x, y, z } = pagina.coordinate
       return `#/osservatorio/${x},${y},${z}`

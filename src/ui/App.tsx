@@ -26,6 +26,8 @@ import { Pannello } from './plancia'
 import { Ponte } from './Ponte'
 import { Rete } from './Rete'
 import { Scheda } from './Scheda'
+import { Traguardi } from './Traguardi'
+import { TRAGUARDI } from '../dominio/traguardi'
 import { CaricoAttuale, SchedaNave } from './SchedaNave'
 import { usePC } from './schermo'
 import { useNave, useOra } from './useNave'
@@ -64,6 +66,7 @@ export function App() {
     pieno,
     avviaRicerca,
     ricerche,
+    traguardi,
     ricarica,
   } = useNave()
   const ora = useOra(scarto)
@@ -86,12 +89,13 @@ export function App() {
             insediamenti,
             costruzioni,
             ricerche,
+            traguardi,
             fatte,
             nave,
             ora: new Date(minuto * 60_000),
           })
         : [],
-    [viaggi, scoperte, scansioni, raccolti, prelievi, insediamenti, costruzioni, ricerche, fatte, nave, minuto],
+    [viaggi, scoperte, scansioni, raccolti, prelievi, insediamenti, costruzioni, ricerche, traguardi, fatte, nave, minuto],
   )
   // Su PC (doc/11-interfaccia.md#pc--plancia-a-finestre) le pagine sono finestre.
   const pc = usePC()
@@ -212,6 +216,7 @@ export function App() {
       nave: 'nave',
       rete: 'rete',
       ricerche: 'ricerche',
+      traguardi: 'traguardi',
     }
     const id = finestre[pagina.pagina]
     if (id) apri(id)
@@ -266,6 +271,7 @@ export function App() {
             wiki: statoWiki ? { contenuto: <Wiki stato={statoWiki} voce={wikiPC.voce} numeri={wikiPC.numeri} affiancata /> } : undefined,
             catalogo: { contenuto: <ContenutoCatalogo scoperte={scoperte} /> },
             ricerche: { contenuto: <AlberoRicerche nave={stato.nave} ora={ora} /> },
+            traguardi: { contenuto: <Traguardi raggiunti={traguardi} /> },
             rete: { contenuto: <Rete nave={stato.nave} insediamenti={insediamenti} ora={ora} /> },
             nave: { contenuto: <SchedaNave nave={stato.nave} quantita={bordo?.quantita ?? stato.carico.quantita} ora={ora} /> },
             impostazioni: { contenuto: <Impostazioni /> },
@@ -283,6 +289,19 @@ export function App() {
           fondo={<FondoNave nave={stato.nave} scarto={scarto} />}
         >
           <AlberoRicerche nave={stato.nave} ora={ora} />
+        </Cornice>
+      )
+    }
+    if (pagina.pagina === 'traguardi') {
+      return (
+        <Cornice
+          pagina="traguardi"
+          nave={stato.nave}
+          viaggio={viaggio}
+          scarto={scarto}
+          fondo={<FondoNave nave={stato.nave} scarto={scarto} />}
+        >
+          <Traguardi raggiunti={traguardi} />
         </Cornice>
       )
     }
@@ -345,6 +364,15 @@ export function App() {
                   return inCorso ? `In corso: ${inCorso.nodo}` : `${new Set(ricerche.filter((r) => r.fine <= ora).map((r) => r.nodo)).size} fatte`
                 })(),
                 pagina: { pagina: 'ricerche' },
+              },
+              {
+                titolo: 'Traguardi',
+                sottotitolo: (() => {
+                  const ultimo = traguardi.at(-1)
+                  const nome = ultimo && TRAGUARDI.find((t) => t.codice === ultimo.codice)?.nome
+                  return `${traguardi.length} medaglie su ${TRAGUARDI.length}${nome ? ` · l'ultima: ${nome}` : ''}`
+                })(),
+                pagina: { pagina: 'traguardi' },
               },
               {
                 titolo: 'Diario di bordo',

@@ -349,10 +349,16 @@ const GUIDA: PaginaWiki[] = [
           La prima volta che arrivi in un settore con un corpo, lo scopri: entra nel catalogo con nome, coordinate e data. Il catalogo è
           l'album delle tue scoperte; questa wiki invece spiega come funzionano.
         </P>
-        <P>I traguardi, medaglie con data, arriveranno più avanti.</P>
+        <P>
+          I traguardi sono medaglie con data, senza ricompense, in quattro famiglie: distanza, catalogo, infrastruttura e imprese. Li
+          trovi nella loro pagina (G su PC), e ognuno finisce anche nel diario.
+        </P>
       </>
     ),
-    numeri: () => [['Tipi di corpo', `${TIPI.length}`]],
+    numeri: () => [
+      ['Tipi di corpo', `${TIPI.length}`],
+      ['Distanza', BILANCIAMENTO.traguardi.distanza.map((n) => n.toLocaleString('it-IT')).join(' · ') + ' settori'],
+    ],
   },
 ]
 
