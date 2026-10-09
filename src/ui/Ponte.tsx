@@ -10,6 +10,7 @@ import { useSfondoMappa } from './Mappa'
 import { DentroFinestra, Pannello } from './plancia'
 import { FondaEstrattore, Fondazione } from './Fondazione'
 import { AcceleraRicarica, AcceleraViaggio } from './Accelera'
+import { Varco } from './Varco'
 import { MagazzinoQui } from './Magazzino'
 import { Raccolta } from './Raccolta'
 import { Rotta } from './Rotta'
@@ -118,6 +119,7 @@ export function Ponte({ nave, viaggio, scarto, scoperte, scansioni, meta: metaSc
             <MagazzinoQui nave={nave} ora={ora} />
             <Fondazione nave={nave} ora={ora} />
             <FondaEstrattore nave={nave} ora={ora} />
+            <Varco nave={nave} ora={ora} />
           </>
         ),
       },
@@ -200,6 +202,7 @@ export function Ponte({ nave, viaggio, scarto, scoperte, scansioni, meta: metaSc
                 <MagazzinoQui nave={nave} ora={ora} />
                 <Fondazione nave={nave} ora={ora} />
                 <FondaEstrattore nave={nave} ora={ora} />
+                <Varco nave={nave} ora={ora} />
               </>
             ) : scheda === 'scanner' ? (
               <Scanner centro={nave.posizione} livello={nave.scanner} scoperti={scoperti} onScegli={scegli} />

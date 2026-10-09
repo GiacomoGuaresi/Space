@@ -190,7 +190,19 @@ const esitoRelitti = await interroga(`
   select count(*) filter (where space.esito_relitto(x, y, z) <> e) as esiti_diversi, count(*) as totale
   from (values ${relitti.join(',')}) as r(x, y, z, e)`)
 
+// L'uscita dei wormhole, sui primi 40 lungo le stesse rette.
+const varchi: string[] = []
+for (let i = 1; varchi.length < 40 && i < 40000; i++) {
+  const c = i % 3 === 0 ? { x: i, y: 7, z: -3 } : i % 3 === 1 ? { x: -5, y: i, z: 11 } : { x: 2, y: -9, z: -i }
+  const d = tipoSettore(c) === 'wormhole' ? settore(c).corpo!.dettagli : null
+  if (d?.tipo === 'wormhole') varchi.push(`(${c.x},${c.y},${c.z},${d.uscita.x},${d.uscita.y},${d.uscita.z})`)
+}
+const esitoVarchi = await interroga(`
+  select count(*) filter (where (u.ux, u.uy, u.uz) <> (v.ux, v.uy, v.uz)) as uscite_diverse, count(*) as totale
+  from (values ${varchi.join(',')}) as v(x, y, z, ux, uy, uz), lateral space.uscita_varco(v.x, v.y, v.z) u`)
+
 console.log('Settori', esitoSettori)
+console.log('Wormhole', esitoVarchi)
 console.log('Relitti', esitoRelitti)
 console.log('Rotte', esitoRotte)
 console.log('Raggi dello scanner', esitoRaggi)
@@ -214,7 +226,8 @@ if (
   esitoCorpi.sottotipi_diversi ||
   esitoCorpi.pianeti_diversi ||
   esitoCorpi.ritmi_diversi ||
-  esitoRelitti.esiti_diversi
+  esitoRelitti.esiti_diversi ||
+  esitoVarchi.uscite_diverse
 ) {
   console.error('TypeScript e SQL non danno lo stesso universo')
   process.exit(1)

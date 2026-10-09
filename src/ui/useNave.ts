@@ -228,6 +228,12 @@ export function useNave() {
     [ricarica],
   )
 
+  const attraversa = useCallback(async () => {
+    await datiNave().attraversa()
+    suona('scoperta')
+    await ricarica()
+  }, [ricarica])
+
   const potenzia = useCallback(
     async (lavoro: Lavoro) => {
       await datiNave().potenzia(lavoro)
@@ -271,6 +277,7 @@ export function useNave() {
     fondaEstrattore,
     abbandona,
     accelera,
+    attraversa,
     potenzia,
     ricarica,
   }

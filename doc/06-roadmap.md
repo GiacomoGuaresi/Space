@@ -156,7 +156,7 @@ Porta l'interfaccia su PC nella [plancia a finestre](11-interfaccia.md#pc--planc
 - [x] **9.2 Fionda gravitazionale** (P6). (Anticipata in 8.4: la chiede *Contenimento gravitazionale*. `fiondaDi` e `space.viaggia` usano `fionda.gravitazionale`, ×2 e 30 % gratis.)
 - [x] **9.3 Relitti**: bottino una volta per giocatore, progetti. (`031_relitti.sql`: `space.bottino_relitto` dentro `assesta`, l'esito dalla quinta sequenza del seed (`esitoRelitto`, confrontato da `verifica-sql`); i progetti in `nave.progetti` dimezzano la prossima ricerca. Il raddoppio di *Recupero* su relitti e comete è già pronto, la ricerca arriva con 9.6.)
 - [x] **9.4 Accelerare** viaggi, costruzioni e ricarica con la Materia oscura. (`032_accelera.sql`: `space.accelera(cosa, lavoro)`, pagato dalla stiva da dove si vuole; il lavoro accelerato anticipa quelli dopo nella sua coda. I tasti (`Accelera.tsx`) compaiono in Qui, nel volo e nella coda solo con Materia oscura a bordo.)
-- [ ] **9.5 Wormhole**: Navigazione dei varchi (P9), 50 MO, senso unico; Sonda di varco (S9).
+- [x] **9.5 Wormhole**: Navigazione dei varchi (P9), 50 MO, senso unico; Sonda di varco (S9). (`033_wormhole.sql`: `space.uscita_varco`, identica a `uscitaVarco` (40 varchi in `verifica-sql`, 1000 controllati una volta), e `space.attraversa()`: salto istantaneo, `viaggio.wormhole`. Il riquadro Varco sta in Qui; senza S9 l'uscita non si vede.)
 - [ ] **9.6 Ultime ricerche** (gradini 9-10) e i due **nodi infiniti**.
 
 **Si consegna**: tutte le meccaniche.

@@ -44,6 +44,8 @@ export interface Viaggio {
   fionda: boolean
   /** Vero se è un viaggio tra due ponti di curvatura. */
   ponte: boolean
+  /** Vero se è il salto attraverso un wormhole. */
+  wormhole: boolean
 }
 
 export function inViaggio(nave: Nave, ora: Date): boolean {

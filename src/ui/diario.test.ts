@@ -31,6 +31,7 @@ const viaggio = (parziale: Partial<Viaggio>): Viaggio => ({
   consumo: 1,
   fionda: false,
   ponte: false,
+  wormhole: false,
   ...parziale,
 })
 
@@ -161,5 +162,19 @@ describe('insediamenti', () => {
     const voci = vociDiario(fonti({ insediamenti: [madre], ora: dopo(169) }))
     expect(voci.map((v) => v.tipo)).toEqual(['pieno'])
     expect(voci[0].testo).toContain('base madre')
+  })
+})
+
+describe('wormhole', () => {
+  it('il salto è una voce sola, all’uscita', () => {
+    const voci = vociDiario(
+      fonti({
+        viaggi: [viaggio({ da: { x: 200, y: 0, z: 0 }, meta: { x: 900, y: 0, z: 0 }, a: { x: 900, y: 0, z: 0 }, partenza: dopo(1), arrivo: dopo(1), wormhole: true })],
+        ora: dopo(2),
+      }),
+    )
+    expect(voci.map((v) => v.tipo)).toEqual(['arrivo'])
+    expect(voci[0].testo).toContain('Salto nel varco')
+    expect(voci[0].testo).toContain('700 settori')
   })
 })

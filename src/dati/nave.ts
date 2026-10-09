@@ -99,6 +99,7 @@ export type MotivoRifiuto =
   | 'non_abbandonabile'
   | 'gia_costruito'
   | 'niente_da_accelerare'
+  | 'non_varco'
 
 export class ViaggioRifiutato extends Error {
   constructor(readonly motivo: MotivoRifiuto) {
@@ -138,6 +139,7 @@ interface RigaViaggio {
   consumo: number
   fionda: boolean
   ponte: boolean
+  wormhole: boolean
 }
 
 function nave(r: RigaNave): Nave {
@@ -165,6 +167,7 @@ function viaggio(r: RigaViaggio): Viaggio {
     consumo: r.consumo,
     fionda: r.fionda,
     ponte: r.ponte,
+    wormhole: r.wormhole,
   }
 }
 
@@ -208,6 +211,7 @@ const MOTIVI: readonly MotivoRifiuto[] = [
   'non_abbandonabile',
   'gia_costruito',
   'niente_da_accelerare',
+  'non_varco',
 ]
 
 export class NaveSupabase {
@@ -273,6 +277,16 @@ export class NaveSupabase {
       const motivo = MOTIVI.find((m) => m === error.message)
       if (motivo) throw new ViaggioRifiutato(motivo)
       throw fallita('Accelerazione non riuscita', error)
+    }
+  }
+
+  /** Attraversa il wormhole dove sta la nave, pagando Materia oscura. */
+  async attraversa(): Promise<void> {
+    const { error } = await this.client.rpc('attraversa')
+    if (error) {
+      const motivo = MOTIVI.find((m) => m === error.message)
+      if (motivo) throw new ViaggioRifiutato(motivo)
+      throw fallita('Salto non riuscito', error)
     }
   }
 
@@ -343,7 +357,7 @@ export class NaveSupabase {
   async viaggiDal(dal: Date): Promise<Viaggio[]> {
     const { data, error } = await this.client
       .from('viaggio')
-      .select('da_x, da_y, da_z, meta_x, meta_y, meta_z, a_x, a_y, a_z, partenza, arrivo, consumo, fionda, ponte')
+      .select('da_x, da_y, da_z, meta_x, meta_y, meta_z, a_x, a_y, a_z, partenza, arrivo, consumo, fionda, ponte, wormhole')
       .gte('arrivo', dal.toISOString())
       .order('arrivo')
     if (error) throw fallita('Viaggi non letti', error)

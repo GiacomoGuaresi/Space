@@ -1,6 +1,7 @@
 import { CATALOGO, NOMI_COLONIE, NOMI_RISORSE } from '../dominio/catalogo'
 import { NOMI_CLASSI, NOMI_GENERI_NEBULOSA, type Dettagli, type Settore } from '../dominio/settore'
-import type { ReactNode } from 'react'
+import { useContext, type ReactNode } from 'react'
+import { CaricoAttuale } from './SchedaNave'
 import { ricchezzaMedia } from '../dominio/catalogo'
 import { COLORI_RARITA } from './colori'
 import { coordinate, coordinatePlancia } from './formato'
@@ -10,7 +11,7 @@ import { Etichetta, Info, SimboloRarita } from './plancia'
 const numero = (n: number, cifre = 0) => n.toLocaleString('it-IT', { maximumFractionDigits: cifre })
 
 /** I dettagli del corpo, a parole: una riga per voce. */
-function righeDettagli(d: Dettagli): [string, string][] {
+function righeDettagli(d: Dettagli, sonda: boolean): [string, string][] {
   switch (d.tipo) {
     case 'asteroidi':
       return [['Composizione', d.composizione], ['Rocce grandi', numero(d.rocce)]]
@@ -38,13 +39,16 @@ function righeDettagli(d: Dettagli): [string, string][] {
     case 'relitto':
       return [['Forma', d.forma], ['Età', `${numero(d.eta)} mila anni`]]
     case 'wormhole':
-      return [['Uscita', coordinate(d.uscita)]]
+      // Senza *Sonda di varco* (S9) l'uscita non si vede; nell'osservatorio sì.
+      return [['Uscita', sonda ? coordinate(d.uscita) : 'sconosciuta']]
   }
 }
 
 /** La scheda del settore: cosa c'è, quanto vale, cosa ci si può fare. */
 export function Scheda({ settore }: { settore: Settore }) {
   const { corpo, coordinate, distanzaBase } = settore
+  const bordo = useContext(CaricoAttuale)
+  const sonda = !bordo || bordo.fatte.has('S9')
   const dove = coordinatePlancia(coordinate)
   const lontano = `${numero(distanzaBase, 1)} sett. dalla base madre`
 
@@ -62,7 +66,7 @@ export function Scheda({ settore }: { settore: Settore }) {
 
   const media = ricchezzaMedia(distanzaBase)
   const righe: [string, ReactNode][] = [
-    ...righeDettagli(corpo.dettagli),
+    ...righeDettagli(corpo.dettagli, sonda),
     ['Risorse', corpo.risorse.length ? corpo.risorse.map((r) => NOMI_RISORSE[r]).join(', ') : '—'],
     [
       'Ricchezza',

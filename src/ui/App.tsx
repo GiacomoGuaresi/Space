@@ -58,6 +58,7 @@ export function App() {
     fondaEstrattore,
     abbandona,
     accelera,
+    attraversa,
     potenzia,
     costruzioni,
     pieno,
@@ -132,8 +133,8 @@ export function App() {
     [carico, nave, secondo, raccolti, insediamenti, fatte],
   )
   const azioni = useMemo(
-    () => ({ fonda, fondaEstrattore, abbandona, accelera, potenzia, pieno, avviaRicerca, ricerche, costruzioni }),
-    [fonda, fondaEstrattore, abbandona, accelera, potenzia, pieno, avviaRicerca, ricerche, costruzioni],
+    () => ({ fonda, fondaEstrattore, abbandona, accelera, attraversa, potenzia, pieno, avviaRicerca, ricerche, costruzioni }),
+    [fonda, fondaEstrattore, abbandona, accelera, attraversa, potenzia, pieno, avviaRicerca, ricerche, costruzioni],
   )
   const ultima = useMemo(() => ({ voce: voci[0] ?? null, nuove: daLeggere }), [voci, daLeggere])
 

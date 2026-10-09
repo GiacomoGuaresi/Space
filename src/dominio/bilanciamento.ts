@@ -246,6 +246,7 @@ export const BILANCIAMENTO = {
       'S1', 'S2', 'S3', 'S4', 'S5', 'S6',
       'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8',
       'C7', 'C8', 'S7', 'S8', 'I7', 'I8',
+      'P9', 'S9',
     ] as string[],
     /** Gli effetti, con i loro numeri. */
     effetti: {
@@ -288,6 +289,10 @@ export const BILANCIAMENTO = {
       /** Riciclo: abbandonando un insediamento torna questa parte di quanto vi si è speso. */
       I6: 0.25,
     },
+  },
+  varco: {
+    /** Attraversare un wormhole costa tanta Materia oscura, sempre. */
+    materiaOscura: 50,
   },
   accelera: {
     /** Saltare `ore` ore di un viaggio, di un lavoro o della ricarica costa `base × ore^esponente` di Materia oscura. */

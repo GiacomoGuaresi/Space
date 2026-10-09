@@ -87,6 +87,16 @@ function vociViaggi(viaggi: readonly Viaggio[], ora: Date): Voce[] {
   // La prima fionda apre la sua pagina della wiki.
   const primaFionda = [...viaggi].sort((a, b) => a.partenza.getTime() - b.partenza.getTime()).find((v) => v.fionda)
   for (const v of viaggi) {
+    if (v.wormhole && v.partenza <= ora) {
+      const dove = luogo(v.a)
+      voci.push({
+        quando: v.arrivo,
+        tipo: 'arrivo',
+        testo: `Salto nel varco: la nave è uscita in ${dove.lungo}, a ${numero(distanza(v.da, v.a), 0)} settori dal wormhole.`,
+        breve: dove.breve,
+      })
+      continue
+    }
     if (v.partenza <= ora) {
       voci.push({
         quando: v.partenza,

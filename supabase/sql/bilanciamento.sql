@@ -486,7 +486,9 @@ language sql immutable parallel safe set search_path = '' as $$
       "S7",
       "S8",
       "I7",
-      "I8"
+      "I8",
+      "P9",
+      "S9"
     ],
     "effetti": {
       "I1": 0.1,
@@ -509,6 +511,9 @@ language sql immutable parallel safe set search_path = '' as $$
       "C9": 2,
       "I6": 0.25
     }
+  },
+  "varco": {
+    "materiaOscura": 50
   },
   "accelera": {
     "base": 2,

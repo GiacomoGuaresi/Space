@@ -389,7 +389,8 @@ const DESCRIZIONI: Readonly<Record<TipoCorpo, string>> = {
   pulsar: 'Il cuore spento di una stella, che gira e lampeggia. In sosta qui lo scanner vede il doppio, e si raccolgono Terre rare.',
   buconero: 'Niente esce da qui, tranne chi parte con la fionda. Attorno si raccoglie Materia oscura.',
   relitto: 'I resti di qualcuno arrivato prima. Si saccheggia una volta sola, e a volte nasconde un progetto.',
-  wormhole: 'Un varco a senso unico verso un settore lontano.',
+  wormhole:
+    'Un varco a senso unico verso un settore lontano, sempre lo stesso. Si attraversa con Navigazione dei varchi, pagando Materia oscura; dove porta lo dice la Sonda di varco.',
 }
 
 const CORPI: PaginaWiki[] = TIPI.map((tipo) => {
