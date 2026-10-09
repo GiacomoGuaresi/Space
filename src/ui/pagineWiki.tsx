@@ -92,6 +92,10 @@ const GUIDA: PaginaWiki[] = [
           insieme al magazzino della base dove si costruisce.
         </P>
         <P>Potenziarla è il cuore della progressione: si fa nel cantiere di una base (vedi Cantiere e potenziamenti).</P>
+        <P>
+          Nelle colonie magazzino e laboratorio si costruiscono subito; il cantiere arriva con Cantiere orbitale, il deposito carburante
+          con la ricerca Deposito.
+        </P>
       </>
     ),
     numeri: ({ nave }) => [
@@ -242,8 +246,8 @@ const GUIDA: PaginaWiki[] = [
         </P>
         <P>
           Se il carburante non basta, la nave si ferma nel settore più vicino al punto in cui si svuota e aspetta. Da ferma si ricarica:
-          fuori dalla base solo fino a metà serbatoio, mentre in base o accanto a una stella si riempie del tutto, e accanto a una stella
-          anche più in fretta.
+          fuori dalle basi solo fino a metà serbatoio, mentre in una base (la madre o una colonia, non un estrattore) o accanto a una
+          stella si riempie del tutto, e accanto a una stella anche più in fretta.
         </P>
       </>
     ),

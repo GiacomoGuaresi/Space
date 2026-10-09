@@ -12,7 +12,7 @@ import { vaiA } from './indirizzo'
 import { MenuContesto, menuCorpo, type Menu } from './MenuContesto'
 import { segnaRaroVisto } from './pallini'
 import { BottonePrimario, Etichetta, Pannello, SimboloRarita } from './plancia'
-import { CaricoAttuale } from './SchedaNave'
+import { CaricoAttuale, useDintorni } from './SchedaNave'
 import { useOra } from './useNave'
 
 // three.js pesa: si carica a parte, come la scena del ponte.
@@ -34,6 +34,7 @@ interface Props {
 export function Mappa({ nave, viaggio, scarto, scoperte, scansioni }: Props) {
   const ora = useOra(scarto)
   const fatte = useContext(CaricoAttuale)?.fatte
+  const dintorni = useDintorni()
   const spettrometria = fatte?.has('S2') ?? false
   const tutti = useMemo(() => corpiNoti(scansioni, scoperte), [scansioni, scoperte])
   const [filtro, setFiltro] = useState<Filtro>('tutti')
@@ -49,7 +50,7 @@ export function Mappa({ nave, viaggio, scarto, scoperte, scansioni }: Props) {
   }, [punto])
   const scoperta = scelto && scoperte.find((s) => stessoSettore(s.coordinate, scelto))
   const volo = inViaggio(nave, ora)
-  const prova = punto && !volo && !stessoSettore(punto.coordinate, nave.posizione) ? anteprima(nave, punto.coordinate, ora, fatte) : null
+  const prova = punto && !volo && !stessoSettore(punto.coordinate, nave.posizione) ? anteprima(nave, punto.coordinate, ora, dintorni) : null
 
   return (
     <Cornice

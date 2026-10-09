@@ -7,7 +7,7 @@ import { anteprima, tipiRilevabili, type Nave } from '../dominio/navigazione'
 import { distanza, stessoSettore, tipoSettore, type Coordinate } from '../dominio/settore'
 import { coordinate, durata, numero, orario, settori } from './formato'
 import { AzioniNave } from './azioni'
-import { CaricoAttuale } from './SchedaNave'
+import { useDintorni } from './SchedaNave'
 import { BottonePrimario, Info } from './plancia'
 import { RIFIUTI } from './rifiuti'
 
@@ -36,10 +36,10 @@ export function Rotta({ nave, ora, meta, scoperti, onMeta, onParti }: Props) {
     if (meta) setBozza(testi(meta))
   }, [meta])
 
-  const azioniFatte = useContext(CaricoAttuale)?.fatte
   const scritta = leggi(bozza)
   const valida = scritta !== null && !stessoSettore(scritta, nave.posizione)
-  const prova = valida ? anteprima(nave, scritta, ora, azioniFatte) : null
+  const dintorni = useDintorni()
+  const prova = valida ? anteprima(nave, scritta, ora, dintorni) : null
   // Lo scanner non rivela i tipi che non rileva: si sa cosa c'è solo se è
   // rilevabile o già scoperto.
   const tipoVero = scritta ? tipoSettore(scritta) : null

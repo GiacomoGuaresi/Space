@@ -1,7 +1,7 @@
-import { createContext, useContext, type ReactNode } from 'react'
+import { createContext, useContext, useMemo, type ReactNode } from 'react'
 import type { Raccolto } from '../dati'
-import type { Insediamento } from '../dominio/insediamenti'
-import { raggioScanner, type Nave } from '../dominio/navigazione'
+import { coordinateBasi, type Insediamento } from '../dominio/insediamenti'
+import { raggioScanner, type Dintorni, type Nave } from '../dominio/navigazione'
 import { capacitaNave, RISORSE, type Carico, type Fatte, type Quantita } from '../dominio/risorse'
 import { NOMI_RISORSE } from '../dominio/catalogo'
 import { tipoSettore } from '../dominio/settore'
@@ -19,6 +19,15 @@ export const CaricoAttuale = createContext<{
   /** Le ricerche completate: cambiano capacità, costi e tempi. */
   fatte: Fatte
 } | null>(null)
+
+/** Le ricerche fatte e le basi, per i conti del carburante (navigazione.ts, `Dintorni`). */
+export function useDintorni(): Dintorni {
+  const bordo = useContext(CaricoAttuale)
+  return useMemo(
+    () => (bordo ? { fatte: bordo.fatte, basi: coordinateBasi(bordo.insediamenti) } : {}),
+    [bordo?.fatte, bordo?.insediamenti],
+  )
+}
 
 /**
  * La Nave (doc/11-interfaccia.md#nave): le statistiche e la stiva, una barra

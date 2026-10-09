@@ -6,7 +6,7 @@ import { coordinatePlancia, durata, numero, orario, rovescia } from './formato'
 import { NOMI_VOCI, UltimaVoce } from './diario'
 import { RISORSE, SIGLE_RISORSE } from '../dominio/risorse'
 import { NOMI_RISORSE } from '../dominio/catalogo'
-import { CaricoAttuale } from './SchedaNave'
+import { CaricoAttuale, useDintorni } from './SchedaNave'
 import { Etichetta, Info } from './plancia'
 
 interface Props {
@@ -30,10 +30,11 @@ export function StrisciaStato({ nave, viaggio, ora, onApri, riga = false }: Prop
   const volo = inViaggio(nave, ora)
   const ultima = useContext(UltimaVoce)
   const bordo = useContext(CaricoAttuale)
-  const carburante = carburanteOra(nave, ora)
-  const tetto = tettoQui(nave, nave.posizione)
-  const pieno = pienoTra(nave, ora)
-  const stellare = ricaricaQui(nave, nave.posizione) > nave.ricarica
+  const dintorni = useDintorni()
+  const carburante = carburanteOra(nave, ora, dintorni)
+  const tetto = tettoQui(nave, nave.posizione, dintorni)
+  const pieno = pienoTra(nave, ora, dintorni)
+  const stellare = ricaricaQui(nave, nave.posizione, dintorni) > nave.ricarica
   const percentoTetto = Math.round((tetto / nave.serbatoio) * 100)
   const nome = stessoSettore(nave.posizione, BASE) ? 'Base madre' : (settore(nave.posizione).corpo?.nome ?? 'Spazio vuoto')
 
@@ -92,7 +93,7 @@ export function StrisciaStato({ nave, viaggio, ora, onApri, riga = false }: Prop
               titolo="Ricarica"
               wiki="viaggio"
               formula={`${numero(nave.ricarica, 2)}/h${stellare ? ` × ${BILANCIAMENTO.carburante.ricaricaStella} (stella)` : ''} fino a ${numero(nave.serbatoio, 1)} × ${percentoTetto}%`}
-              esatto={`${numero(ricaricaQui(nave, nave.posizione), 2)}/h, tetto ${numero(tetto, 2)}`}
+              esatto={`${numero(ricaricaQui(nave, nave.posizione, dintorni), 2)}/h, tetto ${numero(tetto, 2)}`}
             />
           </>
         )}

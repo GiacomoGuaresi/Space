@@ -15,7 +15,7 @@ import { NESSUNA_RICERCA, RICERCHE, type IdRicerca } from '../dominio/ricerche'
 import { BarreMagazzino, NOMI_INSEDIAMENTI } from './Magazzino'
 import { BottoneSecondario, Etichetta, Info, Pannello } from './plancia'
 import { RIFIUTI } from './rifiuti'
-import { CaricoAttuale } from './SchedaNave'
+import { CaricoAttuale, useDintorni } from './SchedaNave'
 
 /**
  * Le strutture che si costruiscono in un insediamento: la base madre le ha
@@ -79,7 +79,8 @@ function Deposito({ nave, ora, base }: { nave: Nave; ora: Date; base: Insediamen
   const { pieno } = useContext(AzioniNave)
   const [inCorso, setInCorso] = useState(false)
   const [errore, setErrore] = useState<string | null>(null)
-  const mancano = nave.serbatoio - carburanteOra(nave, ora)
+  const dintorni = useDintorni()
+  const mancano = nave.serbatoio - carburanteOra(nave, ora, dintorni)
   const costo = costoPieno(mancano, base.deposito, bordo?.fatte)
   const disponibile = (bordo?.quantita.idrogeno ?? 0) + (magazzinoOra(base, ora, bordo?.fatte).idrogeno ?? 0)
   const fai = async () => {

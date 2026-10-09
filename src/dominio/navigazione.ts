@@ -48,17 +48,26 @@ export function inViaggio(nave: Nave, ora: Date): boolean {
 
 const ORA_MS = 3_600_000
 
+/**
+ * Ciò che cambia i conti del carburante oltre alla nave: le ricerche fatte e
+ * dove sono le basi del giocatore (la base madre e le colonie, non gli estrattori).
+ */
+export interface Dintorni {
+  fatte?: ReadonlySet<string>
+  basi?: readonly Coordinate[]
+}
+
 /** La ricarica all'ora, da fermi nel settore `qui`: più veloce accanto a una stella. */
-export function ricaricaQui(nave: Nave, qui: Coordinate): number {
+export function ricaricaQui(nave: Nave, qui: Coordinate, _dintorni: Dintorni = {}): number {
   return nave.ricarica * (tipoSettore(qui) === 'stella' ? CARBURANTE.ricaricaStella : 1)
 }
 
 /**
- * Fin dove si ricarica il serbatoio da fermi nel settore `qui`: pieno in base
- * e accanto a una stella, altrove solo in parte.
+ * Fin dove si ricarica il serbatoio da fermi nel settore `qui`: pieno in una
+ * base e accanto a una stella, altrove solo in parte. Come `space.tetto`.
  */
-export function tettoQui(nave: Nave, qui: Coordinate): number {
-  const pieno = stessoSettore(qui, BASE) || tipoSettore(qui) === 'stella'
+export function tettoQui(nave: Nave, qui: Coordinate, { basi = [] }: Dintorni = {}): number {
+  const pieno = stessoSettore(qui, BASE) || basi.some((b) => stessoSettore(b, qui)) || tipoSettore(qui) === 'stella'
   return nave.serbatoio * (pieno ? 1 : CARBURANTE.tettoFuori)
 }
 
@@ -66,18 +75,18 @@ export function tettoQui(nave: Nave, qui: Coordinate): number {
  * Il carburante adesso: fermo da `dal`, si ricarica fino al tetto. Se è già
  * oltre (arrivato da una base con il pieno) non cala: smette solo di salire.
  */
-export function carburanteOra(nave: Nave, ora: Date): number {
+export function carburanteOra(nave: Nave, ora: Date, dintorni: Dintorni = {}): number {
   if (inViaggio(nave, ora)) return nave.carburante
-  const tetto = tettoQui(nave, nave.posizione)
+  const tetto = tettoQui(nave, nave.posizione, dintorni)
   if (nave.carburante >= tetto) return nave.carburante
   const ore = (ora.getTime() - nave.dal.getTime()) / ORA_MS
-  return Math.min(tetto, nave.carburante + ricaricaQui(nave, nave.posizione) * ore)
+  return Math.min(tetto, nave.carburante + ricaricaQui(nave, nave.posizione, dintorni) * ore)
 }
 
 /** Fra quanto il carburante arriva al tetto, in millisecondi (0 se c'è già). */
-export function pienoTra(nave: Nave, ora: Date): number {
-  const mancante = tettoQui(nave, nave.posizione) - carburanteOra(nave, ora)
-  return Math.max(0, (mancante / ricaricaQui(nave, nave.posizione)) * ORA_MS)
+export function pienoTra(nave: Nave, ora: Date, dintorni: Dintorni = {}): number {
+  const mancante = tettoQui(nave, nave.posizione, dintorni) - carburanteOra(nave, ora, dintorni)
+  return Math.max(0, (mancante / ricaricaQui(nave, nave.posizione, dintorni)) * ORA_MS)
 }
 
 export interface Rotta {
@@ -126,9 +135,10 @@ export interface Anteprima extends Rotta {
 }
 
 /** Cosa succederebbe partendo adesso verso `meta`. */
-export function anteprima(nave: Nave, meta: Coordinate, ora: Date, fatte: ReadonlySet<string> = new Set()): Anteprima {
+export function anteprima(nave: Nave, meta: Coordinate, ora: Date, dintorni: Dintorni = {}): Anteprima {
+  const fatte = dintorni.fatte ?? new Set<string>()
   const fionda = tipoSettore(nave.posizione) === 'buconero'
-  const r = rotta(nave.posizione, meta, carburanteOra(nave, ora), quotaConsumo(fionda, fatte))
+  const r = rotta(nave.posizione, meta, carburanteOra(nave, ora, dintorni), quotaConsumo(fionda, fatte))
   const velocita = nave.velocita * (fionda ? FIONDA.velocita : 1)
   return {
     ...r,

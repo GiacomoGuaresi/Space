@@ -230,7 +230,7 @@ export const BILANCIAMENTO = {
       I10: { gradino: 10, richiede: ['I9'] },
     },
     /** I nodi che si possono già ricercare: gli altri arrivano con le loro meccaniche (doc/06-roadmap.md). */
-    attive: ['I1', 'I2', 'I3', 'I4', 'C1', 'C2', 'C3', 'C4', 'S1', 'S2', 'S3', 'S4', 'P1', 'P2'] as string[],
+    attive: ['I1', 'I2', 'I3', 'I4', 'I5', 'C1', 'C2', 'C3', 'C4', 'S1', 'S2', 'S3', 'S4', 'P1', 'P2'] as string[],
     /** Gli effetti, con i loro numeri. */
     effetti: {
       /** Automazione: tempi di costruzione −10 %. */

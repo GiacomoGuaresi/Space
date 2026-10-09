@@ -447,6 +447,7 @@ language sql immutable parallel safe set search_path = '' as $$
       "I2",
       "I3",
       "I4",
+      "I5",
       "C1",
       "C2",
       "C3",

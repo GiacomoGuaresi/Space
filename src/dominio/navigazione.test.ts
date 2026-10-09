@@ -60,6 +60,12 @@ describe('carburante', () => {
     expect(pienoTra(nave({ posizione: vuoto, carburante: tetto - 1 }), t0)).toBe((1 / NAVE_INIZIALE.ricarica) * ORA)
   })
 
+  it('in una colonia si ricarica fino al pieno, come nella base madre', () => {
+    const colonia = { x: 0, y: 0, z: 1 }
+    expect(tettoQui(nave(), colonia, { basi: [colonia] })).toBe(NAVE_INIZIALE.serbatoio)
+    expect(carburanteOra(nave({ posizione: colonia, carburante: 0 }), dopo(100 * ORA), { basi: [colonia] })).toBe(NAVE_INIZIALE.serbatoio)
+  })
+
   it('oltre il tetto non cala: smette solo di salire', () => {
     const n = nave({ posizione: { x: 0, y: 0, z: 1 }, carburante: NAVE_INIZIALE.serbatoio * 0.9 })
     expect(carburanteOra(n, dopo(10 * ORA))).toBe(NAVE_INIZIALE.serbatoio * 0.9)

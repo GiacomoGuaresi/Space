@@ -6,11 +6,21 @@ import { createContext, useSyncExternalStore } from 'react'
 import type { Costruzione, Prelievo, Raccolto, RicercaAvviata, Scansione, Scoperta } from '../dati'
 import { NOMI_LAVORI } from '../dominio/cantiere'
 import { RICERCHE, type IdRicerca } from '../dominio/ricerche'
-import { pienoIl, ritmoInsediamento, type Insediamento } from '../dominio/insediamenti'
+import { coordinateBasi, pienoIl, ritmoInsediamento, type Insediamento } from '../dominio/insediamenti'
 import { NOMI_RISORSE } from '../dominio/catalogo'
 import { RISORSE } from '../dominio/risorse'
 import { CATALOGO, type TipoCorpo } from '../dominio/catalogo'
-import { carburanteOra, inViaggio, ricaricaQui, scansione, tettoQui, tipiRilevabili, type Nave, type Viaggio } from '../dominio/navigazione'
+import {
+  carburanteOra,
+  inViaggio,
+  ricaricaQui,
+  scansione,
+  tettoQui,
+  tipiRilevabili,
+  type Dintorni,
+  type Nave,
+  type Viaggio,
+} from '../dominio/navigazione'
 import { BASE, distanza, settore, stessoSettore, type Coordinate } from '../dominio/settore'
 import { coordinatePlancia, numero, orario } from './formato'
 
@@ -104,11 +114,11 @@ function vociViaggi(viaggi: readonly Viaggio[], ora: Date): Voce[] {
 }
 
 /** La ricarica completata della sosta in corso, se è già arrivata al tetto. */
-function vociRicarica(nave: Nave, ora: Date): Voce[] {
+function vociRicarica(nave: Nave, ora: Date, dintorni: Dintorni): Voce[] {
   if (inViaggio(nave, ora)) return []
-  const tetto = tettoQui(nave, nave.posizione)
-  if (nave.carburante >= tetto || carburanteOra(nave, ora) < tetto) return []
-  const quando = new Date(nave.dal.getTime() + ((tetto - nave.carburante) / ricaricaQui(nave, nave.posizione)) * ORA_MS)
+  const tetto = tettoQui(nave, nave.posizione, dintorni)
+  if (nave.carburante >= tetto || carburanteOra(nave, ora, dintorni) < tetto) return []
+  const quando = new Date(nave.dal.getTime() + ((tetto - nave.carburante) / ricaricaQui(nave, nave.posizione, dintorni)) * ORA_MS)
   const percento = Math.round((tetto / nave.serbatoio) * 100)
   const dove = luogo(nave.posizione)
   return [
@@ -282,7 +292,7 @@ export function vociDiario({
   const dal = ora.getTime() - GIORNI_DIARIO * 24 * ORA_MS
   return [
     ...vociViaggi(viaggi, ora),
-    ...vociRicarica(nave, ora),
+    ...vociRicarica(nave, ora, { fatte, basi: coordinateBasi(insediamenti) }),
     ...vociScoperte(scoperte),
     ...vociRilevamenti(scansioni),
     ...vociRaccolti(raccolti),

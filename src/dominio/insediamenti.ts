@@ -155,3 +155,8 @@ export function costoEstrattore(fondati: number): Partial<Quantita> {
   const totale = aLivello(costo, crescita, fondati + 1)
   return Object.fromEntries(risorse.map((r) => [r, totale / risorse.length]))
 }
+
+/** Dove sono le basi (base madre e colonie, non gli estrattori): lì il serbatoio si ricarica fino in fondo. */
+export function coordinateBasi(insediamenti: readonly Pick<Insediamento, 'tipo' | 'coordinate'>[]): Coordinate[] {
+  return insediamenti.filter((i) => i.tipo !== 'estrattore').map((i) => i.coordinate)
+}

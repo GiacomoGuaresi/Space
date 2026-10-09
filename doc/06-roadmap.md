@@ -134,7 +134,7 @@ Porta l'interfaccia su PC nella [plancia a finestre](11-interfaccia.md#pc--planc
 ## M7 · Rete di basi ed estrattori ← *prossimo*
 
 - [x] **7.1 Estrattori** su asteroidi, nebulose e giganti, con il loro limite. *Si gioca: la rete di raccolta.* (`022_estrattori.sql`: `space.fonda_estrattore()`, `space.estrattori_fondabili`; sblocchi e limiti in `bilanciamento.fondazione.estrattore`. Si fondano da Qui; un estrattore ha solo produzione e magazzino, e la sua produzione è verificata da `verifica-sql`.)
-- [ ] **7.2 Strutture nelle colonie**: magazzino e laboratorio subito, cantiere (I3) e deposito (I5) dopo la ricerca.
+- [x] **7.2 Strutture nelle colonie**: magazzino e laboratorio subito, cantiere (I3) e deposito (I5) dopo la ricerca. (`023_strutture_colonie.sql`: *Deposito* ricercabile; in ogni base, non solo nella madre, il serbatoio si ricarica fino al pieno, con `Dintorni` in `navigazione.ts`. I5 è di gradino 5 e chiede Terre rare: si paga da M8.2.)
 - [ ] **7.3 Radar** a livelli nelle basi.
 - [ ] **7.4 Abbandono** di basi ed estrattori.
 - [ ] **7.5 Ricerche fino al gradino 6** nei quattro rami (Astrofisica II, Riciclo, Filtri nebulari, Analisi stellare, Raffinazione II, Vele solari…).
