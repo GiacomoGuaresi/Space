@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { basiFondabili } from './insediamenti'
-import { conLeghe, costoLavoro, costoPieno, durataLavoro, mancante, ricetta, valoreNave } from './cantiere'
+import { conLeghe, costoAccelera, costoLavoro, costoPieno, durataLavoro, mancante, ricetta, valoreNave } from './cantiere'
 import { capacitaStiva, nessuna } from './risorse'
 
 describe('cantiere', () => {
@@ -113,5 +113,14 @@ describe('ricerche dei gradini 7-8', () => {
 
   it('Raffinazione III: il pieno a 2 Idrogeno per unità', () => {
     expect(costoPieno(1, 1, new Set(['P1', 'P4', 'P7']))).toBe(2)
+  })
+})
+
+describe('accelerare', () => {
+  it('costa 2 × ore^1,5 di Materia oscura, come in doc/09', () => {
+    expect(costoAccelera(1)).toBe(2)
+    expect(Math.round(costoAccelera(6))).toBe(29)
+    expect(Math.round(costoAccelera(24))).toBe(235)
+    expect(Math.round(costoAccelera(168))).toBe(4355)
   })
 })

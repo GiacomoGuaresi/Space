@@ -28,4 +28,5 @@ export const RIFIUTI: Readonly<Record<MotivoRifiuto, string>> = {
   insediamento_sconosciuto: 'Questo insediamento non c’è più.',
   non_abbandonabile: 'La base madre non si abbandona.',
   gia_costruito: 'Questa struttura c’è già: non ha livelli.',
+  niente_da_accelerare: 'Non c’è più niente da accelerare.',
 }

@@ -8,6 +8,7 @@ import { magazzinoOra, type Insediamento } from '../dominio/insediamenti'
 import { inViaggio, raggioScanner, type Nave } from '../dominio/navigazione'
 import { capacitaNave, RISORSE, type Fatte, type Quantita } from '../dominio/risorse'
 import { stessoSettore } from '../dominio/settore'
+import { AcceleraLavoro } from './Accelera'
 import { AzioniNave } from './azioni'
 import { durata, numero, orario, rovescia } from './formato'
 import { BottoneSecondario, Etichetta } from './plancia'
@@ -196,13 +197,16 @@ export function Coda({ coda, base, ora }: { coda: 'nave' | 'base'; base?: Insedi
       {lavori.map((c) => {
         const corre = c.inizio <= ora
         return (
-          <li key={c.id} className="flex items-baseline gap-2 text-[13px]">
-            <span className="flex-1">
-              {NOMI_LAVORI[c.lavoro]} {c.livello}
-            </span>
-            <span className={`cifre text-xs ${corre ? 'text-ambra' : 'text-testo-tenue'}`}>
-              {corre ? rovescia(c.fine.getTime() - ora.getTime()) : `inizia ${orario(c.inizio, ora)}`}
-            </span>
+          <li key={c.id} className="flex flex-col gap-1.5 text-[13px]">
+            <div className="flex items-baseline gap-2">
+              <span className="flex-1">
+                {NOMI_LAVORI[c.lavoro]} {c.livello}
+              </span>
+              <span className={`cifre text-xs ${corre ? 'text-ambra' : 'text-testo-tenue'}`}>
+                {corre ? rovescia(c.fine.getTime() - ora.getTime()) : `inizia ${orario(c.inizio, ora)}`}
+              </span>
+            </div>
+            {corre && <AcceleraLavoro id={c.id} fine={c.fine} ora={ora} />}
           </li>
         )
       })}

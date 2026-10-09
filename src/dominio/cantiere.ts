@@ -141,3 +141,9 @@ export function raffinazione(fatte: Fatte): number {
   const effetti: Partial<Record<string, number>> = BILANCIAMENTO.ricerche.effetti
   return RAFFINAZIONE.reduce((n, r) => n + (fatte.has(r) ? (effetti[r] ?? 0) : 0), 0)
 }
+
+/** La Materia oscura per saltare `ore` ore di un viaggio, di un lavoro o della ricarica: `2 × ore^1,5`. Come `space.costo_accelera`. */
+export function costoAccelera(ore: number): number {
+  const { base, esponente } = BILANCIAMENTO.accelera
+  return base * Math.max(0, ore) ** esponente
+}

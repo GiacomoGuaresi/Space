@@ -13,6 +13,8 @@ export interface Azioni {
   fondaEstrattore: () => Promise<void>
   /** Abbandona un insediamento: restituisce quello che torna nella stiva. */
   abbandona: (id: number) => Promise<Partial<Record<Risorsa, number>>>
+  /** Salta il tempo che manca pagando Materia oscura. */
+  accelera: (cosa: 'viaggio' | 'ricarica' | 'lavoro', lavoro?: number) => Promise<void>
   /** Avvia un lavoro nel cantiere della base dove sta la nave. */
   potenzia: (lavoro: Lavoro) => Promise<void>
   /** Il pieno al deposito della base dove sta la nave. */
@@ -33,6 +35,9 @@ export const AzioniNave = createContext<Azioni>({
     throw new Error('azioni non disponibili')
   },
   abbandona: async () => {
+    throw new Error('azioni non disponibili')
+  },
+  accelera: async () => {
     throw new Error('azioni non disponibili')
   },
   potenzia: async () => {

@@ -128,6 +128,10 @@ const GUIDA: PaginaWiki[] = [
           alle ricerche dal gradino 5. Presso un buco nero raccoglie Materia oscura, ancora più piano: serve dal livello 15, alle ricerche
           dal gradino 8, per accelerare e per attraversare i wormhole.
         </P>
+        <P>
+          Con la Materia oscura a bordo si può accelerare: far arrivare subito un viaggio, finire subito il lavoro in corso del cantiere
+          (quelli dopo partono prima) o riempire subito il serbatoio. Più tempo si salta, più costa, e in modo più che proporzionale.
+        </P>
         <P>Ripartendo, quello che hai raccolto resta a bordo.</P>
         <P>Le comete si raccolgono arrivando, una volta sola: quello che non entra nella stiva si perde.</P>
         <P>
@@ -147,6 +151,7 @@ const GUIDA: PaginaWiki[] = [
           `${mano} × ${ritmo.comune}/h (Terre rare ${ritmo.terreRare}/h, Materia oscura ${ritmo.materiaOscura}/h) × ricchezza × parte del mix`,
         ],
         ['Pulsar · buco nero', 'Terre rare 100 · Materia oscura 100'],
+        ['Accelerare', `${BILANCIAMENTO.accelera.base} × ore^${numero(BILANCIAMENTO.accelera.esponente, 1)} di Materia oscura`],
         ['Asteroidi', `metallici ${mix(asteroidi.metallica)} · silicei ${mix(asteroidi.silicea)} · misti ${mix(asteroidi.mista)}`],
         ['Nebulosa', 'H 100'],
         ['Gigante gassoso', `senza anelli ${mix(gigante.senza)} · con anelli ${mix(gigante.anelli)}`],

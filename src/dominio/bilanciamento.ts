@@ -289,6 +289,11 @@ export const BILANCIAMENTO = {
       I6: 0.25,
     },
   },
+  accelera: {
+    /** Saltare `ore` ore di un viaggio, di un lavoro o della ricarica costa `base × ore^esponente` di Materia oscura. */
+    base: 2,
+    esponente: 1.5,
+  },
   deposito: {
     /** Il pieno al deposito: tanto Idrogeno per unità di carburante, per tanto a ogni livello. */
     idrogeno: 5,

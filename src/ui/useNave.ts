@@ -219,6 +219,15 @@ export function useNave() {
     [ricarica],
   )
 
+  const accelera = useCallback(
+    async (cosa: 'viaggio' | 'ricarica' | 'lavoro', lavoro?: number) => {
+      await datiNave().accelera(cosa, lavoro)
+      suona(cosa === 'viaggio' ? 'arrivo' : 'clic')
+      await ricarica()
+    },
+    [ricarica],
+  )
+
   const potenzia = useCallback(
     async (lavoro: Lavoro) => {
       await datiNave().potenzia(lavoro)
@@ -261,6 +270,7 @@ export function useNave() {
     fonda,
     fondaEstrattore,
     abbandona,
+    accelera,
     potenzia,
     ricarica,
   }

@@ -510,6 +510,10 @@ language sql immutable parallel safe set search_path = '' as $$
       "I6": 0.25
     }
   },
+  "accelera": {
+    "base": 2,
+    "esponente": 1.5
+  },
   "deposito": {
     "idrogeno": 5,
     "crescita": 0.9

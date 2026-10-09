@@ -9,6 +9,7 @@ import { apri, FINESTRE, inPrimoPiano, useDisposizione, type IdFinestra } from '
 import { useSfondoMappa } from './Mappa'
 import { DentroFinestra, Pannello } from './plancia'
 import { FondaEstrattore, Fondazione } from './Fondazione'
+import { AcceleraRicarica, AcceleraViaggio } from './Accelera'
 import { MagazzinoQui } from './Magazzino'
 import { Raccolta } from './Raccolta'
 import { Rotta } from './Rotta'
@@ -106,7 +107,13 @@ export function Ponte({ nave, viaggio, scarto, scoperte, scansioni, meta: metaSc
       qui: {
         contenuto: (
           <>
+            {volo && (
+              <div className="mb-3 border-b border-separatore pb-3">
+                <AcceleraViaggio nave={nave} ora={ora} />
+              </div>
+            )}
             <Scheda settore={settore} />
+            {!volo && <AcceleraRicarica nave={nave} ora={ora} />}
             <Raccolta nave={nave} ora={ora} />
             <MagazzinoQui nave={nave} ora={ora} />
             <Fondazione nave={nave} ora={ora} />
@@ -168,8 +175,9 @@ export function Ponte({ nave, viaggio, scarto, scoperte, scansioni, meta: metaSc
   return (
     <Cornice pagina="ponte" nave={nave} viaggio={viaggio} scarto={scarto} fondo={fondo}>
       {volo ? (
-        <Pannello className="p-3 text-xs text-testo-tenue">
+        <Pannello className="flex flex-col gap-2 p-3 text-xs text-testo-tenue">
           Lo scanner e la rotta tornano disponibili all'arrivo. Il nome di quello che c'è laggiù lo scoprirai arrivando.
+          <AcceleraViaggio nave={nave} ora={ora} />
         </Pannello>
       ) : (
         <Pannello className="flex max-h-[58dvh] flex-col">
@@ -187,6 +195,7 @@ export function Ponte({ nave, viaggio, scarto, scoperte, scansioni, meta: metaSc
             ) : scheda === 'qui' || scheda === 'base' ? (
               <>
                 <Scheda settore={settore} />
+                <AcceleraRicarica nave={nave} ora={ora} />
                 <Raccolta nave={nave} ora={ora} />
                 <MagazzinoQui nave={nave} ora={ora} />
                 <Fondazione nave={nave} ora={ora} />
