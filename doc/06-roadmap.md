@@ -131,17 +131,17 @@ Porta l'interfaccia su PC nella [plancia a finestre](11-interfaccia.md#pc--planc
 
 **Si consegna**: le prime scelte nell'albero.
 
-## M7 · Rete di basi ed estrattori ← *prossimo*
+## M7 · Rete di basi ed estrattori ✅
 
 - [x] **7.1 Estrattori** su asteroidi, nebulose e giganti, con il loro limite. *Si gioca: la rete di raccolta.* (`022_estrattori.sql`: `space.fonda_estrattore()`, `space.estrattori_fondabili`; sblocchi e limiti in `bilanciamento.fondazione.estrattore`. Si fondano da Qui; un estrattore ha solo produzione e magazzino, e la sua produzione è verificata da `verifica-sql`.)
 - [x] **7.2 Strutture nelle colonie**: magazzino e laboratorio subito, cantiere (I3) e deposito (I5) dopo la ricerca. (`023_strutture_colonie.sql`: *Deposito* ricercabile; in ogni base, non solo nella madre, il serbatoio si ricarica fino al pieno, con `Dintorni` in `navigazione.ts`. I5 è di gradino 5 e chiede Terre rare: si paga da M8.2.)
 - [x] **7.3 Radar** a livelli nelle basi. (`024_radar.sql`: colonna `insediamento.radar`, si costruisce con S3 in ogni base, non negli estrattori. Il database tiene solo il livello: le bolle le ricava il browser in `useNave` con `sosteRadar`, coi tipi dello scanner della nave, e mappa, diario e pallini le vedono come le soste.)
 - [x] **7.4 Abbandono** di basi ed estrattori. (`025_abbandono.sql`: `space.abbandona(id)`, dalla Rete con conferma; non la base madre, né quella dove la nave sta lavorando. La fondazione resta in `insediamento.costo`, per il rimborso di *Riciclo*, già pronto.)
-- [ ] **7.5 Ricerche fino al gradino 6** nei quattro rami (Astrofisica II, Riciclo, Filtri nebulari, Analisi stellare, Raffinazione II, Vele solari…).
+- [x] **7.5 Ricerche fino al gradino 6** nei quattro rami (Astrofisica II, Riciclo, Filtri nebulari, Analisi stellare, Raffinazione II, Vele solari…). (`026_ricerche_6.sql`: attivi P3 (solo lo sblocco, il ponte arriva con 8.1), P4, P5, C5 (+2 estrattori, quelli sulle pulsar con 8.2), C6, S5, S6, I6. `space.raggio_di` e `raggioQui` danno il raggio con le ricerche. Dal gradino 5 le ricerche chiedono Terre rare: si pagano da 8.2.)
 
 **Si consegna**: l'infrastruttura.
 
-## M8 · Ponte di curvatura e Terre rare
+## M8 · Ponte di curvatura e Terre rare ← *prossimo*
 
 - [ ] **8.1 Ponte di curvatura** (P3): rete libera tra le basi, ×3 velocità e ⅓ carburante. *Si gioca: spostarsi nella propria rete.*
 - [ ] **8.2 Terre rare**: raccolta a mano presso le pulsar, Estrattori stellari (C5).

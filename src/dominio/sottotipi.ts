@@ -60,3 +60,9 @@ export function sottotipo(d: Dettagli): string | null {
       return null
   }
 }
+
+/** Il nome del sottotipo di un corpo, come nel catalogo (es. "Metallici", "G · nana gialla"), o `null`. */
+export function nomeSottotipo(d: Dettagli): string | null {
+  const chiave = sottotipo(d)
+  return SOTTOTIPI[d.tipo].find((s) => s.chiave === chiave)?.nome ?? null
+}

@@ -106,7 +106,16 @@ export function mancante(costo: Partial<Quantita>, stiva: Quantita, magazzino: P
  */
 export function costoPieno(mancano: number, deposito: number, fatte: Fatte = new Set()): number {
   const { idrogeno, crescita } = BILANCIAMENTO.deposito
-  // *Raffinazione I* (P1) toglie un'unità di Idrogeno per unità di carburante.
-  const base = idrogeno - (fatte.has('P1') ? BILANCIAMENTO.ricerche.effetti.P1 : 0)
+  // Ogni *Raffinazione* (P1, P4…) toglie un'unità di Idrogeno per unità di carburante.
+  const base = idrogeno - raffinazione(fatte)
   return Math.max(0, mancano) * aLivello(base, crescita, deposito)
+}
+
+/** Le ricerche di Raffinazione, in ordine (doc/10-ricerche.md#propulsione). */
+export const RAFFINAZIONE = ['P1', 'P4', 'P7', 'P10'] as const
+
+/** Quante unità di Idrogeno tolgono dal pieno le Raffinazioni fatte. Come `space.costo_pieno_di`. */
+export function raffinazione(fatte: Fatte): number {
+  const effetti: Partial<Record<string, number>> = BILANCIAMENTO.ricerche.effetti
+  return RAFFINAZIONE.reduce((n, r) => n + (fatte.has(r) ? (effetti[r] ?? 0) : 0), 0)
 }

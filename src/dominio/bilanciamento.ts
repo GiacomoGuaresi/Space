@@ -231,7 +231,12 @@ export const BILANCIAMENTO = {
       I10: { gradino: 10, richiede: ['I9'] },
     },
     /** I nodi che si possono già ricercare: gli altri arrivano con le loro meccaniche (doc/06-roadmap.md). */
-    attive: ['I1', 'I2', 'I3', 'I4', 'I5', 'C1', 'C2', 'C3', 'C4', 'S1', 'S2', 'S3', 'S4', 'P1', 'P2'] as string[],
+    attive: [
+      'I1', 'I2', 'I3', 'I4', 'I5', 'I6',
+      'C1', 'C2', 'C3', 'C4', 'C5', 'C6',
+      'S1', 'S2', 'S3', 'S4', 'S5', 'S6',
+      'P1', 'P2', 'P3', 'P4', 'P5',
+    ] as string[],
     /** Gli effetti, con i loro numeri. */
     effetti: {
       /** Automazione: tempi di costruzione −10 %. */
@@ -248,6 +253,12 @@ export const BILANCIAMENTO = {
       P1: 1,
       /** Iniettori: consumo −10 %. */
       P2: 0.1,
+      /** Raffinazione II: un'altra unità di Idrogeno in meno. */
+      P4: 1,
+      /** Vele solari: presso una stella la ricarica vale tanto (invece di `carburante.ricaricaStella`). */
+      P5: 3,
+      /** Astrofisica II: basi fondabili in più. */
+      C6: 2,
       /** Riciclo: abbandonando un insediamento torna questa parte di quanto vi si è speso. */
       I6: 0.25,
     },

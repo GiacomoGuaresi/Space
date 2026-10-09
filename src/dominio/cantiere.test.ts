@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { basiFondabili } from './insediamenti'
 import { costoLavoro, costoPieno, durataLavoro, mancante, ricetta, valoreNave } from './cantiere'
 import { nessuna } from './risorse'
 
@@ -64,5 +65,15 @@ describe('ricerche di Ingegneria', () => {
 describe('ricerche di Propulsione', () => {
   it('Raffinazione I: 4 Idrogeno per unità', () => {
     expect(costoPieno(2, 1, new Set(['P1']))).toBe(8)
+  })
+})
+
+describe('Raffinazione II e Astrofisica II', () => {
+  it('il pieno costa 3 Idrogeno per unità con Raffinazione I e II', () => {
+    expect(costoPieno(1, 1, new Set(['P1', 'P4']))).toBe(3)
+  })
+
+  it('Astrofisica II dà altre 2 basi', () => {
+    expect(basiFondabili(new Set(['C1', 'C6']))).toBe(6)
   })
 })

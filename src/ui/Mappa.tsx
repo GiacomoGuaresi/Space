@@ -13,6 +13,7 @@ import { MenuContesto, menuCorpo, type Menu } from './MenuContesto'
 import { segnaRaroVisto } from './pallini'
 import { BottonePrimario, Etichetta, Pannello, SimboloRarita } from './plancia'
 import { CaricoAttuale, useDintorni } from './SchedaNave'
+import { nomeSottotipo } from '../dominio/sottotipi'
 import { useOra } from './useNave'
 
 // three.js pesa: si carica a parte, come la scena del ponte.
@@ -89,6 +90,7 @@ export function Mappa({ nave, viaggio, scarto, scoperte, scansioni }: Props) {
           <div className="flex gap-5">
             <Valore etichetta="Distanza">{numero(distanza(nave.posizione, punto.coordinate), 1)} sett.</Valore>
             {spettrometria && <Valore etichetta="Ricchezza">×{numero(settore(punto.coordinate).corpo?.ricchezza ?? 0, 2)}</Valore>}
+            {(scoperta || fatte?.has('S6')) && <SottotipoPunto c={punto.coordinate} />}
             {prova && <Valore etichetta="Durata">{durata(prova.durata)}</Valore>}
             {prova && <Valore etichetta="Carb">{numero(prova.consumo, 1)}</Valore>}
           </div>
@@ -248,4 +250,11 @@ export function useSfondoMappa({
       </div>
     ),
   }
+}
+
+/** Il sottotipo del corpo scelto: si vede se è visitato, o con *Analisi stellare* (S6). */
+function SottotipoPunto({ c }: { c: Coordinate }) {
+  const corpo = settore(c).corpo
+  const nome = corpo && nomeSottotipo(corpo.dettagli)
+  return nome ? <Valore etichetta="Sottotipo">{nome}</Valore> : null
 }

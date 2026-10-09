@@ -258,12 +258,15 @@ const GUIDA: PaginaWiki[] = [
     numeri: ({ nave }) => [
       ['Durata', `distanza / ${numero(nave.velocita, 2)} settori/h`],
       ['Consumo', '1 unità per settore'],
-      ['Ricarica', `${numero(nave.ricarica, 2)}/h · ×${carburante.ricaricaStella} accanto a una stella`],
+      [
+        'Ricarica',
+        `${numero(nave.ricarica, 2)}/h · ×${carburante.ricaricaStella} accanto a una stella (×${BILANCIAMENTO.ricerche.effetti.P5} con Vele solari)`,
+      ],
       ['Tetto fuori', `${numero(carburante.tettoFuori * 100)} % = ${numero(nave.serbatoio * carburante.tettoFuori, 1)} unità`],
       ['Tetto in base', `100 % = ${numero(nave.serbatoio, 1)} unità`],
       [
         'Deposito',
-        `pieno subito in una base col deposito: ${BILANCIAMENTO.deposito.idrogeno} Idrogeno per unità × ${BILANCIAMENTO.deposito.crescita}^(livello − 1)`,
+        `pieno subito in una base col deposito: ${BILANCIAMENTO.deposito.idrogeno} Idrogeno per unità × ${BILANCIAMENTO.deposito.crescita}^(livello − 1), un'unità in meno per ogni Raffinazione`,
       ],
     ],
   },
@@ -279,7 +282,10 @@ const GUIDA: PaginaWiki[] = [
           Lo scanner mostra i corpi attorno alla nave. Vede solo i tipi del suo livello: gli altri sono invisibili, e il settore sembra
           vuoto finché non ci arrivi. Il nome di un corpo lo scopri solo arrivando.
         </P>
-        <P>Ogni sosta resta sulla mappa. Dentro una nebulosa il raggio si dimezza; in sosta presso una pulsar raddoppia.</P>
+        <P>
+          Ogni sosta resta sulla mappa. Dentro una nebulosa il raggio si dimezza (non più con Filtri nebulari); in sosta presso una pulsar
+          raddoppia. Con Spettrometria si vede la ricchezza dei corpi rilevati, con Analisi stellare il loro sottotipo.
+        </P>
         <P>
           Con la ricerca Radar ogni base può costruire un radar: uno scanner fisso attorno alla base, che vede gli stessi tipi dello scanner
           della nave. Il suo raggio cresce coi livelli, e quello che rileva resta sulla mappa.

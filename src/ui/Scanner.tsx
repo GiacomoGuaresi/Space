@@ -1,7 +1,8 @@
 import { useCallback, useContext, useMemo, useState } from 'react'
 import { Check } from 'lucide-react'
 import { CATALOGO } from '../dominio/catalogo'
-import { raggioScanner, scansione, tipiRilevabili } from '../dominio/navigazione'
+import { raggioQui, scansione, tipiRilevabili } from '../dominio/navigazione'
+import { nomeSottotipo } from '../dominio/sottotipi'
 import { settore, tipoSettore, type Coordinate } from '../dominio/settore'
 import { CaricoAttuale } from './SchedaNave'
 import { coordinate, numero, settori } from './formato'
@@ -24,12 +25,16 @@ interface Props {
  */
 export function Scanner({ centro, livello, scoperti, onScegli }: Props) {
   const tipoQui = tipoSettore(centro)
-  const raggio = raggioScanner(livello, tipoQui)
+  const fatte = useContext(CaricoAttuale)?.fatte
+  const raggio = raggioQui(livello, centro, fatte)
+  const filtri = tipoQui === 'nebulosa' && (fatte?.has('S5') ?? false)
   const tipi = useMemo(() => tipiRilevabili(livello), [livello])
   const trovati = useMemo(() => scansione(centro, raggio, tipi), [centro, raggio, tipi])
   // Su PC il tasto destro su un corpo apre il menu: Imposta rotta · Apri nella wiki.
   const pc = usePC()
-  const spettrometria = useContext(CaricoAttuale)?.fatte.has('S2') ?? false
+  const spettrometria = fatte?.has('S2') ?? false
+  // *Analisi stellare* (S6): i sottotipi dei corpi rilevati.
+  const analisi = fatte?.has('S6') ?? false
   const [menu, setMenu] = useState<Menu | null>(null)
   const chiudiMenu = useCallback(() => setMenu(null), [])
 
@@ -37,7 +42,13 @@ export function Scanner({ centro, livello, scoperti, onScegli }: Props) {
     <div className="flex flex-col gap-1.5">
       <p className="m-0 text-xs text-testo-tenue">
         Raggio {settori(raggio)}
-        {tipoQui === 'nebulosa' ? ' · ridotto dalla nebulosa' : tipoQui === 'pulsar' ? ' · raddoppiato dalla pulsar' : ''}
+        {tipoQui === 'nebulosa'
+          ? filtri
+            ? ' · la nebulosa non lo riduce (Filtri nebulari)'
+            : ' · ridotto dalla nebulosa'
+          : tipoQui === 'pulsar'
+            ? ' · raddoppiato dalla pulsar'
+            : ''}
         {' · rileva: '}
         {[...tipi].map((t) => CATALOGO[t].nome.toLowerCase()).join(', ')}
       </p>
@@ -64,6 +75,7 @@ export function Scanner({ centro, livello, scoperti, onScegli }: Props) {
                   <SimboloRarita rarita={CATALOGO[tipo].rarita} className="w-3 shrink-0 text-center" />
                   <span className="flex-1">
                     {CATALOGO[tipo].nome}
+                    {analisi && <Sottotipo c={c} />}
                     <span className="text-testo-tenue"> · {coordinate(c)}</span>
                   </span>
                   {scoperti.has(chiave) && <Check className="size-3.5 text-[#7fd1c7]" aria-label="Già scoperto" />}
@@ -83,4 +95,11 @@ export function Scanner({ centro, livello, scoperti, onScegli }: Props) {
       <MenuContesto menu={menu} onChiudi={chiudiMenu} />
     </div>
   )
+}
+
+/** Il sottotipo di un corpo rilevato, se il suo tipo ne ha uno. */
+function Sottotipo({ c }: { c: Coordinate }) {
+  const corpo = settore(c).corpo
+  const nome = corpo && nomeSottotipo(corpo.dettagli)
+  return nome ? <span className="text-ambra"> · {nome.toLowerCase()}</span> : null
 }

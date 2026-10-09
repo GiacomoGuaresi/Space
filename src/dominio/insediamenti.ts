@@ -128,9 +128,13 @@ export function pienoIl(i: Insediamento, fatte: Fatte = new Set()): Date {
   return new Date(i.ultima.getTime() + pienoTra(i, i.ultima, fatte) * 3_600_000)
 }
 
-/** Quante basi si possono fondare: 2, più quelle di *Astrofisica I* (C1). Come `space.basi_fondabili`. */
+/** Le ricerche di Astrofisica, che danno basi fondabili in più (doc/10-ricerche.md#colonizzazione). */
+const ASTROFISICA = ['C1', 'C6', 'C10'] as const
+
+/** Quante basi si possono fondare: 2, più quelle di *Astrofisica* (C1, C6…). Come `space.basi_fondabili`. */
 export function basiFondabili(fatte: Fatte = new Set()): number {
-  return BILANCIAMENTO.fondazione.basi + (fatte.has('C1') ? BILANCIAMENTO.ricerche.effetti.C1 : 0)
+  const effetti: Partial<Record<string, number>> = BILANCIAMENTO.ricerche.effetti
+  return BILANCIAMENTO.fondazione.basi + ASTROFISICA.reduce((n, r) => n + (fatte.has(r) ? (effetti[r] ?? 0) : 0), 0)
 }
 
 /** I tipi di corpo su cui si fonda un estrattore, con le ricerche fatte. Come `space.fonda_estrattore`. */

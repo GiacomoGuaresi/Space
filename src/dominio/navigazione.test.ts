@@ -11,6 +11,8 @@ import {
   rotta,
   scansione,
   tettoQui,
+  raggioQui,
+  ricaricaQui,
   tipiRilevabili,
   type Nave,
 } from './navigazione'
@@ -186,5 +188,21 @@ describe('Iniettori', () => {
     expect(quotaConsumo(false, new Set(['P2']))).toBeCloseTo(0.9, 12)
     expect(quotaConsumo(true, new Set(['P2']))).toBeCloseTo(0.72, 12)
     expect(quotaConsumo(false, new Set())).toBe(1)
+  })
+})
+
+describe('ricerche fino al gradino 6', () => {
+  it('Vele solari: presso una stella la ricarica è ×3', () => {
+    let stella = { x: 1, y: 0, z: 0 }
+    for (let x = 1; tipoSettore(stella) !== 'stella'; x++) stella = { x, y: 3, z: 0 }
+    expect(ricaricaQui(nave(), stella)).toBeCloseTo(NAVE_INIZIALE.ricarica * 2, 12)
+    expect(ricaricaQui(nave(), stella, { fatte: new Set(['P5']) })).toBeCloseTo(NAVE_INIZIALE.ricarica * 3, 12)
+  })
+
+  it('Filtri nebulari: le nebulose non riducono lo scanner', () => {
+    let nebulosa = { x: 1, y: 0, z: 0 }
+    for (let x = 1; tipoSettore(nebulosa) !== 'nebulosa'; x++) nebulosa = { x, y: 3, z: 0 }
+    expect(raggioQui(1, nebulosa)).toBe(raggioScanner(1, 'nebulosa'))
+    expect(raggioQui(1, nebulosa, new Set(['S5']))).toBe(raggioScanner(1, null))
   })
 })

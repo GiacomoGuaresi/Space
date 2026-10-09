@@ -58,8 +58,10 @@ export interface Dintorni {
 }
 
 /** La ricarica all'ora, da fermi nel settore `qui`: più veloce accanto a una stella. */
-export function ricaricaQui(nave: Nave, qui: Coordinate, _dintorni: Dintorni = {}): number {
-  return nave.ricarica * (tipoSettore(qui) === 'stella' ? CARBURANTE.ricaricaStella : 1)
+export function ricaricaQui(nave: Nave, qui: Coordinate, { fatte }: Dintorni = {}): number {
+  if (tipoSettore(qui) !== 'stella') return nave.ricarica
+  // *Vele solari* (P5) la portano da ×2 a ×3.
+  return nave.ricarica * (fatte?.has('P5') ? BILANCIAMENTO.ricerche.effetti.P5 : CARBURANTE.ricaricaStella)
 }
 
 /**
@@ -173,6 +175,15 @@ export function raggioScanner(livello: number, tipoQui: TipoCorpo | null): numbe
   if (tipoQui === 'nebulosa') return raggio * SCANNER.nebulosa
   if (tipoQui === 'pulsar') return raggio * SCANNER.pulsar
   return raggio
+}
+
+/**
+ * Il raggio dello scanner fermi in `qui`, con le ricerche: con *Filtri
+ * nebulari* (S5) le nebulose non lo riducono. Come `space.raggio_di`.
+ */
+export function raggioQui(livello: number, qui: Coordinate, fatte: ReadonlySet<string> = new Set()): number {
+  const tipo = tipoSettore(qui)
+  return raggioScanner(livello, tipo === 'nebulosa' && fatte.has('S5') ? null : tipo)
 }
 
 export interface Rilevamento {

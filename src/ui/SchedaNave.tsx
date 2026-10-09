@@ -1,10 +1,9 @@
 import { createContext, useContext, useMemo, type ReactNode } from 'react'
 import type { Raccolto } from '../dati'
 import { coordinateBasi, type Insediamento } from '../dominio/insediamenti'
-import { raggioScanner, type Dintorni, type Nave } from '../dominio/navigazione'
+import { raggioQui, type Dintorni, type Nave } from '../dominio/navigazione'
 import { capacitaNave, RISORSE, type Carico, type Fatte, type Quantita } from '../dominio/risorse'
 import { NOMI_RISORSE } from '../dominio/catalogo'
-import { tipoSettore } from '../dominio/settore'
 import { numero } from './formato'
 import { Coda, Potenziamenti, STATISTICHE_ATTIVE } from './Cantiere'
 import { Etichetta, Info, Numero, Pannello } from './plancia'
@@ -50,7 +49,7 @@ export function SchedaNave({ nave, quantita, ora }: { nave: Nave; quantita: Quan
           <Riga nome={`Serbatoio · liv. ${nave.livelli.serbatoio}`}>{numero(nave.serbatoio, 1)} unità</Riga>
           <Riga nome={`Ricarica · liv. ${nave.livelli.ricarica}`}>{numero(nave.ricarica, 2)} unità/h</Riga>
           <Riga nome={`Scanner · liv. ${nave.scanner}`}>
-            raggio {numero(raggioScanner(nave.scanner, tipoSettore(nave.posizione)), 1)} sett.
+            raggio {numero(raggioQui(nave.scanner, nave.posizione, fatte), 1)} sett.
           </Riga>
           <Riga nome={`Stiva · liv. ${nave.stiva}`}>
             <span className="inline-flex items-center gap-1.5">
