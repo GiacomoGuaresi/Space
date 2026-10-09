@@ -203,6 +203,16 @@ export function useNave() {
     await ricarica()
   }, [ricarica])
 
+  const abbandona = useCallback(
+    async (id: number) => {
+      const reso = await datiNave().abbandona(id)
+      suona('clic')
+      await ricarica()
+      return reso
+    },
+    [ricarica],
+  )
+
   const potenzia = useCallback(
     async (lavoro: Lavoro) => {
       await datiNave().potenzia(lavoro)
@@ -244,6 +254,7 @@ export function useNave() {
     parti,
     fonda,
     fondaEstrattore,
+    abbandona,
     potenzia,
     ricarica,
   }

@@ -25,4 +25,6 @@ export const RIFIUTI: Readonly<Record<MotivoRifiuto, string>> = {
   serve_laboratorio: 'Serve un laboratorio di livello pari almeno al gradino.',
   non_estraibile: 'Qui non si può fondare un estrattore.',
   limite_estrattori: 'Hai già tutti gli estrattori che puoi fondare.',
+  insediamento_sconosciuto: 'Questo insediamento non c’è più.',
+  non_abbandonabile: 'La base madre non si abbandona.',
 }

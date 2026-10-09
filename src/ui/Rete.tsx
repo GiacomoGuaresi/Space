@@ -1,4 +1,8 @@
 import { useContext, useState } from 'react'
+import { ViaggioRifiutato } from '../dati'
+import { BILANCIAMENTO } from '../dominio/bilanciamento'
+import { AzioniNave } from './azioni'
+import { RIFIUTI } from './rifiuti'
 import { magazzinoOra, pienoTra, tettoMagazzino, type Insediamento } from '../dominio/insediamenti'
 import { inViaggio, type Nave } from '../dominio/navigazione'
 import { RISORSE, type Fatte } from '../dominio/risorse'
@@ -90,6 +94,7 @@ export function Rete({ nave, insediamenti, ora }: { nave: Nave; insediamenti: re
                 </p>
               )}
               {tra === 0 && !qui && <p className="m-0 text-xs text-ambra">Pieno: passa a raccogliere, la produzione è ferma.</p>}
+              {i.tipo !== 'madre' && <Abbandono insediamento={i} nome={nome} />}
             </li>
           )
         })}
@@ -99,5 +104,58 @@ export function Rete({ nave, insediamenti, ora }: { nave: Nave; insediamenti: re
         durante la sosta.
       </p>
     </Pannello>
+  )
+}
+
+/**
+ * Abbandonare un insediamento (doc/02-meccaniche.md#insediamenti), con una
+ * conferma: strutture, coda e scorte spariscono, il corpo torna libero. Con
+ * *Riciclo* torna nella stiva una parte di quanto ci hai speso.
+ */
+function Abbandono({ insediamento, nome }: { insediamento: Insediamento; nome: string }) {
+  const { abbandona } = useContext(AzioniNave)
+  const riciclo = useContext(CaricoAttuale)?.fatte.has('I6') ?? false
+  const [conferma, setConferma] = useState(false)
+  const [inCorso, setInCorso] = useState(false)
+  const [errore, setErrore] = useState<string | null>(null)
+  const fai = async () => {
+    setInCorso(true)
+    setErrore(null)
+    try {
+      await abbandona(insediamento.id)
+    } catch (e) {
+      setErrore(e instanceof ViaggioRifiutato ? RIFIUTI[e.motivo] : 'Abbandono non riuscito: controlla la connessione e riprova.')
+      setInCorso(false)
+    }
+  }
+  if (!conferma) {
+    return (
+      <button type="button" className="etichetta self-end text-testo-tenue hover:text-pericolo" onClick={() => setConferma(true)}>
+        Abbandona…
+      </button>
+    )
+  }
+  return (
+    <div className="flex flex-col gap-2 rounded-plancia border border-pericolo/60 p-2.5" role="alertdialog" aria-label={`Abbandona ${nome}`}>
+      <p className="m-0 text-xs">
+        Abbandoni {nome}: strutture, coda e magazzino spariscono, e il corpo torna libero.{' '}
+        {riciclo
+          ? `Con Riciclo torna nella stiva il ${Math.round(BILANCIAMENTO.ricerche.effetti.I6 * 100)} % di quanto ci hai speso, fin dove c'è posto.`
+          : 'Non torna nulla.'}
+      </p>
+      {errore && (
+        <p className="m-0 text-xs text-pericolo" role="alert">
+          {errore}
+        </p>
+      )}
+      <div className="flex gap-2">
+        <BottoneSecondario className="flex-1" disabled={inCorso} onClick={() => setConferma(false)}>
+          Annulla
+        </BottoneSecondario>
+        <BottoneSecondario className="flex-1 border-pericolo! text-pericolo!" disabled={inCorso} onClick={() => void fai()}>
+          Abbandona
+        </BottoneSecondario>
+      </div>
+    </div>
   )
 }

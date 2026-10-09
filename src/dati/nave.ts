@@ -93,6 +93,8 @@ export type MotivoRifiuto =
   | 'serve_laboratorio'
   | 'non_estraibile'
   | 'limite_estrattori'
+  | 'insediamento_sconosciuto'
+  | 'non_abbandonabile'
 
 export class ViaggioRifiutato extends Error {
   constructor(readonly motivo: MotivoRifiuto) {
@@ -194,6 +196,8 @@ const MOTIVI: readonly MotivoRifiuto[] = [
   'serve_laboratorio',
   'non_estraibile',
   'limite_estrattori',
+  'insediamento_sconosciuto',
+  'non_abbandonabile',
 ]
 
 export class NaveSupabase {
@@ -239,6 +243,17 @@ export class NaveSupabase {
       if (motivo) throw new ViaggioRifiutato(motivo)
       throw fallita('Fondazione non riuscita', error)
     }
+  }
+
+  /** Abbandona l'insediamento `id`: quello che torna nella stiva (con *Riciclo*). */
+  async abbandona(id: number): Promise<Partial<Record<Risorsa, number>>> {
+    const { data, error } = await this.client.rpc('abbandona', { id })
+    if (error) {
+      const motivo = MOTIVI.find((m) => m === error.message)
+      if (motivo) throw new ViaggioRifiutato(motivo)
+      throw fallita('Abbandono non riuscito', error)
+    }
+    return (data as { reso: Partial<Record<Risorsa, number>> }).reso
   }
 
   /** Avvia un lavoro nel cantiere della base dove sta la nave. */

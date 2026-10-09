@@ -4,12 +4,15 @@
 import { createContext } from 'react'
 import type { Costruzione, RicercaAvviata } from '../dati'
 import type { Lavoro } from '../dominio/cantiere'
+import type { Risorsa } from '../dominio/risorse'
 
 export interface Azioni {
   /** Fonda una base sul sistema dove sta la nave, col pianeta `pianeta`. */
   fonda: (pianeta: number) => Promise<void>
   /** Fonda un estrattore sul corpo dove sta la nave. */
   fondaEstrattore: () => Promise<void>
+  /** Abbandona un insediamento: restituisce quello che torna nella stiva. */
+  abbandona: (id: number) => Promise<Partial<Record<Risorsa, number>>>
   /** Avvia un lavoro nel cantiere della base dove sta la nave. */
   potenzia: (lavoro: Lavoro) => Promise<void>
   /** Il pieno al deposito della base dove sta la nave. */
@@ -27,6 +30,9 @@ export const AzioniNave = createContext<Azioni>({
     throw new Error('azioni non disponibili')
   },
   fondaEstrattore: async () => {
+    throw new Error('azioni non disponibili')
+  },
+  abbandona: async () => {
     throw new Error('azioni non disponibili')
   },
   potenzia: async () => {

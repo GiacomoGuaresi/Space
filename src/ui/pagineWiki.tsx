@@ -175,6 +175,10 @@ const GUIDA: PaginaWiki[] = [
           con Raccoglitori di gas. Producono col mix del corpo e hanno solo produzione e magazzino: niente strutture, niente ricarica
           piena. Hanno un loro limite, separato da quello delle basi.
         </P>
+        <P>
+          Dalla Rete si può abbandonare una base o un estrattore, tranne la base madre: strutture, coda e scorte spariscono e il corpo torna
+          libero, e si libera un posto nel limite. Con la ricerca Riciclo torna nella stiva una parte di quanto ci avevi speso.
+        </P>
       </>
     ),
     numeri: () => {

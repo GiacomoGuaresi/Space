@@ -248,6 +248,8 @@ export const BILANCIAMENTO = {
       P1: 1,
       /** Iniettori: consumo −10 %. */
       P2: 0.1,
+      /** Riciclo: abbandonando un insediamento torna questa parte di quanto vi si è speso. */
+      I6: 0.25,
     },
   },
   deposito: {
