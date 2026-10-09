@@ -94,3 +94,12 @@ describe('Stiva modulare', () => {
     expect(capacitaNave(1)).toBe(25)
   })
 })
+
+describe('Terre rare', () => {
+  it('presso una pulsar si raccolgono a mano: 3 × 3/h × ricchezza', () => {
+    let c = { x: 30, y: 7, z: -3 }
+    for (let x = 30; tipoSettore(c) !== 'pulsar'; x++) c = { x, y: 7, z: -3 }
+    const corpo = settore(c).corpo!
+    expect(ritmoMano(corpo)).toEqual({ terreRare: 3 * 3 * corpo.ricchezza })
+  })
+})

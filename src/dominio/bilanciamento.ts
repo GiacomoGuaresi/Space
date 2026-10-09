@@ -145,8 +145,8 @@ export const BILANCIAMENTO = {
       costo: 60,
       crescita: 1.4,
       risorse: ['metallo', 'silicio'],
-      /** La ricerca che apre gli estrattori su ogni tipo di corpo (pulsar e buchi neri arrivano con M8-M9). */
-      tipi: { asteroidi: 'C2', nebulosa: 'C3', gigante: 'C3' } as Record<string, string>,
+      /** La ricerca che apre gli estrattori su ogni tipo di corpo (i buchi neri arrivano con M9). */
+      tipi: { asteroidi: 'C2', nebulosa: 'C3', gigante: 'C3', pulsar: 'C5' } as Record<string, string>,
       /** Quanti estrattori in più dà ogni ricerca. */
       limite: { C2: 3, C3: 2, C5: 2, C7: 2 } as Record<string, number>,
     },
@@ -311,6 +311,7 @@ export const BILANCIAMENTO = {
       senza: { idrogeno: 0.7, ghiaccio: 0.3 },
       anelli: { idrogeno: 0.5, ghiaccio: 0.5 },
     },
+    pulsar: { terreRare: 1 },
     pianeti: {
       roccioso: { metallo: 0.5, silicio: 0.5 },
       oceanico: { metallo: 0.2, silicio: 0.2, ghiaccio: 0.6 },

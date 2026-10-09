@@ -57,8 +57,8 @@ export interface Carico {
 
 /**
  * Come si divide la produzione di un corpo tra le risorse, o `null` se non ne
- * ha di raccoglibili. Per ora solo le comuni: Terre rare e Materia oscura si
- * raccolgono con M8-M9 (doc/06-roadmap.md). Un sistema planetario fa la media
+ * ha di raccoglibili. Le pulsar danno Terre rare; la Materia oscura dei buchi
+ * neri arriva con M9 (doc/06-roadmap.md). Un sistema planetario fa la media
  * dei suoi pianeti, nell'ordine delle orbite.
  */
 export function mixCorpo(corpo: Corpo | null): Partial<Quantita> | null {
@@ -72,6 +72,8 @@ export function mixCorpo(corpo: Corpo | null): Partial<Quantita> | null {
       return { ...mix.nebulosa }
     case 'gigante':
       return { ...mix.gigante[d.anelli ? 'anelli' : 'senza'] }
+    case 'pulsar':
+      return { ...mix.pulsar }
     case 'sistema': {
       const media: Partial<Quantita> = {}
       for (const p of d.pianeti) {
@@ -100,11 +102,11 @@ export function ritmoRisorsa(r: Risorsa): number {
 export function ritmoMano(corpo: Corpo | null): Partial<Quantita> | null {
   const mix = mixCorpo(corpo)
   if (!corpo || !mix) return null
-  const { mano, ritmo } = BILANCIAMENTO.produzione
+  const { mano } = BILANCIAMENTO.produzione
   const ritmi: Partial<Quantita> = {}
   for (const r of RISORSE) {
     const parte = mix[r]
-    if (parte) ritmi[r] = mano * ritmo.comune * corpo.ricchezza * parte
+    if (parte) ritmi[r] = mano * ritmoRisorsa(r) * corpo.ricchezza * parte
   }
   return ritmi
 }

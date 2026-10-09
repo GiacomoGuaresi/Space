@@ -121,7 +121,8 @@ language sql immutable parallel safe set search_path = '' as $$
       "tipi": {
         "asteroidi": "C2",
         "nebulosa": "C3",
-        "gigante": "C3"
+        "gigante": "C3",
+        "pulsar": "C5"
       },
       "limite": {
         "C2": 3,
@@ -532,6 +533,9 @@ language sql immutable parallel safe set search_path = '' as $$
         "idrogeno": 0.5,
         "ghiaccio": 0.5
       }
+    },
+    "pulsar": {
+      "terreRare": 1
     },
     "pianeti": {
       "roccioso": {

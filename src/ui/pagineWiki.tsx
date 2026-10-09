@@ -123,6 +123,10 @@ const GUIDA: PaginaWiki[] = [
           finché la stiva di quella risorsa non è piena. Quanto e cosa dipende dal sottotipo del corpo e dalla sua ricchezza, che cresce
           allontanandosi dalla base. Un sistema planetario dà la media dei suoi pianeti.
         </P>
+        <P>
+          In sosta presso una pulsar la nave raccoglie Terre rare, più lentamente delle risorse comuni. Servono alle ricette dal livello 10 e
+          alle ricerche dal gradino 5.
+        </P>
         <P>Ripartendo, quello che hai raccolto resta a bordo.</P>
         <P>Le comete si raccolgono arrivando, una volta sola: quello che non entra nella stiva si perde.</P>
       </>
@@ -133,7 +137,8 @@ const GUIDA: PaginaWiki[] = [
         (Object.entries(m) as [Risorsa, number][]).map(([r, p]) => `${SIGLE_RISORSE[r]} ${Math.round(p * 100)}`).join(' ')
       const { asteroidi, gigante, pianeti } = BILANCIAMENTO.mix
       return [
-        ['Raccolta a mano', `${mano} × ${ritmo.comune}/h × ricchezza × parte del mix`],
+        ['Raccolta a mano', `${mano} × ${ritmo.comune}/h (Terre rare ${ritmo.terreRare}/h) × ricchezza × parte del mix`],
+        ['Pulsar', 'Terre rare 100'],
         ['Asteroidi', `metallici ${mix(asteroidi.metallica)} · silicei ${mix(asteroidi.silicea)} · misti ${mix(asteroidi.mista)}`],
         ['Nebulosa', 'H 100'],
         ['Gigante gassoso', `senza anelli ${mix(gigante.senza)} · con anelli ${mix(gigante.anelli)}`],
@@ -172,7 +177,7 @@ const GUIDA: PaginaWiki[] = [
         </P>
         <P>
           Con le ricerche di Colonizzazione si fondano gli estrattori: sugli asteroidi con Estrattori minerari, su nebulose e giganti gassosi
-          con Raccoglitori di gas. Producono col mix del corpo e hanno solo produzione e magazzino: niente strutture, niente ricarica
+          con Raccoglitori di gas, sulle pulsar (Terre rare) con Estrattori stellari. Producono col mix del corpo e hanno solo produzione e magazzino: niente strutture, niente ricarica
           piena. Hanno un loro limite, separato da quello delle basi.
         </P>
         <P>
@@ -360,7 +365,7 @@ const DESCRIZIONI: Readonly<Record<TipoCorpo, string>> = {
   sistema: "Una stella con i suoi pianeti: l'unico posto dove si potrà fondare una base.",
   gigante: 'Un pianeta gassoso senza stella, alla deriva tra i settori.',
   cometa: 'Un nucleo di ghiaccio con la sua coda. Si raccoglierà una volta sola.',
-  pulsar: 'Il cuore spento di una stella, che gira e lampeggia. In sosta qui lo scanner vede il doppio.',
+  pulsar: 'Il cuore spento di una stella, che gira e lampeggia. In sosta qui lo scanner vede il doppio, e si raccolgono Terre rare.',
   buconero: 'Niente esce da qui, tranne chi parte con la fionda.',
   relitto: 'I resti di qualcuno arrivato prima. Si saccheggerà una volta sola.',
   wormhole: 'Un varco a senso unico verso un settore lontano.',

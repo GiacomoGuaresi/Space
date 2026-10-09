@@ -1,7 +1,7 @@
 import { useContext } from 'react'
 import { BILANCIAMENTO } from '../dominio/bilanciamento'
 import type { Nave } from '../dominio/navigazione'
-import { bottinoCometa, mixCorpo, RISORSE, ritmoMano, stivaPienaTra } from '../dominio/risorse'
+import { bottinoCometa, mixCorpo, RISORSE, ritmoMano, ritmoRisorsa, stivaPienaTra } from '../dominio/risorse'
 import { NOMI_RISORSE } from '../dominio/catalogo'
 import { settore, stessoSettore } from '../dominio/settore'
 import { durata, numero, orario } from './formato'
@@ -44,7 +44,7 @@ export function Raccolta({ nave, ora }: { nave: Nave; ora: Date }) {
   }
   if (!bordo || !corpo || !ritmi || !mix || nave.dal > ora) return null
   const tra = stivaPienaTra(bordo.carico, nave, ora, bordo.fatte)
-  const { mano, ritmo } = BILANCIAMENTO.produzione
+  const { mano } = BILANCIAMENTO.produzione
   const raccolte = RISORSE.filter((r) => ritmi[r])
   const piena = raccolte.every((r) => bordo.quantita[r] >= bordo.capacita)
   return (
@@ -63,7 +63,7 @@ export function Raccolta({ nave, ora }: { nave: Nave; ora: Date }) {
                 <Info
                   titolo={`Raccolta di ${NOMI_RISORSE[r].toLowerCase()}`}
                   wiki="risorse"
-                  formula={`${mano} × ${ritmo.comune}/h × ricchezza ${numero(corpo.ricchezza, 2)} × ${numero(mix[r]! * 100, 0)} %`}
+                  formula={`${mano} × ${ritmoRisorsa(r)}/h × ricchezza ${numero(corpo.ricchezza, 2)} × ${numero(mix[r]! * 100, 0)} %`}
                   esatto={`${numero(ritmi[r]!, 3)}/h`}
                 />
               </span>

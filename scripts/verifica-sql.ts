@@ -111,7 +111,7 @@ const esitoStiva = await interroga(`
 
 // I primi 40 corpi di ogni tipo con risorse, lungo tre rette: abbastanza sistemi da provare i pianeti.
 const corpi: string[] = []
-for (const tipo of ['asteroidi', 'nebulosa', 'gigante', 'sistema', 'stella', 'cometa'] as const) {
+for (const tipo of ['asteroidi', 'nebulosa', 'gigante', 'sistema', 'stella', 'cometa', 'pulsar'] as const) {
   let trovati = 0
   for (let i = 1; trovati < 40 && i < 20000; i++) {
     const c = i % 3 === 0 ? { x: i, y: 7, z: -3 } : i % 3 === 1 ? { x: -5, y: i, z: 11 } : { x: 2, y: -9, z: -i }
