@@ -1,7 +1,7 @@
 // Suoni discreti della plancia (doc/11-interfaccia.md#stile--plancia-ambra):
 // sintetizzati al momento, niente file. Solo se accesi nelle impostazioni.
 
-import { impostazioni } from './impostazioni'
+import { impostazioni } from './preferenze'
 
 export type Suono = 'clic' | 'partenza' | 'arrivo' | 'scoperta'
 

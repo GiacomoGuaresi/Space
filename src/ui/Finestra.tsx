@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Rnd } from 'react-rnd'
+import { ICONE_FINESTRE, IconaChiudi, IconaRiduci } from './icone'
 import { DentroFinestra } from './plancia'
 import { chiudi, FINESTRE, primoPiano, riduci, sposta, type Finestra as DatiFinestra, type IdFinestra } from './finestre'
 
@@ -21,6 +22,7 @@ interface Props {
  */
 export function Finestra({ id, finestra, livello, attiva, onChiudi, children }: Props) {
   const { titolo, minW, minH, piena } = FINESTRE[id]
+  const Icona = ICONE_FINESTRE[id]
   return (
     <Rnd
       bounds="parent"
@@ -42,11 +44,12 @@ export function Finestra({ id, finestra, livello, attiva, onChiudi, children }: 
     >
       <section
         aria-label={titolo}
-        className={`flex min-h-0 flex-1 flex-col overflow-hidden rounded-plancia border bg-pannello/92 backdrop-blur ${
-          attiva ? 'border-ambra-scura' : 'border-linea'
+        className={`smussato flex min-h-0 flex-1 flex-col overflow-hidden border bg-pannello/92 backdrop-blur ${
+          attiva ? 'border-ambra-scura [--smusso-colore:var(--color-ambra-scura)]' : 'border-linea'
         }`}
       >
         <header className="maniglia flex h-8 shrink-0 cursor-move items-center gap-2 border-b border-linea pr-1 pl-3 select-none">
+          <Icona className={`size-4 shrink-0 ${attiva ? 'text-ambra' : 'text-testo-tenue'}`} />
           <h2 className={`etichetta m-0 flex-1 truncate ${attiva ? 'text-ambra!' : ''}`}>{titolo}</h2>
           <button
             type="button"
@@ -55,7 +58,7 @@ export function Finestra({ id, finestra, livello, attiva, onChiudi, children }: 
             title="Riduci nel dock"
             onClick={() => riduci(id)}
           >
-            _
+            <IconaRiduci className="size-3.5" />
           </button>
           <button
             type="button"
@@ -67,7 +70,7 @@ export function Finestra({ id, finestra, livello, attiva, onChiudi, children }: 
               onChiudi?.()
             }}
           >
-            ×
+            <IconaChiudi className="size-3.5" />
           </button>
         </header>
         <div className={`flex min-h-0 flex-1 flex-col overflow-y-auto ${piena ? '' : 'p-3'}`}>

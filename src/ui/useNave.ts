@@ -15,10 +15,11 @@ import type { Insediamento } from '../dominio/insediamenti'
 import type { Lavoro } from '../dominio/cantiere'
 import type { Coordinate } from '../dominio/settore'
 import { tipoSettore } from '../dominio/settore'
-import { sosteRadar } from '../dominio/mappa'
+import { sosteRadar, type Rilevato } from '../dominio/mappa'
+import { lavoroRilevati, richiedi } from './scansioni'
 import { ricercheFatte } from '../dominio/infiniti'
 import { suona } from './suoni'
-import { GIORNI_DIARIO, letto, novita, segnaLetto, vociDiario } from './diario'
+import { GIORNI_DIARIO, letto, novita, segnaLetto, vociDiario } from './voci'
 
 export type StatoNave =
   { fase: 'carico' } | { fase: 'errore'; messaggio: string } | { fase: 'pronta'; nave: Nave; viaggio: Viaggio | null; carico: Carico }
@@ -102,7 +103,8 @@ export function useNave() {
       setScarto(scartoNuovo)
       setStato({ fase: 'pronta', nave: remoto.nave, viaggio: remoto.viaggio, carico: remoto.carico })
       setScoperte(elenco)
-      setScansioni([...soste, ...radar(basi, remoto.nave, lavori, studi)])
+      const tutteLeSoste = [...soste, ...radar(basi, remoto.nave, lavori, studi)]
+      setScansioni(tutteLeSoste)
       setViaggi(recenti)
       setRaccolti(presi)
       setInsediamenti(basi)
@@ -112,10 +114,13 @@ export function useNave() {
       setTraguardi(medaglie)
 
       if (apriDiario) {
+        // Le novità dello scanner dal worker (ui/scansioni.ts): la nave intanto è già sullo schermo.
+        const rilevati = await richiedi<Rilevato[]>(lavoroRilevati(tutteLeSoste), { canale: 'rilevati' }).catch(() => [])
         const voci = vociDiario({
           viaggi: recenti,
           scoperte: elenco,
-          scansioni: [...soste, ...radar(basi, remoto.nave, lavori, studi)],
+          scansioni: tutteLeSoste,
+          rilevati,
           raccolti: presi,
           prelievi: prelevati,
           insediamenti: basi,

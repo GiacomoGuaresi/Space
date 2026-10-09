@@ -2,20 +2,19 @@ import { describe, expect, it } from 'vitest'
 import { alterna, dentro, disposizione, disposizioneIniziale, FINESTRE, leggiDisposizione, mostra, riordina, rientra } from './finestre'
 
 describe('disposizione delle finestre', () => {
-  it('parte con Qui, Scanner e Rotta aperte e le altre chiuse', () => {
+  it('parte con Scanner e Rotta aperte e le altre chiuse', () => {
     const d = disposizioneIniziale(1440)
     expect(
       Object.entries(d.finestre)
         .filter(([, f]) => f.stato === 'aperta')
         .map(([id]) => id)
         .sort(),
-    ).toEqual(['qui', 'rotta', 'scanner'])
+    ).toEqual(['rotta', 'scanner'])
     expect(d.finestre.rotta.x + d.finestre.rotta.w).toBeLessThanOrEqual(1440)
     expect(d.sfondo).toBe('scena')
-    // Su uno schermo basso Scanner e Qui si accorciano per stare una sopra l'altra.
-    const bassa = disposizioneIniziale(1024, 616)
-    expect(bassa.finestre.qui.y + bassa.finestre.qui.h).toBeLessThanOrEqual(616)
-    expect(bassa.finestre.scanner.y + bassa.finestre.scanner.h).toBeLessThan(bassa.finestre.qui.y)
+    // Su uno schermo basso lo Scanner si accorcia per starci.
+    const bassa = disposizioneIniziale(1024, 360)
+    expect(bassa.finestre.scanner.y + bassa.finestre.scanner.h).toBeLessThanOrEqual(360)
   })
 
   it('legge quella salvata scartando i valori strani e completando le finestre mancanti', () => {
@@ -23,20 +22,20 @@ describe('disposizione delle finestre', () => {
     const d = leggiDisposizione(
       {
         finestre: {
-          qui: { stato: 'ridotta', x: 5, y: 6, w: 300, h: 200 },
+          wiki: { stato: 'ridotta', x: 5, y: 6, w: 300, h: 200 },
           rotta: { stato: 'boh', x: 1, y: 1, w: 1, h: 1 },
           scanner: { stato: 'aperta', x: 'a', y: 1, w: 1, h: 1 },
         },
-        ordine: ['wiki', 'sconosciuta', 'qui'],
+        ordine: ['wiki', 'sconosciuta', 'qui', 'rotta'],
         sfondo: 'mappa',
       },
       iniziale,
     )
-    expect(d.finestre.qui).toEqual({ stato: 'ridotta', x: 5, y: 6, w: 300, h: 200 })
+    expect(d.finestre.wiki).toEqual({ stato: 'ridotta', x: 5, y: 6, w: 300, h: 200 })
     expect(d.finestre.rotta).toEqual(iniziale.finestre.rotta)
     expect(d.finestre.scanner).toEqual(iniziale.finestre.scanner)
     expect(d.ordine).toHaveLength(Object.keys(FINESTRE).length)
-    expect(d.ordine.slice(-2)).toEqual(['wiki', 'qui'])
+    expect(d.ordine.slice(-2)).toEqual(['wiki', 'rotta'])
     expect(d.sfondo).toBe('mappa')
     expect(leggiDisposizione('rotta', iniziale)).toBe(iniziale)
   })

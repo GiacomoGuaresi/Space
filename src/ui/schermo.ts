@@ -2,7 +2,7 @@
 // su la plancia a finestre, sotto le pagine.
 
 import { useSyncExternalStore } from 'react'
-import { useImpostazioni } from './impostazioni'
+import { useImpostazioni } from './preferenze'
 
 export const LARGHEZZA_PC = 1024
 

@@ -18,6 +18,10 @@ flowchart LR
 
 1. **GitHub Pages** serve solo file statici.
 2. L'**universo si calcola nel browser**: seed, corpo, nome e grafica di ogni settore ([03](03-universo.md)). Per guardare lo spazio non serve nessuna chiamata.
+   - Le **scansioni** sono il calcolo più pesante: allo scanner 25 una sosta è una sfera di ~1 milione di settori, ~100 mila corpi, ~0,6 s (~2,7 s con *Rilevamento gravitazionale*). Le fa un **Web Worker** (`src/dominio/scansioni.worker.ts`): lo scanner, il radar, i corpi noti della mappa e le novità del diario.
+   - Gli arriva un lavoro alla volta dalla **coda** `src/ui/scansioni.ts`. Lo scanner e il radar, che si stanno guardando, hanno la priorità alta; la mappa e il diario aspettano.
+   - Un lavoro chiesto più volte si fa una volta sola. Uno nuovo sullo stesso canale scarta quelli ancora in coda: la nave si è spostata. Gli ultimi risultati restano in memoria, e il worker tiene una copia delle ultime soste.
+   - Intanto l'interfaccia mostra una barra di avanzamento, e lo scanner elenca i corpi 100 alla volta.
 3. Il **database** conserva solo lo stato del gioco: nave, viaggi, scoperte, risorse, colonie, potenziamenti ([05](05-modello-dati.md)).
 4. **Le azioni passano da funzioni Postgres** (`space.viaggia`, `space.raccogli`, `space.colonizza`, `space.potenzia`…). Le funzioni controllano le regole e scrivono il risultato; il browser non scrive mai direttamente posizione, carburante o risorse. Per sapere cosa c'è in un settore usano l'hash scritto in SQL.
 5. **Tutto si calcola alla lettura, senza job programmati**: posizione della nave (arrivata se `arrivo <= now()`), carburante ricaricato, produzione delle colonie, costruzioni finite. Si salvano gli istanti di partenza e di ultima raccolta, il resto si ricava da `now()`.

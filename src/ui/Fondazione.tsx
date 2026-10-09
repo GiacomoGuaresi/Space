@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react'
-import { Flag, Pickaxe } from 'lucide-react'
+import { IconaEstrattore, IconaFonda, IconaRisorsa } from './icone'
 import { ViaggioRifiutato } from '../dati'
 import { NOMI_RISORSE } from '../dominio/catalogo'
 import {
@@ -92,7 +92,7 @@ export function Fondazione({ nave, ora }: { nave: Nave; ora: Date }) {
             <span key={r}>
               {n > 0 && ' · '}
               <span className={bordo.quantita[r] < costo[r]! ? 'text-ambra' : ''}>
-                {numero(costo[r]!, 0)} {NOMI_RISORSE[r]}
+                <IconaRisorsa risorsa={r} /> {numero(costo[r]!, 0)} {NOMI_RISORSE[r]}
               </span>
             </span>
           ))}
@@ -105,7 +105,7 @@ export function Fondazione({ nave, ora }: { nave: Nave; ora: Date }) {
         </p>
       )}
       <BottonePrimario disabled={inCorso || basi >= limite || manca} onClick={() => void conferma()}>
-        <Flag className="size-4" aria-hidden="true" />
+        <IconaFonda className="size-4" aria-hidden="true" />
         {basi === 0 ? 'Fonda · gratis' : 'Fonda'}
       </BottonePrimario>
     </section>
@@ -174,7 +174,7 @@ export function FondaEstrattore({ nave, ora }: { nave: Nave; ora: Date }) {
             <span key={r}>
               {n > 0 && ' · '}
               <span className={bordo.quantita[r] < costo[r]! ? 'text-ambra' : ''}>
-                {numero(Math.ceil(costo[r]!), 0)} {NOMI_RISORSE[r]}
+                <IconaRisorsa risorsa={r} /> {numero(Math.ceil(costo[r]!), 0)} {NOMI_RISORSE[r]}
               </span>
             </span>
           ))}
@@ -188,7 +188,7 @@ export function FondaEstrattore({ nave, ora }: { nave: Nave; ora: Date }) {
       )}
       {aperta && (
         <BottonePrimario disabled={inCorso || fondati >= limite || manca} onClick={() => void conferma()}>
-          <Pickaxe className="size-4" aria-hidden="true" />
+          <IconaEstrattore className="size-4" aria-hidden="true" />
           Fonda l'estrattore
         </BottonePrimario>
       )}

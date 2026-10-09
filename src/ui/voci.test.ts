@@ -4,7 +4,7 @@ import type { Insediamento } from '../dominio/insediamenti'
 import { NAVE_INIZIALE, type Nave, type Viaggio } from '../dominio/navigazione'
 import { piuVicino } from '../dominio/ricerca'
 import { BASE } from '../dominio/settore'
-import { novita, raggruppa, vociDiario } from './diario'
+import { novita, raggruppa, vociDiario } from './voci'
 
 const ORA = 3_600_000
 const t0 = new Date('2026-10-08T12:00:00Z')

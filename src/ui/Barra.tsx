@@ -1,4 +1,5 @@
-import { createContext, useContext, type ReactNode } from 'react'
+import { createContext, useContext, type ComponentType } from 'react'
+import { IconaAltro, IconaMappa, IconaNave, IconaPonte, IconaRete } from './icone'
 import { indirizzo, type Pagina } from './indirizzo'
 
 export type Sezione = 'ponte' | 'mappa' | 'rete' | 'nave' | 'altro'
@@ -9,30 +10,12 @@ export function sezioneDi(pagina: Pagina['pagina']): Sezione {
   return 'altro'
 }
 
-const ICONE: Readonly<Record<Sezione, ReactNode>> = {
-  ponte: (
-    <>
-      <circle cx="12" cy="12" r="7" />
-      <path d="M12 2v5M12 17v5M2 12h5M17 12h5" />
-    </>
-  ),
-  mappa: (
-    <>
-      <circle cx="12" cy="12" r="9" />
-      <ellipse cx="12" cy="12" rx="9" ry="3.5" />
-      <ellipse cx="12" cy="12" rx="3.5" ry="9" />
-    </>
-  ),
-  rete: (
-    <>
-      <circle cx="6" cy="7" r="2.5" />
-      <circle cx="18" cy="7" r="2.5" />
-      <circle cx="12" cy="18" r="2.5" />
-      <path d="M8.5 7h7M7.3 9.2l3.5 6.6M16.7 9.2l-3.5 6.6" />
-    </>
-  ),
-  nave: <path d="M12 2l5 9v6l-5 3-5-3v-6zM7 17l-3 4M17 17l3 4" />,
-  altro: <path d="M5 6h14M5 12h14M5 18h14" />,
+const ICONE: Readonly<Record<Sezione, ComponentType<{ className?: string }>>> = {
+  ponte: IconaPonte,
+  mappa: IconaMappa,
+  rete: IconaRete,
+  nave: IconaNave,
+  altro: IconaAltro,
 }
 
 /**
@@ -62,6 +45,7 @@ export function Barra({ attuale }: { attuale: Sezione }) {
       style={{ gridTemplateColumns: `repeat(${VOCI.length}, minmax(0, 1fr))` }}
     >
       {VOCI.map(({ sezione, nome, pagina }) => {
+        const Icona = ICONE[sezione]
         const qui = sezione === attuale
         // Nella sezione dove sei il pallino non serve.
         const pallino = qui ? undefined : pallini[sezione]
@@ -75,9 +59,7 @@ export function Barra({ attuale }: { attuale: Sezione }) {
               qui ? 'border-ambra text-ambra' : 'border-transparent text-testo-tenue hover:text-testo'
             }`}
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-              {ICONE[sezione]}
-            </svg>
+            <Icona className="size-[22px]" />
             <span className="text-[9px] font-semibold tracking-[0.18em] uppercase">{nome}</span>
             {pallino && <span aria-hidden="true" className="absolute top-3 left-1/2 ml-3 size-[7px] rounded-full bg-ambra" />}
           </a>

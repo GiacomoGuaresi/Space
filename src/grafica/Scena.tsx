@@ -10,7 +10,7 @@ import type { Settore } from '../dominio/settore'
 import { libera, type Contenuto } from './comune'
 import { GENERATORI } from './generatori'
 import { creaSfondo } from './sfondo'
-import { movimentoRidotto } from '../ui/impostazioni'
+import { movimentoRidotto } from '../ui/preferenze'
 import { Misuratore, qualitaAutomatica, qualitaIniziale, resa, ricordaQualita } from './qualita'
 
 /** Le sequenze della grafica, separate da quelle del dominio (dominio/settore.ts). */

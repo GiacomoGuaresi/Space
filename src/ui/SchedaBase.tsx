@@ -1,11 +1,11 @@
-import { createContext, useContext, useState } from 'react'
-import { Fuel } from 'lucide-react'
+import { createContext, useContext, useMemo, useState } from 'react'
+import { IconaPieno } from './icone'
 import { ViaggioRifiutato } from '../dati'
 import { BILANCIAMENTO } from '../dominio/bilanciamento'
 import { costoPieno } from '../dominio/cantiere'
 import type { Struttura } from '../dominio/cantiere'
 import { magazzinoOra, type Insediamento } from '../dominio/insediamenti'
-import { carburanteOra, inViaggio, raggioRadar, scansione, tipiRilevabili, type Nave } from '../dominio/navigazione'
+import { carburanteOra, inViaggio, raggioRadar, tipiRilevabili, type Nave, type Rilevamento } from '../dominio/navigazione'
 import { settore, stessoSettore } from '../dominio/settore'
 import { Coda, Potenziamenti } from './Cantiere'
 import { AzioniNave } from './azioni'
@@ -15,6 +15,7 @@ import { NESSUNA_RICERCA, RICERCHE, type IdRicerca } from '../dominio/ricerche'
 import { BarreMagazzino, NOMI_INSEDIAMENTI } from './Magazzino'
 import { BottoneSecondario, Etichetta, Info, Pannello } from './plancia'
 import { RIFIUTI } from './rifiuti'
+import { useScansione, type Lavoro } from './scansioni'
 import { CaricoAttuale, useDintorni } from './SchedaNave'
 
 /**
@@ -128,7 +129,7 @@ function Deposito({ nave, ora, base }: { nave: Nave; ora: Date; base: Insediamen
             </p>
           )}
           <BottoneSecondario disabled={inCorso || costo > disponibile} onClick={() => void fai()}>
-            <Fuel className="size-4" aria-hidden="true" />
+            <IconaPieno className="size-4" aria-hidden="true" />
             Pieno
           </BottoneSecondario>
           {costo > disponibile && (
@@ -164,14 +165,19 @@ function Radar({ nave, base }: { nave: Nave; base: Insediamento }) {
   const fatte = useContext(CaricoAttuale)?.fatte
   const profondo = fatte?.has('S8') ?? false
   const raggio = raggioRadar(base.radar, fatte)
-  const tipi = tipiRilevabili(nave.scanner)
-  const trovati = scansione(base.coordinate, raggio, tipi).length
+  const { x, y, z } = base.coordinate
+  const lavoro = useMemo<Lavoro>(
+    () => ({ tipo: 'scansione', centro: { x, y, z }, raggio, tipi: [...tipiRilevabili(nave.scanner)] }),
+    [x, y, z, raggio, nave.scanner],
+  )
+  const trovati = useScansione<Rilevamento[]>(lavoro, { priorita: 'alta', canale: 'radar' }).valore?.length
   const { raggio: iniziale, crescita } = BILANCIAMENTO.radar
   return (
     <section aria-label="Radar" className="flex flex-col gap-1.5 border-b border-separatore p-3.5">
       <h2 className="etichetta m-0">Radar · liv. {base.radar}</h2>
       <p className="m-0 flex items-center gap-1 text-[13px]">
-        Raggio {numero(raggio, 1)} sett. · {trovati} {trovati === 1 ? 'corpo rilevato' : 'corpi rilevati'}
+        Raggio {numero(raggio, 1)} sett. ·{' '}
+        {trovati === undefined ? 'scansione in corso…' : `${numero(trovati, 0)} ${trovati === 1 ? 'corpo rilevato' : 'corpi rilevati'}`}
         <Info
           titolo="Raggio del radar"
           wiki="scanner"

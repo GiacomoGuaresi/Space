@@ -1,15 +1,19 @@
-import { useCallback, useContext, useMemo, useState } from 'react'
-import { Check } from 'lucide-react'
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { IconaFatto } from './icone'
 import { BILANCIAMENTO } from '../dominio/bilanciamento'
 import { CATALOGO } from '../dominio/catalogo'
-import { raggioQui, scansione, tipiRilevabili } from '../dominio/navigazione'
+import { raggioQui, tipiRilevabili, type Rilevamento } from '../dominio/navigazione'
 import { nomeSottotipo } from '../dominio/sottotipi'
 import { settore, tipoSettore, type Coordinate } from '../dominio/settore'
 import { CaricoAttuale } from './SchedaNave'
 import { coordinate, numero, settori } from './formato'
 import { MenuContesto, menuCorpo, type Menu } from './MenuContesto'
-import { SimboloRarita } from './plancia'
+import { BottoneSecondario, Caricamento, SimboloRarita } from './plancia'
+import { useScansione, type Lavoro } from './scansioni'
 import { usePC } from './schermo'
+
+/** Le righe mostrate alla volta: allo scanner alto i corpi sono decine di migliaia. */
+const PAGINA = 100
 
 interface Props {
   centro: Coordinate
@@ -32,7 +36,15 @@ export function Scanner({ centro, livello, scoperti, onScegli }: Props) {
   const tipi = useMemo(() => tipiRilevabili(livello), [livello])
   // *Rilevamento gravitazionale* (S10): buchi neri e wormhole al doppio del raggio, solo nello scanner dal vivo.
   const gravitazionale = fatte?.has('S10') ? raggio * BILANCIAMENTO.ricerche.effetti.S10 : raggio
-  const trovati = useMemo(() => scansione(centro, raggio, tipi, gravitazionale), [centro, raggio, tipi, gravitazionale])
+  // La scansione la fa il worker (ui/scansioni.ts): con uno scanner alto ci vuole qualche secondo.
+  const { x, y, z } = centro
+  const lavoro = useMemo<Lavoro>(
+    () => ({ tipo: 'scansione', centro: { x, y, z }, raggio, tipi: [...tipi], gravitazionale }),
+    [x, y, z, raggio, tipi, gravitazionale],
+  )
+  const { valore: trovati, avanzamento } = useScansione<Rilevamento[]>(lavoro, { priorita: 'alta', canale: 'scanner' })
+  const [quanti, setQuanti] = useState(PAGINA)
+  useEffect(() => setQuanti(PAGINA), [lavoro])
   // Su PC il tasto destro su un corpo apre il menu: Imposta rotta · Apri nella wiki.
   const pc = usePC()
   const spettrometria = fatte?.has('S2') ?? false
@@ -57,13 +69,15 @@ export function Scanner({ centro, livello, scoperti, onScegli }: Props) {
         {' · rileva: '}
         {[...tipi].map((t) => CATALOGO[t].nome.toLowerCase()).join(', ')}
       </p>
-      {trovati.length === 0 ? (
+      {!trovati ? (
+        <Caricamento testo="Scansione in corso" avanzamento={avanzamento} className="py-1" />
+      ) : trovati.length === 0 ? (
         <p className="m-0 text-xs">
           Nessun corpo rilevato nel raggio. Prova a spostarti: gli altri tipi di corpo si scoprono solo arrivandoci.
         </p>
       ) : (
         <ul className="m-0 flex list-none flex-col gap-1 p-0">
-          {trovati.map(({ coordinate: c, tipo, distanza }) => {
+          {trovati.slice(0, quanti).map(({ coordinate: c, tipo, distanza }) => {
             const chiave = `${c.x},${c.y},${c.z}`
             return (
               <li key={chiave}>
@@ -83,7 +97,7 @@ export function Scanner({ centro, livello, scoperti, onScegli }: Props) {
                     {analisi && <Sottotipo c={c} />}
                     <span className="text-testo-tenue"> · {coordinate(c)}</span>
                   </span>
-                  {scoperti.has(chiave) && <Check className="size-3.5 text-[#7fd1c7]" aria-label="Già scoperto" />}
+                  {scoperti.has(chiave) && <IconaFatto className="size-3.5 text-[#7fd1c7]" aria-label="Già scoperto" />}
                   {/* *Spettrometria* (S2): la ricchezza dei corpi rilevati. */}
                   {spettrometria && (
                     <span className="shrink-0 tabular-nums text-ambra" title="Ricchezza">
@@ -96,6 +110,11 @@ export function Scanner({ centro, livello, scoperti, onScegli }: Props) {
             )
           })}
         </ul>
+      )}
+      {trovati && trovati.length > quanti && (
+        <BottoneSecondario className="self-center" onClick={() => setQuanti((n) => n + PAGINA)}>
+          Altri {Math.min(PAGINA, trovati.length - quanti)} · {trovati.length.toLocaleString('it-IT')} in tutto
+        </BottoneSecondario>
       )}
       <MenuContesto menu={menu} onChiudi={chiudiMenu} />
     </div>

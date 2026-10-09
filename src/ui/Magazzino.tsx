@@ -1,4 +1,5 @@
 import { useContext } from 'react'
+import { IconaRisorsa } from './icone'
 import { BILANCIAMENTO } from '../dominio/bilanciamento'
 import { NOMI_RISORSE } from '../dominio/catalogo'
 import { magazzinoOra, pienoTra, ritmoInsediamento, tettoMagazzino, type Insediamento } from '../dominio/insediamenti'
@@ -28,7 +29,10 @@ export function BarreMagazzino({ insediamento, ora }: { insediamento: Insediamen
           return (
             <li key={r} className="flex flex-col gap-1 text-[13px]">
               <div className="flex items-baseline gap-3">
-                <span className="flex-1">{NOMI_RISORSE[r]}</span>
+                <span className="flex flex-1 items-center gap-1.5">
+                  <IconaRisorsa risorsa={r} className="size-4 text-ambra" />
+                  {NOMI_RISORSE[r]}
+                </span>
                 <span className="cifre inline-flex items-center gap-1 text-testo-tenue">
                   {numero(ritmi[r]!, 2)}/h
                   <Info

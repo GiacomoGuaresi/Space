@@ -4,7 +4,7 @@
 // si scende di un livello. Non si risale da soli: niente altalene. Nelle
 // impostazioni la qualità si può anche fissare.
 
-import { impostazioni } from '../ui/impostazioni'
+import { impostazioni } from '../ui/preferenze'
 
 export type Qualita = 'alta' | 'media' | 'bassa'
 

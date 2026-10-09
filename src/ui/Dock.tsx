@@ -3,16 +3,16 @@ import { Pallini } from './Barra'
 import { Attraccata } from './SchedaBase'
 import { mostraAiuto } from './tastiera'
 import { alterna, FINESTRE, mostra, riordina, useDisposizione, type IdFinestra, type StatoFinestra } from './finestre'
+import { ICONE_FINESTRE, IconaMappa, IconaRiordina, IconaScorciatoie } from './icone'
 
 const GRUPPI: readonly { nome: string; voci: readonly IdFinestra[] }[] = [
-  { nome: 'Navigazione', voci: ['qui', 'scanner', 'rotta'] },
+  { nome: 'Navigazione', voci: ['scanner', 'rotta'] },
   { nome: 'Nave e rete', voci: ['nave', 'rete', 'base', 'ricerche'] },
   { nome: 'Archivio', voci: ['diario', 'wiki', 'catalogo', 'traguardi'] },
 ]
 
 /** Le voci con un pallino, e quale (Barra.tsx): su PC Altro si scompone nelle sue voci. */
-const PALLINI: Partial<Record<IdFinestra, 'ponte' | 'rete' | 'diario' | 'wiki'>> = {
-  qui: 'ponte',
+const PALLINI: Partial<Record<IdFinestra, 'rete' | 'diario' | 'wiki'>> = {
   rete: 'rete',
   diario: 'diario',
   wiki: 'wiki',
@@ -41,16 +41,17 @@ export function Dock() {
     const { titolo, tasto } = FINESTRE[id]
     const stato = finestre[id].stato
     const pallino = PALLINI[id] && stato !== 'aperta' ? pallini[PALLINI[id]] : undefined
+    const Icona = ICONE_FINESTRE[id]
     return (
       <button
         type="button"
         aria-pressed={stato === 'aperta'}
         aria-label={pallino ? `${titolo}, ${pallino}` : titolo}
-        title={stato === 'ridotta' ? `${titolo}, ridotta` : titolo}
+        title={`${titolo}${stato === 'ridotta' ? ', ridotta' : ''} (${tasto})`}
         className={`${CLASSI} ${STILI[stato]}`}
         onClick={() => alterna(id)}
       >
-        <Tasto>{id === 'impostazioni' ? '⚙' : tasto}</Tasto>
+        <Icona className={ICONA} />
         {contenuto ?? NOMI_DOCK[id] ?? titolo}
         {pallino && <span aria-hidden="true" className="absolute top-1.5 right-0.5 size-[6px] rounded-full bg-ambra" />}
       </button>
@@ -76,13 +77,13 @@ export function Dock() {
         <li className="flex">
           <button
             type="button"
-            title={mappa ? 'Torna alla scena del settore' : 'Mostra la mappa'}
+            title={mappa ? 'Torna alla scena del settore (Tab)' : 'Mostra la mappa (Tab)'}
             aria-pressed={mappa}
             aria-label={!mappa && pallini.mappa ? `Mappa, ${pallini.mappa}` : 'Mappa'}
             className={`${CLASSI} ${STILI[mappa ? 'aperta' : 'chiusa']}`}
             onClick={() => mostra(mappa ? 'scena' : 'mappa')}
           >
-            <Tasto>⇆</Tasto>
+            <IconaMappa className={ICONA} />
             Mappa
             {!mappa && pallini.mappa && <span aria-hidden="true" className="absolute top-1.5 right-0.5 size-[6px] rounded-full bg-ambra" />}
           </button>
@@ -95,18 +96,18 @@ export function Dock() {
             className={`${CLASSI} ${STILI.chiusa}`}
             onClick={riordina}
           >
-            <Tasto>↺</Tasto>
+            <IconaRiordina className={ICONA} />
           </button>
         </li>
         <li className="flex">
           <button
             type="button"
-            title="Scorciatoie da tastiera"
+            title="Scorciatoie da tastiera (?)"
             aria-label="Scorciatoie da tastiera"
             className={`${CLASSI} ${STILI.chiusa}`}
             onClick={() => mostraAiuto(true)}
           >
-            <Tasto>?</Tasto>
+            <IconaScorciatoie className={ICONA} />
           </button>
         </li>
         <li className="flex">{voce('impostazioni', <span className="sr-only">Impostazioni</span>)}</li>
@@ -117,10 +118,4 @@ export function Dock() {
 
 const CLASSI = 'relative flex items-center gap-1.5 border-t-2 px-2.5 text-[10px] font-semibold tracking-[0.16em] uppercase no-underline'
 
-function Tasto({ children }: { children: ReactNode }) {
-  return (
-    <span aria-hidden="true" className="cifre text-[11px]">
-      {children}
-    </span>
-  )
-}
+const ICONA = 'size-4 shrink-0'

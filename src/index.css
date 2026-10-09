@@ -30,6 +30,39 @@
   color: var(--color-testo-tenue);
 }
 
+/* Pannelli con gli angoli tagliati a 45°. clip-path taglia anche il bordo,
+   così la diagonale si ridisegna con un gradiente per angolo, sullo sfondo del
+   pannello (resta ferma anche se il contenuto scorre). Misura e colore della
+   diagonale con --smusso e --smusso-colore: il colore va tenuto uguale al bordo. */
+@utility smussato {
+  --s: var(--smusso, 10px);
+  --c: var(--smusso-colore, var(--color-linea));
+  border-radius: 0;
+  clip-path: polygon(
+    var(--s) 0,
+    calc(100% - var(--s)) 0,
+    100% var(--s),
+    100% calc(100% - var(--s)),
+    calc(100% - var(--s)) 100%,
+    var(--s) 100%,
+    0 calc(100% - var(--s)),
+    0 var(--s)
+  );
+  background-image:
+    linear-gradient(to bottom right, transparent 50%, var(--c) 50%, var(--c) calc(50% + 1px), transparent calc(50% + 1px)),
+    linear-gradient(to bottom left, transparent 50%, var(--c) 50%, var(--c) calc(50% + 1px), transparent calc(50% + 1px)),
+    linear-gradient(to top left, transparent 50%, var(--c) 50%, var(--c) calc(50% + 1px), transparent calc(50% + 1px)),
+    linear-gradient(to top right, transparent 50%, var(--c) 50%, var(--c) calc(50% + 1px), transparent calc(50% + 1px));
+  background-size: var(--s) var(--s);
+  background-repeat: no-repeat;
+  background-position:
+    top left,
+    top right,
+    bottom right,
+    bottom left;
+  background-origin: border-box;
+}
+
 /* Numeri in monospazio a cifre tabulari. */
 @utility cifre {
   font-family: var(--font-mono);
@@ -68,4 +101,10 @@ body {
 /* I campi di testo restano a 16px: sotto, iOS zooma da solo al tocco. */
 input {
   font-size: 16px;
+}
+
+/* Scrollbar sottili, nei colori della plancia. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-linea) transparent;
 }

@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Orbit } from 'lucide-react'
+import { IconaPianeta } from './icone'
 import type { EsitoAccesso } from '../dati'
 
 const avvisi: Record<Exclude<EsitoAccesso, 'dentro'>, string> = {
@@ -36,7 +36,7 @@ export function Accesso({ onEntra }: Props) {
   return (
     <main className="grid min-h-dvh place-items-center bg-fondo p-3">
       <form className="flex w-full max-w-[300px] flex-col gap-2" onSubmit={invia}>
-        <Orbit className="size-11 self-center text-ambra" aria-hidden="true" />
+        <IconaPianeta className="size-11 self-center text-ambra" aria-hidden="true" />
         <h1 className="mb-3 text-center text-lg font-semibold">Space</h1>
         <label className="text-xs text-testo-tenue" htmlFor="passphrase">
           Passphrase

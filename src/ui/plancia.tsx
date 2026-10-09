@@ -25,7 +25,7 @@ export function Pannello({
   return (
     <section
       aria-label={etichetta}
-      className={`${nudo ? '' : 'rounded-plancia border border-linea bg-pannello/90 backdrop-blur'} ${className}`}
+      className={`${nudo ? '' : 'smussato border border-linea bg-pannello/90 backdrop-blur'} ${className}`}
     >
       {children}
     </section>
@@ -178,7 +178,7 @@ export function Info({
             style={{ left: aperta.x, top: aperta.y, width: LARGHEZZA_INFO }}
             onPointerEnter={() => window.clearTimeout(timer.current)}
             onPointerLeave={lascia}
-            className="fixed z-50 flex flex-col gap-1 rounded-plancia border border-linea bg-pannello p-2.5 text-left text-xs font-normal tracking-normal normal-case text-testo shadow-lg"
+            className="smussato fixed z-50 flex flex-col gap-1 border border-linea bg-pannello p-2.5 [--smusso:7px] text-left text-xs font-normal tracking-normal normal-case text-testo shadow-lg"
           >
             <span className="etichetta">{titolo}</span>
             <span className="cifre text-[12px] leading-relaxed">{formula}</span>
@@ -195,5 +195,28 @@ export function Info({
           document.body,
         )}
     </span>
+  )
+}
+
+/** Un lavoro in corso (una scansione nel worker): la scritta e una barra che si riempie. */
+export function Caricamento({ testo, avanzamento, className = '' }: { testo: string; avanzamento: number | null; className?: string }) {
+  const percento = Math.round((avanzamento ?? 0) * 100)
+  return (
+    <div className={`flex flex-col gap-1.5 ${className}`} role="status" aria-live="polite">
+      <span className="flex items-baseline justify-between gap-2 text-xs text-testo-tenue">
+        <span>{testo}…</span>
+        <span className="cifre">{percento}%</span>
+      </span>
+      <span
+        className="h-1 bg-[#211a10]"
+        role="progressbar"
+        aria-label={testo}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={percento}
+      >
+        <span className="block h-full bg-ambra transition-[width] duration-150" style={{ width: `${percento}%` }} />
+      </span>
+    </div>
   )
 }

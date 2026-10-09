@@ -15,14 +15,13 @@ import {
   carburanteOra,
   inViaggio,
   ricaricaQui,
-  scansione,
   tettoQui,
-  tipiRilevabili,
   type Dintorni,
   type Nave,
   type Viaggio,
 } from '../dominio/navigazione'
 import { BASE, distanza, settore, stessoSettore, type Coordinate } from '../dominio/settore'
+import { rilevatiNuovi, type Rilevato } from '../dominio/mappa'
 import { coordinatePlancia, numero, orario } from './formato'
 
 export type TipoVoce =
@@ -77,8 +76,6 @@ function luogo(c: Coordinate): { lungo: string; breve: string } {
   return { lungo: `${corpo.nome} (${coordinatePlancia(c)}), ${CATALOGO[corpo.tipo].nome.toLowerCase()}`, breve: corpo.nome }
 }
 
-const chiave = ({ x, y, z }: Coordinate) => `${x},${y},${z}`
-
 interface Fonti {
   viaggi: readonly Viaggio[]
   scoperte: readonly Scoperta[]
@@ -93,6 +90,8 @@ interface Fonti {
   fatte?: ReadonlySet<string>
   nave: Nave
   ora: Date
+  /** Le novità dello scanner già calcolate (dal worker delle scansioni); se mancano si calcolano qui. */
+  rilevati?: readonly Rilevato[]
 }
 
 /** Le voci dei viaggi: partenze, arrivi e soste forzate già successi. */
@@ -176,35 +175,19 @@ function vociScoperte(scoperte: readonly Scoperta[]): Voce[] {
   })
 }
 
-/**
- * I corpi rilevati dallo scanner, solo le novità: i rari e il primo di ogni
- * tipo. Le soste si ripercorrono in ordine, ricordando cosa si era già visto.
- */
-function vociRilevamenti(scansioni: readonly Scansione[]): Voce[] {
-  const visti = new Set<string>()
-  const tipiVisti = new Set<TipoCorpo>()
-  const voci: Voce[] = []
-  for (const s of [...scansioni].sort((a, b) => a.istante.getTime() - b.istante.getTime())) {
-    for (const { coordinate, tipo } of scansione(s.centro, s.raggio, tipiRilevabili(s.livello))) {
-      const k = chiave(coordinate)
-      if (visti.has(k)) continue
-      visti.add(k)
-      const { rarita, nome } = CATALOGO[tipo]
-      const raro = rarita === 'rara' || rarita === 'leggendaria'
-      const primo = !tipiVisti.has(tipo)
-      if (!raro && !primo) continue
-      tipiVisti.add(tipo)
-      voci.push({
-        quando: s.istante,
-        tipo: 'rilevato',
-        testo: `${nome} (${rarita}) in ${coordinatePlancia(coordinate)}, a ${numero(distanza(coordinate, BASE), 1)} sett. dalla base madre.${
-          primo ? ` Nuova pagina della wiki: ${nome}.` : ''
-        }`,
-        breve: nome.toLowerCase(),
-      })
+/** I corpi rilevati dallo scanner, solo le novità (dominio/mappa.ts, `rilevatiNuovi`). */
+function vociRilevamenti(rilevati: readonly Rilevato[]): Voce[] {
+  return rilevati.map(({ coordinate, tipo, istante, primo }) => {
+    const { rarita, nome } = CATALOGO[tipo]
+    return {
+      quando: istante,
+      tipo: 'rilevato',
+      testo: `${nome} (${rarita}) in ${coordinatePlancia(coordinate)}, a ${numero(distanza(coordinate, BASE), 1)} sett. dalla base madre.${
+        primo ? ` Nuova pagina della wiki: ${nome}.` : ''
+      }`,
+      breve: nome.toLowerCase(),
     }
-  }
-  return voci
+  })
 }
 
 /** I bottini presi all'arrivo, con quello che è entrato nella stiva. */
@@ -328,13 +311,14 @@ export function vociDiario({
   fatte = new Set(),
   nave,
   ora,
+  rilevati,
 }: Fonti): Voce[] {
   const dal = ora.getTime() - GIORNI_DIARIO * 24 * ORA_MS
   return [
     ...vociViaggi(viaggi, ora),
     ...vociRicarica(nave, ora, { fatte, basi: coordinateBasi(insediamenti) }),
     ...vociScoperte(scoperte),
-    ...vociRilevamenti(scansioni),
+    ...vociRilevamenti(rilevati ?? rilevatiNuovi(scansioni)),
     ...vociRaccolti(raccolti),
     ...vociPrelievi(prelievi, insediamenti),
     ...vociInsediamenti(insediamenti, fatte),

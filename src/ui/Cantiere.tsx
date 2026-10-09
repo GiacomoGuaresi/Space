@@ -1,5 +1,5 @@
-import { useContext, useState } from 'react'
-import { Wrench } from 'lucide-react'
+import { useContext, useState, type ReactNode } from 'react'
+import { IconaCantiere, IconaRisorsa, ICONE_LAVORI } from './icone'
 import { ViaggioRifiutato, type Costruzione } from '../dati'
 import { BILANCIAMENTO } from '../dominio/bilanciamento'
 import { CATALOGO, NOMI_RISORSE, type TipoCorpo } from '../dominio/catalogo'
@@ -10,7 +10,7 @@ import { capacitaNave, RISORSE, type Fatte, type Quantita } from '../dominio/ris
 import { stessoSettore } from '../dominio/settore'
 import { AcceleraLavoro } from './Accelera'
 import { AzioniNave } from './azioni'
-import { durata, numero, orario, rovescia } from './formato'
+import { abbreviato, durata, numero, orario, rovescia } from './formato'
 import { BottoneSecondario, Etichetta } from './plancia'
 import { RIFIUTI } from './rifiuti'
 import { CaricoAttuale } from './SchedaNave'
@@ -79,6 +79,10 @@ interface Props {
   lavori: readonly Lavoro[]
   /** Per le strutture: la base di cui si parla (per la nave, quella dove è attraccata). */
   base?: Insediamento
+  /** Righe (la scheda della base) o moduli a scheda in griglia (la scheda della nave). */
+  aspetto?: 'righe' | 'moduli'
+  /** Nei moduli: il valore attuale di ogni lavoro, già calcolato con le ricerche. */
+  attuali?: Partial<Record<Lavoro, ReactNode>>
 }
 
 /**
@@ -86,7 +90,7 @@ interface Props {
  * (in ambra quanto manca, contando stiva e magazzino della base), tempo e il
  * motivo se non si possono fare. Si avviano solo attraccati.
  */
-export function Potenziamenti({ nave, ora, lavori, base }: Props) {
+export function Potenziamenti({ nave, ora, lavori, base, aspetto = 'righe', attuali = {} }: Props) {
   const bordo = useContext(CaricoAttuale)
   const { potenzia, costruzioni } = useContext(AzioniNave)
   const [inCorso, setInCorso] = useState<Lavoro | null>(null)
@@ -113,7 +117,13 @@ export function Potenziamenti({ nave, ora, lavori, base }: Props) {
 
   return (
     <div className="flex flex-col gap-2">
-      <ul className="m-0 flex list-none flex-col gap-0 p-0">
+      <ul
+        className={
+          aspetto === 'moduli'
+            ? 'm-0 grid list-none grid-cols-1 gap-2.5 p-0 @md:grid-cols-2 @3xl:grid-cols-3'
+            : 'm-0 flex list-none flex-col gap-0 p-0'
+        }
+      >
         {lavori.map((lavoro) => {
           const attuale = livelloAttuale(lavoro, nave, dove)
           const inAttesa = pendenti.filter((c) => c.lavoro === lavoro && (c.coda === 'nave' || c.insediamento === dove?.id))
@@ -144,6 +154,63 @@ export function Potenziamenti({ nave, ora, lavori, base }: Props) {
                       : Object.keys(manca).length
                         ? 'Tra stiva e magazzino non basta.'
                         : null
+          const costi = RISORSE.filter((r) => costo[r]).map((r) => ({ r, quanto: Math.ceil(costo[r]!), manca: Boolean(manca[r]) }))
+          const bottone = (
+            <BottoneSecondario
+              className={aspetto === 'moduli' ? 'w-full' : 'shrink-0 px-3'}
+              disabled={motivo !== null || inCorso !== null}
+              onClick={() => void avvia(lavoro)}
+            >
+              <IconaCantiere className="size-3.5" aria-hidden="true" />
+              {unico ? 'Costruisci' : aspetto === 'moduli' ? `Potenzia · liv. ${livello}` : `Liv. ${livello}`}
+            </BottoneSecondario>
+          )
+          if (aspetto === 'moduli') {
+            const Icona = ICONE_LAVORI[lavoro]
+            return (
+              <li
+                key={lavoro}
+                className="smussato flex flex-col gap-2.5 border border-separatore bg-[#120d07] p-3 [--smusso-colore:var(--color-separatore)] [--smusso:8px]"
+              >
+                <div className="flex items-start gap-2.5">
+                  <span className="smussato grid size-9 shrink-0 place-items-center border border-ambra-scura/70 bg-ambra/5 text-ambra [--smusso-colore:color-mix(in_oklab,var(--color-ambra-scura)_70%,transparent)] [--smusso:6px]">
+                    <Icona className="size-5" />
+                  </span>
+                  <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                    <span className="etichetta text-testo!">{NOMI_LAVORI[lavoro]}</span>
+                    <span className="cifre truncate text-[13px] text-testo">{attuali[lavoro]}</span>
+                  </span>
+                  <span className="flex shrink-0 flex-col items-end leading-none">
+                    <span className="etichetta text-[9px]">liv.</span>
+                    <span className="cifre text-2xl font-semibold text-ambra [text-shadow:0_0_12px_rgb(255_181_71/0.35)]">{attuale}</span>
+                  </span>
+                </div>
+                {dellaNave && cantiere > 0 && lavoro !== 'stiva' && <Tacche livello={attuale} tetto={tetto} />}
+                <div className="flex items-baseline gap-1.5 border-t border-dashed border-separatore pt-2 text-xs">
+                  <span className="etichetta text-[9px]">prossimo</span>
+                  <span className="cifre min-w-0 flex-1 truncate text-right text-ambra">{eDellaNave(lavoro) && valore(lavoro, livello, bordo.fatte)}</span>
+                </div>
+                {inAttesa.length > 0 && <span className="text-xs text-ambra">In coda: liv. {inAttesa.map((c) => c.livello).join(', ')}</span>}
+                <div className="flex flex-wrap gap-1">
+                  {costi.map(({ r, quanto, manca }) => (
+                    <span
+                      key={r}
+                      title={NOMI_RISORSE[r]}
+                      className={`cifre inline-flex items-center gap-1 border px-1.5 py-0.5 text-[11px] ${manca ? 'border-ambra/60 text-ambra' : 'border-separatore text-testo-tenue'}`}
+                    >
+                      <IconaRisorsa risorsa={r} className="size-3.5" />
+                      {abbreviato(quanto)}
+                    </span>
+                  ))}
+                  <span className="cifre border border-transparent px-1.5 py-0.5 text-[11px] text-testo-tenue">⧗ {durata(ore * 3_600_000)}</span>
+                </div>
+                <div className="mt-auto flex flex-col gap-1">
+                  {bottone}
+                  {motivo && <span className="text-[11px] leading-snug text-testo-tenue">{motivo}</span>}
+                </div>
+              </li>
+            )
+          }
           return (
             <li key={lavoro} className="flex flex-col gap-1 border-b border-separatore py-2.5 last:border-b-0">
               <div className="flex items-baseline gap-2 text-[13px]">
@@ -156,22 +223,15 @@ export function Potenziamenti({ nave, ora, lavori, base }: Props) {
               </div>
               <div className="flex items-center gap-2">
                 <span className="cifre flex-1 text-xs">
-                  {RISORSE.filter((r) => costo[r]).map((r, n) => (
-                    <span key={r} className={manca[r] ? 'text-ambra' : 'text-testo-tenue'}>
+                  {costi.map(({ r, quanto, manca }, n) => (
+                    <span key={r} title={NOMI_RISORSE[r]} className={manca ? 'text-ambra' : 'text-testo-tenue'}>
                       {n > 0 && ' · '}
-                      {numero(Math.ceil(costo[r]!), 0)} {NOMI_RISORSE[r].slice(0, 3)}
+                      <IconaRisorsa risorsa={r} aria-label={NOMI_RISORSE[r]} /> {numero(quanto, 0)}
                     </span>
                   ))}
                   <span className="text-testo-tenue"> · {durata(ore * 3_600_000)}</span>
                 </span>
-                <BottoneSecondario
-                  className="shrink-0 px-3"
-                  disabled={motivo !== null || inCorso !== null}
-                  onClick={() => void avvia(lavoro)}
-                >
-                  <Wrench className="size-3.5" aria-hidden="true" />
-                  {unico ? 'Costruisci' : `Liv. ${livello}`}
-                </BottoneSecondario>
+                {bottone}
               </div>
               {motivo && <span className="text-xs text-testo-tenue">{motivo}</span>}
             </li>
@@ -183,6 +243,24 @@ export function Potenziamenti({ nave, ora, lavori, base }: Props) {
           {errore}
         </p>
       )}
+    </div>
+  )
+}
+
+/** Il livello rispetto al tetto del cantiere dove si è attraccati: una tacca per livello, al massimo 20. */
+function Tacche({ livello, tetto }: { livello: number; tetto: number }) {
+  const n = Math.min(20, Math.max(tetto, 1))
+  const piene = Math.round((Math.min(livello, tetto) / Math.max(tetto, 1)) * n)
+  return (
+    <div className="flex items-center gap-2" role="meter" aria-label="Livello rispetto al cantiere" aria-valuemin={0} aria-valuemax={tetto} aria-valuenow={livello}>
+      <span className="flex flex-1 gap-[2px]">
+        {Array.from({ length: n }, (_, i) => (
+          <span key={i} className={`h-1.5 flex-1 ${i < piene ? 'bg-ambra' : 'bg-[#211a10]'}`} />
+        ))}
+      </span>
+      <span className="cifre text-[10px] text-testo-tenue">
+        {livello}/{tetto}
+      </span>
     </div>
   )
 }

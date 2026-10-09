@@ -137,7 +137,7 @@ function Abbandono({ insediamento, nome }: { insediamento: Insediamento; nome: s
     )
   }
   return (
-    <div className="flex flex-col gap-2 rounded-plancia border border-pericolo/60 p-2.5" role="alertdialog" aria-label={`Abbandona ${nome}`}>
+    <div className="smussato flex flex-col gap-2 border border-pericolo/60 p-2.5 [--smusso-colore:color-mix(in_srgb,var(--color-pericolo)_60%,transparent)] [--smusso:7px]" role="alertdialog" aria-label={`Abbandona ${nome}`}>
       <p className="m-0 text-xs">
         Abbandoni {nome}: strutture, coda e magazzino spariscono, e il corpo torna libero.{' '}
         {riciclo

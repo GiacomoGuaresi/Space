@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import { ChevronDown, ChevronUp, Crosshair, Home, Search } from 'lucide-react'
+import { IconaCasa, IconaCerca, IconaGiu, IconaMira, IconaSu } from './icone'
 import { CATALOGO, TIPI, type TipoCorpo } from '../dominio/catalogo'
 import { piuVicino } from '../dominio/ricerca'
 import { BASE, type Coordinate, type Settore } from '../dominio/settore'
@@ -65,7 +65,7 @@ export function Osservatorio({ settore }: { settore: Settore }) {
                   aria-label={`${asse} + 1`}
                   onClick={() => sposta(asse, 1)}
                 >
-                  <ChevronUp className="size-3.5" />
+                  <IconaSu className="size-3.5" />
                 </button>
                 <button
                   type="button"
@@ -73,7 +73,7 @@ export function Osservatorio({ settore }: { settore: Settore }) {
                   aria-label={`${asse} − 1`}
                   onClick={() => sposta(asse, -1)}
                 >
-                  <ChevronDown className="size-3.5" />
+                  <IconaGiu className="size-3.5" />
                 </button>
               </div>
             </div>
@@ -99,11 +99,11 @@ export function Osservatorio({ settore }: { settore: Settore }) {
           ))}
         </select>
         <button className={`${pulsante} flex gap-1.5`} type="button" onClick={cerca}>
-          <Search className="size-3.5" />
+          <IconaCerca className="size-3.5" />
           Più vicino
         </button>
         <button className={pulsante} type="button" aria-label="Torna alla base" title="Torna alla base" onClick={() => osserva(BASE)}>
-          <Home className="size-4" />
+          <IconaCasa className="size-4" />
         </button>
         <button
           className={pulsante}
@@ -116,7 +116,7 @@ export function Osservatorio({ settore }: { settore: Settore }) {
             osserva({ x: a(), y: a(), z: a() })
           }}
         >
-          <Crosshair className="size-4" />
+          <IconaMira className="size-4" />
         </button>
       </div>
       {avviso && (

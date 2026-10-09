@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { orario } from './formato'
-import { NOMI_VOCI, novita, raggruppa, type Voce } from './diario'
+import { NOMI_VOCI, novita, raggruppa, type Voce } from './voci'
 import { BottonePrimario, Etichetta, Pannello } from './plancia'
 
 interface Props {

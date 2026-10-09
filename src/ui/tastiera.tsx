@@ -83,7 +83,7 @@ export function Scorciatoie() {
     <div className="pointer-events-auto absolute inset-0 z-[100] grid place-items-center bg-black/50" onClick={() => mostraAiuto(false)}>
       <section
         aria-label="Scorciatoie da tastiera"
-        className="w-80 rounded-plancia border border-ambra-scura bg-pannello p-4 shadow-lg"
+        className="smussato w-80 border border-ambra-scura bg-pannello p-4 shadow-lg [--smusso-colore:var(--color-ambra-scura)]"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="etichetta m-0 mb-3 text-ambra!">Scorciatoie</h2>

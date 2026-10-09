@@ -1,4 +1,5 @@
 import { useContext } from 'react'
+import { IconaRisorsa } from './icone'
 import { BILANCIAMENTO } from '../dominio/bilanciamento'
 import type { Nave } from '../dominio/navigazione'
 import { bottinoCometa, bottinoRelitto, mixCorpo, RISORSE, ritmoMano, ritmoRisorsa, stivaPienaTra } from '../dominio/risorse'
@@ -78,7 +79,10 @@ export function Raccolta({ nave, ora }: { nave: Nave; ora: Date }) {
         {raccolte.map((r) => (
           <li key={r} className="flex flex-col gap-0.5 text-[13px]">
             <div className="flex items-baseline gap-3">
-              <span className="flex-1">{NOMI_RISORSE[r]}</span>
+              <span className="flex flex-1 items-center gap-1.5">
+                <IconaRisorsa risorsa={r} className="size-4 text-ambra" />
+                {NOMI_RISORSE[r]}
+              </span>
               <span className="cifre inline-flex items-center gap-1 text-testo-tenue">
                 {numero(ritmi[r]!, 1)}/h
                 <Info

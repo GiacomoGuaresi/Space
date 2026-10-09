@@ -69,7 +69,7 @@ export function MenuContesto({ menu, onChiudi }: { menu: Menu | null; onChiudi: 
       role="menu"
       aria-label={menu.titolo}
       style={{ left: x, top: y, width: LARGHEZZA }}
-      className="fixed z-50 flex flex-col rounded-plancia border border-linea bg-pannello py-1 shadow-lg"
+      className="smussato fixed z-50 flex flex-col border border-linea bg-pannello py-1 shadow-lg [--smusso:7px]"
       onContextMenu={(e) => e.preventDefault()}
     >
       <span className="etichetta truncate px-3 py-1.5">{menu.titolo}</span>

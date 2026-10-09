@@ -5,7 +5,6 @@
 import { useSyncExternalStore } from 'react'
 
 export type IdFinestra =
-  | 'qui'
   | 'scanner'
   | 'rotta'
   | 'nave'
@@ -48,10 +47,9 @@ export interface Disposizione {
 export const FINESTRE: Readonly<
   Record<IdFinestra, { titolo: string; tasto: string; w: number; h: number; minW: number; minH: number; piena?: boolean }>
 > = {
-  qui: { titolo: 'Qui', tasto: 'Q', w: 340, h: 300, minW: 260, minH: 160 },
   scanner: { titolo: 'Scanner', tasto: 'S', w: 340, h: 420, minW: 260, minH: 200 },
-  rotta: { titolo: 'Rotta', tasto: 'R', w: 340, h: 320, minW: 280, minH: 220 },
-  nave: { titolo: 'Nave', tasto: 'N', w: 420, h: 560, minW: 320, minH: 260, piena: true },
+  rotta: { titolo: 'Rotta', tasto: 'R', w: 360, h: 400, minW: 300, minH: 280 },
+  nave: { titolo: 'Nave', tasto: 'N', w: 900, h: 640, minW: 640, minH: 320, piena: true },
   base: { titolo: 'Base', tasto: 'B', w: 460, h: 560, minW: 340, minH: 260, piena: true },
   ricerche: { titolo: 'Ricerche', tasto: 'T', w: 800, h: 600, minW: 420, minH: 300, piena: true },
   rete: { titolo: 'Rete', tasto: 'E', w: 460, h: 480, minW: 340, minH: 240, piena: true },
@@ -65,15 +63,13 @@ export const FINESTRE: Readonly<
 const MARGINE = 12
 
 /**
- * La disposizione di partenza in un'area `larghezza` × `altezza`: Scanner e Qui
- * a sinistra, una sopra l'altra (più basse se lo schermo è basso), Rotta a
- * destra; le altre chiuse, pronte ad aprirsi al centro.
+ * La disposizione di partenza in un'area `larghezza` × `altezza`: Scanner a
+ * sinistra (più bassa se lo schermo è basso), Rotta a destra; le altre chiuse,
+ * pronte ad aprirsi al centro. Qui non è una finestra: sta sempre sullo sfondo.
  */
 export function disposizioneIniziale(larghezza: number, altezza = 816): Disposizione {
-  const { qui, scanner, rotta } = FINESTRE
-  const libera = altezza - MARGINE * 3
-  const altezzaScanner = Math.min(scanner.h, Math.max(scanner.minH, Math.round(libera * 0.58)))
-  const altezzaQui = Math.min(qui.h, Math.max(qui.minH, libera - altezzaScanner))
+  const { scanner, rotta } = FINESTRE
+  const altezzaScanner = Math.min(scanner.h, Math.max(scanner.minH, altezza - MARGINE * 2))
   // A cascata, perché aprendone più d'una si vedano tutti i titoli.
   const alCentro = (id: IdFinestra, n: number): Finestra => {
     const { w, h } = FINESTRE[id]
@@ -82,7 +78,6 @@ export function disposizioneIniziale(larghezza: number, altezza = 816): Disposiz
   return {
     finestre: {
       scanner: { stato: 'aperta', x: MARGINE, y: MARGINE, w: scanner.w, h: altezzaScanner },
-      qui: { stato: 'aperta', x: MARGINE, y: MARGINE * 2 + altezzaScanner, w: qui.w, h: altezzaQui },
       rotta: { stato: 'aperta', x: Math.max(MARGINE, larghezza - rotta.w - MARGINE), y: MARGINE, w: rotta.w, h: rotta.h },
       wiki: alCentro('wiki', 0),
       catalogo: alCentro('catalogo', 1),
@@ -94,7 +89,7 @@ export function disposizioneIniziale(larghezza: number, altezza = 816): Disposiz
       ricerche: alCentro('ricerche', 0),
       traguardi: alCentro('traguardi', 1),
     },
-    ordine: ['nave', 'rete', 'base', 'ricerche', 'diario', 'wiki', 'catalogo', 'traguardi', 'impostazioni', 'qui', 'scanner', 'rotta'],
+    ordine: ['nave', 'rete', 'base', 'ricerche', 'diario', 'wiki', 'catalogo', 'traguardi', 'impostazioni', 'scanner', 'rotta'],
     sfondo: 'scena',
   }
 }

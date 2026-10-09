@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react'
-import { Orbit } from 'lucide-react'
+import { IconaVarco } from './icone'
 import { ViaggioRifiutato } from '../dati'
 import { BILANCIAMENTO } from '../dominio/bilanciamento'
 import type { Nave } from '../dominio/navigazione'
@@ -59,7 +59,7 @@ export function Varco({ nave, ora }: { nave: Nave; ora: Date }) {
             </p>
           )}
           <BottonePrimario disabled={inCorso || manca} onClick={() => void fai()}>
-            <Orbit className="size-4" aria-hidden="true" />
+            <IconaVarco className="size-4" aria-hidden="true" />
             Attraversa
           </BottonePrimario>
         </>

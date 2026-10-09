@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react'
-import { FlaskConical } from 'lucide-react'
+import { IconaRicerche, IconaRisorsa } from './icone'
 import { ViaggioRifiutato } from '../dati'
 import { NOMI_RISORSE } from '../dominio/catalogo'
 import { mancante } from '../dominio/cantiere'
@@ -168,9 +168,9 @@ function Dettaglio({
       <p className="m-0 text-[13px]">{RICERCHE[id].effetto}</p>
       <p className="cifre m-0 text-xs">
         {RISORSE.filter((r) => costo[r]).map((r, n) => (
-          <span key={r} className={manca[r] ? 'text-ambra' : 'text-testo-tenue'}>
+          <span key={r} title={NOMI_RISORSE[r]} className={manca[r] ? 'text-ambra' : 'text-testo-tenue'}>
             {n > 0 && ' · '}
-            {numero(Math.ceil(costo[r]!), 0)} {NOMI_RISORSE[r].slice(0, 3)}
+            <IconaRisorsa risorsa={r} aria-label={NOMI_RISORSE[r]} /> {numero(Math.ceil(costo[r]!), 0)}
           </span>
         ))}
         <span className="text-testo-tenue"> · {durata(durataGradino(g) * 3_600_000)} · la nave resta ferma</span>
@@ -188,7 +188,7 @@ function Dettaglio({
       )}
       {(continua || !fatte.has(id)) && (
         <BottonePrimario disabled={motivo !== null || inCorso} onClick={() => void avvia()}>
-          <FlaskConical className="size-4" aria-hidden="true" />
+          <IconaRicerche className="size-4" aria-hidden="true" />
           Avvia
         </BottonePrimario>
       )}

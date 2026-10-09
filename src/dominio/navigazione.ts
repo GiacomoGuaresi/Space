@@ -236,18 +236,25 @@ const GRAVITAZIONALI: ReadonlySet<TipoCorpo> = new Set(['buconero', 'wormhole'])
  * I corpi entro il raggio dello scanner (in distanza euclidea), dal più
  * vicino; se si passano i `tipi`, solo quelli. Con `raggioGravitazionale`
  * buchi neri e wormhole si vedono fin lì (*Rilevamento gravitazionale*).
+ * Si scorre solo la sfera, una fetta di x alla volta: `avanza` riceve la
+ * parte fatta (da 0 a 1), per chi la fa in un worker.
  */
 export function scansione(
   centro: Coordinate,
   raggio: number,
   tipi?: ReadonlySet<TipoCorpo>,
   raggioGravitazionale = raggio,
+  avanza?: (fatta: number) => void,
 ): Rilevamento[] {
   const trovati: Rilevamento[] = []
-  const lato = Math.floor(Math.max(raggio, raggioGravitazionale))
-  for (let dx = -lato; dx <= lato; dx++)
-    for (let dy = -lato; dy <= lato; dy++)
-      for (let dz = -lato; dz <= lato; dz++) {
+  const massimo = Math.max(raggio, raggioGravitazionale)
+  const lato = Math.floor(massimo)
+  const quadrato = massimo * massimo
+  for (let dx = -lato; dx <= lato; dx++) {
+    const latoY = Math.floor(Math.sqrt(quadrato - dx * dx))
+    for (let dy = -latoY; dy <= latoY; dy++) {
+      const latoZ = Math.floor(Math.sqrt(Math.max(0, quadrato - dx * dx - dy * dy)))
+      for (let dz = -latoZ; dz <= latoZ; dz++) {
         if (dx === 0 && dy === 0 && dz === 0) continue
         const coordinate = { x: centro.x + dx, y: centro.y + dy, z: centro.z + dz }
         const d = distanza(centro, coordinate)
@@ -256,6 +263,9 @@ export function scansione(
         if (!tipo || (tipi && !tipi.has(tipo))) continue
         if (d <= raggio || (GRAVITAZIONALI.has(tipo) && d <= raggioGravitazionale)) trovati.push({ coordinate, tipo, distanza: d })
       }
+    }
+    avanza?.((dx + lato + 1) / (2 * lato + 1))
+  }
   return trovati.sort((a, b) => a.distanza - b.distanza)
 }
 

@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react'
-import { FastForward } from 'lucide-react'
+import { IconaAccelera } from './icone'
 import { ViaggioRifiutato } from '../dati'
 import { BILANCIAMENTO } from '../dominio/bilanciamento'
 import { costoAccelera } from '../dominio/cantiere'
@@ -42,7 +42,7 @@ function Accelera({ cosa, lavoro, ms, testo }: { cosa: 'viaggio' | 'ricarica' | 
     <div className="flex flex-col gap-1">
       <div className="flex items-center gap-2">
         <BottoneSecondario className="shrink-0 px-3" disabled={inCorso || costo > disponibile} onClick={() => void fai()}>
-          <FastForward className="size-3.5" aria-hidden="true" />
+          <IconaAccelera className="size-3.5" aria-hidden="true" />
           {testo}
         </BottoneSecondario>
         <span className={`cifre inline-flex items-center gap-1 text-xs ${costo > disponibile ? 'text-ambra' : 'text-testo-tenue'}`}>

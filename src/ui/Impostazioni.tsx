@@ -1,5 +1,5 @@
 import { dimenticaQualita, qualitaRicordata } from '../grafica/qualita'
-import { cambiaImpostazioni, useImpostazioni, type Grafica, type Interfaccia, type Movimento } from './impostazioni'
+import { cambiaImpostazioni, useImpostazioni, type Grafica, type Interfaccia, type Movimento } from './preferenze'
 import { Etichetta, Pannello } from './plancia'
 import { suona } from './suoni'
 

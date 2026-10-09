@@ -1,8 +1,8 @@
 import { Suspense, lazy, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { Navigation } from 'lucide-react'
+import { IconaRotta } from './icone'
 import type { Scansione, Scoperta } from '../dati'
 import { CATALOGO } from '../dominio/catalogo'
-import { corpiNoti, type PuntoMappa } from '../dominio/mappa'
+import type { PuntoMappa } from '../dominio/mappa'
 import { anteprima, inViaggio, type Nave, type Viaggio } from '../dominio/navigazione'
 import { BASE, distanza, settore, stessoSettore, type Coordinate } from '../dominio/settore'
 import { COLORI_RARITA } from './colori'
@@ -11,7 +11,8 @@ import { coordinatePlancia, durata, numero, orario } from './formato'
 import { vaiA } from './indirizzo'
 import { MenuContesto, menuCorpo, type Menu } from './MenuContesto'
 import { segnaRaroVisto } from './pallini'
-import { BottonePrimario, Etichetta, Pannello, SimboloRarita } from './plancia'
+import { BottonePrimario, Caricamento, Etichetta, Pannello, SimboloRarita } from './plancia'
+import { useCorpiNoti } from './scansioni'
 import { CaricoAttuale, useDintorni } from './SchedaNave'
 import { nomeSottotipo } from '../dominio/sottotipi'
 import { useOra } from './useNave'
@@ -37,7 +38,8 @@ export function Mappa({ nave, viaggio, scarto, scoperte, scansioni }: Props) {
   const fatte = useContext(CaricoAttuale)?.fatte
   const dintorni = useDintorni()
   const spettrometria = fatte?.has('S2') ?? false
-  const tutti = useMemo(() => corpiNoti(scansioni, scoperte), [scansioni, scoperte])
+  // I corpi noti li calcola il worker: con uno scanner alto le soste sono pesanti.
+  const { punti: tutti = NESSUNO, avanzamento } = useCorpiNoti(scansioni, scoperte)
   const [filtro, setFiltro] = useState<Filtro>('tutti')
   const punti = useMemo(() => tutti.filter(FILTRI[filtro].tiene), [tutti, filtro])
   const [centra, setCentra] = useState<{ su: Coordinate; volta: number } | null>(null)
@@ -77,6 +79,11 @@ export function Mappa({ nave, viaggio, scarto, scoperte, scansioni }: Props) {
           <TastiCentra nave={nave.posizione} onCentra={setCentra} />
         </div>
       </div>
+      {avanzamento !== null && (
+        <Pannello className="p-3">
+          <Caricamento testo="Mappa in aggiornamento" avanzamento={avanzamento} />
+        </Pannello>
+      )}
       {punto ? (
         <Pannello className="flex flex-col gap-2.5 p-3.5" etichetta="Corpo scelto">
           <div className="flex items-baseline justify-between gap-2">
@@ -102,7 +109,7 @@ export function Mappa({ nave, viaggio, scarto, scoperte, scansioni }: Props) {
           </p>
           {!stessoSettore(punto.coordinate, nave.posizione) && (
             <BottonePrimario disabled={volo} onClick={() => vaiA({ pagina: 'ponte', meta: punto.coordinate })}>
-              <Navigation className="size-4" aria-hidden="true" />
+              <IconaRotta className="size-4" aria-hidden="true" />
               {volo ? 'In viaggio' : 'Imposta rotta'}
             </BottonePrimario>
           )}
@@ -118,6 +125,8 @@ export function Mappa({ nave, viaggio, scarto, scoperte, scansioni }: Props) {
     </Cornice>
   )
 }
+
+const NESSUNO: PuntoMappa[] = []
 
 type Filtro = 'tutti' | 'sistemi' | 'rari' | 'nuovi'
 
@@ -208,7 +217,8 @@ export function useSfondoMappa({
   meta: Coordinate | null
   onScegli: (c: Coordinate) => void
 }): { fondo: ReactNode; barretta: ReactNode } {
-  const tutti = useMemo(() => corpiNoti(scansioni, scoperte), [scansioni, scoperte])
+  // I corpi noti li calcola il worker: con uno scanner alto le soste sono pesanti.
+  const { punti: tutti = NESSUNO, avanzamento } = useCorpiNoti(scansioni, scoperte)
   const [filtro, setFiltro] = useState<Filtro>('tutti')
   const punti = useMemo(() => tutti.filter(FILTRI[filtro].tiene), [tutti, filtro])
   const [centra, setCentra] = useState<{ su: Coordinate; volta: number } | null>(null)
@@ -244,7 +254,9 @@ export function useSfondoMappa({
       <div className="flex items-center gap-1.5 border-b border-separatore bg-barra/80 px-3 py-1.5 backdrop-blur">
         <Filtri filtro={filtro} onFiltro={setFiltro} compatti />
         <span className="etichetta mr-2">
-          {punti.length} {punti.length === 1 ? 'corpo' : 'corpi'} · clic → Rotta
+          {avanzamento !== null
+            ? `Mappa in aggiornamento ${Math.round(avanzamento * 100)}%`
+            : `${punti.length.toLocaleString('it-IT')} ${punti.length === 1 ? 'corpo' : 'corpi'} · clic → Rotta`}
         </span>
         <TastiCentra nave={nave} onCentra={setCentra} compatti />
       </div>

@@ -1,6 +1,5 @@
 import { Suspense, lazy, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { CATALOGO, TIPI, type TipoCorpo } from '../dominio/catalogo'
-import { corpiNoti } from '../dominio/mappa'
 import { inViaggio, type Nave } from '../dominio/navigazione'
 import { capacitaNave, caricoOra } from '../dominio/risorse'
 import { pienoIl, ritmoInsediamento } from '../dominio/insediamenti'
@@ -14,9 +13,9 @@ import { Catalogo, ContenutoCatalogo } from './Catalogo'
 import { Cornice } from './Cornice'
 import { Diario } from './Diario'
 import { apri, mostra, useDisposizione, type IdFinestra } from './finestre'
-import { novita, segnaLetto, UltimaVoce, useLetto, vociDiario } from './diario'
+import { novita, segnaLetto, UltimaVoce, useLetto, vociDiario } from './voci'
 import { Impostazioni } from './Impostazioni'
-import { useImpostazioni, type Movimento } from './impostazioni'
+import { useImpostazioni, type Movimento } from './preferenze'
 import { apriDiario, chiudiDiario, indirizzo, usePagina, type Pagina } from './indirizzo'
 import { Mappa } from './Mappa'
 import { Osservatorio } from './Osservatorio'
@@ -29,6 +28,7 @@ import { Scheda } from './Scheda'
 import { Traguardi } from './Traguardi'
 import { TRAGUARDI } from '../dominio/traguardi'
 import { CaricoAttuale, SchedaNave } from './SchedaNave'
+import { useCorpiNoti, useRilevati } from './scansioni'
 import { usePC } from './schermo'
 import { useNave, useOra } from './useNave'
 import { Wiki } from './Wiki'
@@ -41,6 +41,8 @@ const NOMI_MOVIMENTO: Readonly<Record<Movimento, string>> = {
 
 // three.js pesa: si carica a parte, così i comandi compaiono subito.
 const Scena = lazy(async () => ({ default: (await import('../grafica/Scena')).Scena }))
+
+const NESSUNO: never[] = []
 
 /** Le pagine dell'app (ui/indirizzo.ts): ponte, mappa, altro, diario, catalogo e l'osservatorio in sviluppo. */
 export function App() {
@@ -77,6 +79,8 @@ export function App() {
   const chiaveFatte = [...ricercheFatte(ricerche, new Date(minuto * 60_000))].join(',')
   const fatte = useMemo(() => new Set(chiaveFatte ? chiaveFatte.split(',') : []), [chiaveFatte])
   const nave = stato.fase === 'pronta' ? stato.nave : null
+  // Le novità dello scanner le calcola il worker: finché non arrivano il diario non le mostra.
+  const rilevati = useRilevati(scansioni)
   const voci = useMemo(
     () =>
       nave
@@ -93,9 +97,10 @@ export function App() {
             fatte,
             nave,
             ora: new Date(minuto * 60_000),
+            rilevati: rilevati ?? [],
           })
         : [],
-    [viaggi, scoperte, scansioni, raccolti, prelievi, insediamenti, costruzioni, ricerche, traguardi, fatte, nave, minuto],
+    [viaggi, scoperte, scansioni, raccolti, prelievi, insediamenti, costruzioni, ricerche, traguardi, fatte, nave, minuto, rilevati],
   )
   // Su PC (doc/11-interfaccia.md#pc--plancia-a-finestre) le pagine sono finestre.
   const pc = usePC()
@@ -143,7 +148,7 @@ export function App() {
   // raro rilevato mai visitato né aperto, Altro se il diario ha novità.
   const visti = useVisti()
   const impostazioni = useImpostazioni()
-  const noti = useMemo(() => corpiNoti(scansioni, scoperte), [scansioni, scoperte])
+  const noti = useCorpiNoti(scansioni, scoperte).punti ?? NESSUNO
   const volo = nave ? inViaggio(nave, ora) : true
   const arrivoNonVisto = nave !== null && !volo && (!visti.ponte || nave.dal > new Date(visti.ponte))
   const rariNuovi = noti.filter(
@@ -195,11 +200,11 @@ export function App() {
     }),
     [arrivoNonVisto, rariNuovi, daLeggere, wikiNuove.length, pieni],
   )
-  // Sul ponte, a nave ferma, l'arrivo è visto.
+  // Sul ponte, a nave ferma, l'arrivo è visto. Su PC Qui sta sempre sullo sfondo: si vede subito.
   useEffect(() => {
-    const ponte = pc ? disposizione.finestre.qui.stato === 'aperta' : pagina.pagina === 'ponte'
+    const ponte = pc || pagina.pagina === 'ponte'
     if (ponte && arrivoNonVisto && nave) segnaPonteVisto(nave.dal)
-  }, [pc, disposizione.finestre.qui.stato, pagina.pagina, arrivoNonVisto, nave])
+  }, [pc, pagina.pagina, arrivoNonVisto, nave])
 
   // Su PC i link diretti (#/diario, #/wiki/pulsar, #/rotta/x,y,z…) aprono la
   // finestra, poi l'indirizzo si pulisce: la disposizione non sta nell'URL.

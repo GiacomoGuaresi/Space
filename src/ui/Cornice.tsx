@@ -1,6 +1,7 @@
 import { useEffect, useRef, type ReactNode } from 'react'
 import type { Nave, Viaggio } from '../dominio/navigazione'
 import { Barra, sezioneDi } from './Barra'
+import { BarraStato } from './BarraStato'
 import { Dock } from './Dock'
 import { rientra } from './finestre'
 import { apriDiario, type Pagina } from './indirizzo'
@@ -38,7 +39,7 @@ export function Cornice({ pagina, nave, viaggio, scarto, fondo, finestre = false
         {fondo}
         <div className="pointer-events-none absolute inset-0 flex flex-col">
           <header className="pointer-events-auto">
-            <StrisciaStato nave={nave} viaggio={viaggio} ora={ora} onApri={onApri} riga />
+            <BarraStato nave={nave} viaggio={viaggio} ora={ora} onApri={onApri} />
             {barretta}
           </header>
           {finestre ? (

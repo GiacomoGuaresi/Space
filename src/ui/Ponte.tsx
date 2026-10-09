@@ -41,8 +41,9 @@ interface Props {
 /**
  * Il ponte di comando (M2): la vista del settore dove sta la nave (o il
  * viaggio, se è in volo), lo stato della nave in alto e in basso il settore,
- * lo scanner e la rotta: sul telefono come schede di un pannello, su PC come
- * tre finestre (doc/11-interfaccia.md#finestre), insieme a quelle dell'archivio.
+ * lo scanner e la rotta: sul telefono come schede di un pannello, su PC il
+ * settore sempre sullo sfondo e scanner e rotta come finestre
+ * (doc/11-interfaccia.md#finestre), insieme a quelle dell'archivio.
  */
 export function Ponte({ nave, viaggio, scarto, scoperte, scansioni, meta: metaScelta, onParti, archivio = {} }: Props) {
   const ora = useOra(scarto)
@@ -104,25 +105,29 @@ export function Ponte({ nave, viaggio, scarto, scoperte, scansioni, meta: metaSc
   const inArrivo = <p className="m-0 text-xs text-testo-tenue">Disponibile all'arrivo.</p>
 
   if (pc) {
+    // Qui non è una finestra: sta sempre sullo sfondo, in basso a destra, sotto le finestre.
+    const qui = (
+      <section
+        aria-label="Qui"
+        className="pointer-events-auto absolute right-3 bottom-3 z-0 flex max-h-[calc(100%-1.5rem)] w-[340px] flex-col overflow-y-auto smussato border border-linea/60 bg-pannello/70 p-3 backdrop-blur-sm [--smusso-colore:color-mix(in_srgb,var(--color-linea)_60%,transparent)]"
+      >
+        <DentroFinestra.Provider value={true}>
+          {volo && (
+            <div className="mb-3 border-b border-separatore pb-3">
+              <AcceleraViaggio nave={nave} ora={ora} />
+            </div>
+          )}
+          <Scheda settore={settore} />
+          {!volo && <AcceleraRicarica nave={nave} ora={ora} />}
+          <Raccolta nave={nave} ora={ora} />
+          <MagazzinoQui nave={nave} ora={ora} />
+          <Fondazione nave={nave} ora={ora} />
+          <FondaEstrattore nave={nave} ora={ora} />
+          <Varco nave={nave} ora={ora} />
+        </DentroFinestra.Provider>
+      </section>
+    )
     const contenuti: Partial<Record<IdFinestra, { contenuto: ReactNode; onChiudi?: () => void }>> = {
-      qui: {
-        contenuto: (
-          <>
-            {volo && (
-              <div className="mb-3 border-b border-separatore pb-3">
-                <AcceleraViaggio nave={nave} ora={ora} />
-              </div>
-            )}
-            <Scheda settore={settore} />
-            {!volo && <AcceleraRicarica nave={nave} ora={ora} />}
-            <Raccolta nave={nave} ora={ora} />
-            <MagazzinoQui nave={nave} ora={ora} />
-            <Fondazione nave={nave} ora={ora} />
-            <FondaEstrattore nave={nave} ora={ora} />
-            <Varco nave={nave} ora={ora} />
-          </>
-        ),
-      },
       scanner: {
         contenuto: volo ? inArrivo : <Scanner centro={nave.posizione} livello={nave.scanner} scoperti={scoperti} onScegli={scegli} />,
       },
@@ -142,6 +147,7 @@ export function Ponte({ nave, viaggio, scarto, scoperte, scansioni, meta: metaSc
           barretta={disposizione.sfondo === 'mappa' ? mappa.barretta : undefined}
           finestre
         >
+          {qui}
           {(Object.keys(FINESTRE) as IdFinestra[])
             .filter((id) => disposizione.finestre[id].stato === 'aperta' && contenuti[id])
             .map((id) => (

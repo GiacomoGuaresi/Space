@@ -21,9 +21,10 @@ Prototipo approvato delle 7 schermate del telefono: [Space · Prototipo interfac
 | Accento | ambra `#ffb547`, ambra scura `#b97a22` |
 | Linee | `#5a4220`, separatori `#2e2312` |
 | Testo | `#f2e6cc`, secondario `#a8926b` |
-| Pannelli | `rgba(12, 9, 5, .84-.96)`, bordo di 1 px, angoli di 2-3 px |
+| Pannelli | `rgba(12, 9, 5, .84-.96)`, bordo di 1 px, **angoli tagliati a 45°** (10 px, 7 px per riquadri e menu; utility `smussato`) · bottoni e campi con angoli di 3 px |
 | Font | IBM Plex Sans; numeri in IBM Plex Mono a cifre tabulari |
 | Etichette | maiuscole, spaziate (`.18em`), 10 px |
+| Icone | [Phosphor](https://phosphoricons.com), peso *light*, colore del testo; tutte in `src/ui/icone.tsx` con il nome del gioco |
 
 - **HUD vivo**: linee che si disegnano, numeri che scorrono. Tutto si spegne con **riduci movimento**.
 - **Suoni** discreti e disattivabili: clic, partenza, arrivo, scoperta.
@@ -40,25 +41,33 @@ Prototipo approvato delle 7 schermate del telefono: [Space · Prototipo interfac
 │ │ ● Kumion       4,1      │                                    │ meta 3 · −1 · 2       │ │
 │ │ ◆ Talir        6,0      │          scena 3D del settore      │ 12 h · arrivo 18:40   │ │
 │ └─────────────────────────┘             oppure mappa 3D        │ [ PARTI ]             │ │
-│ ┌ QUI ─────────────── _ × ┐                                    └───────────────────────┘ │
-│ │ FASCIA DI ORAN …        │                                                              │
-│ └─────────────────────────┘                                                              │
+│                                                                └───────────────────────┘ │
+│                                                                ┌ FASCIA DI ORAN ───────┐ │
+│                                                                │ qui, sempre sopra lo  │ │
+│                                                                │ sfondo, senza titolo  │ │
+│                                                                └───────────────────────┘ │
 ├───────────────────────────────────────────────────────────────────────────────────────┤
-│ Q S R │ N Nave  E Rete  B Base  T Ricerche │ D Diario● W Wiki C Catalogo G Traguardi │ ⇆ ↺ ⚙ ? │
+│ S R │ N Nave  E Rete  B Base  T Ricerche │ D Diario● W Wiki C Catalogo G Traguardi │ ⇆ ↺ ⚙ ? │
 └───────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-- **Barra di stato** in alto, su una riga: stato e luogo · carburante con il tetto · **attività in corso** con conto alla rovescia (potenziamento, ricerca, raccolta a mano) · **stiva in breve** (sei mini barre) · **ultima voce del diario** con le novità (clic → Diario) · **ora del server**. Attività e stiva compaiono con le loro meccaniche.
-- **Sfondo**: la scena del settore **oppure** la mappa 3D, scambiate con ⇆ o **Tab**; le finestre restano aperte sopra. Con la mappa, i filtri per tipo e i tasti per ricentrare stanno in una barretta sotto la barra di stato; un clic su un corpo lo mette nella Rotta (e la apre).
-- **Dock** in basso, alto ~40 px, in quattro gruppi: *Navigazione* (Qui, Scanner, Rotta) · *Nave e rete* (Nave, Rete, Base, Ricerche) · *Archivio* (Diario, Wiki, Catalogo, Traguardi) · *comandi* (⇆ Scena/Mappa, ↺ Riordina, ⚙ Impostazioni, ? scorciatoie). Finestra aperta = accesa, ridotta = contorno, chiusa = spenta; i **pallini** stanno sulle voci del dock. Su PC non c'è la voce Altro.
+- **Barra di stato** in alto, una fila di moduli come gli strumenti di una plancia, ognuno con l'etichetta sopra e cliccabile verso la finestra che ne parla:
+  - **stato**: in sosta (coordinate, da quando) o in viaggio (meta, conto alla rovescia, barra del viaggio) → Rotta. Il nome del luogo sta già nella scena e in Qui;
+  - **carburante**: 20 tacche, scure fino al tetto, rosse sotto il 20 %; tetto e tempo al pieno, o l'ora d'arrivo;
+  - **in corso**: il lavoro del cantiere o la ricerca che finisce prima, con il conto alla rovescia e quante altre → Nave, Base o Ricerche;
+  - **stiva**: quantità/massimo e icona per ognuna delle sei risorse, tre per riga, in ambra se piena → Nave;
+  - **diario di bordo**: le novità e l'ultima voce (o l'avviso di sosta forzata) → Diario;
+  - **ora** del server.
+- **Sfondo**: la scena del settore **oppure** la mappa 3D, scambiate con ⇆ o **Tab**; le finestre restano aperte sopra.
+- **Qui** non è una finestra: è un pannello fisso in basso a destra, **sempre presente** sopra lo sfondo (scena o mappa) e sotto le finestre, con la scheda del settore e le azioni del luogo. Non si sposta, non si chiude e non ha voce nel dock. Con la mappa, i filtri per tipo e i tasti per ricentrare stanno in una barretta sotto la barra di stato; un clic su un corpo lo mette nella Rotta (e la apre).
+- **Dock** in basso, alto ~40 px, in quattro gruppi: *Navigazione* (Scanner, Rotta) · *Nave e rete* (Nave, Rete, Base, Ricerche) · *Archivio* (Diario, Wiki, Catalogo, Traguardi) · *comandi* (⇆ Scena/Mappa, ↺ Riordina, ⚙ Impostazioni, ? scorciatoie). Ogni voce ha la sua icona; la lettera della scorciatoia sta nel tooltip. Finestra aperta = accesa, ridotta = contorno, chiusa = spenta; i **pallini** stanno sulle voci del dock. Su PC non c'è la voce Altro.
 
 ### Finestre
 
 | Tasto | Finestra | Contenuto | Da | Misura iniziale |
 |---|---|---|---|---|
-| Q | **Qui** | scheda del settore dove sta la nave, azioni del luogo (raccogli, fonda, attraversa) | ora | 340 × 300 |
 | S | **Scanner** | elenco dal più vicino; clic → Rotta | ora | 340 × 420 |
-| R | **Rotta** | meta, anteprima, PARTI | ora | 340 × 320 |
+| R | **Rotta** | coordinate, meta, durata · distanza · arrivo, carburante all'arrivo, PARTI sempre in fondo | ora | 360 × 400 |
 | D | **Diario di bordo** | cronologia, novità evidenziate | ora | 420 × 520 |
 | W | **Wiki** | indice a sinistra, pagina a destra | ora | 720 × 560 |
 | C | **Catalogo** | album per tipo | ora | 640 × 520 |
@@ -78,7 +87,7 @@ Una finestra compare nel dock quando esiste la sua meccanica.
 - Le finestre non escono dallo schermo: se la finestra del browser si restringe, rientrano.
 - Un'azione che riguarda un'altra finestra la apre o la riporta su: scegliere una meta (scanner, mappa, Rete) apre la Rotta; "Numeri ›" di una ⓘ apre la Wiki su quella pagina.
 - In viaggio Scanner e Rotta restano aperte e mostrano "disponibile all'arrivo".
-- **Disposizione**: alla prima apertura Qui, Scanner e Rotta. Poi si ricordano **sul dispositivo** le finestre aperte e ridotte, la posizione e la dimensione. **↺ Riordina** torna alla disposizione iniziale.
+- **Disposizione**: alla prima apertura Scanner e Rotta. Poi si ricordano **sul dispositivo** le finestre aperte e ridotte, la posizione e la dimensione. **↺ Riordina** torna alla disposizione iniziale.
 - **Tastiera**: la lettera della finestra la apre o la chiude, **Tab** scambia scena e mappa (se nessun comando ha il fuoco: altrimenti Tab passa al comando dopo, come sempre), **Esc** chiude la finestra in primo piano, **?** mostra l'elenco. Le lettere non valgono mentre si scrive in un campo.
 - **Indirizzo**: solo link diretti. `#/wiki/pulsar`, `#/rotta/x,y,z`, `#/diario` aprono la finestra, poi l'indirizzo si pulisce. La disposizione non va nell'URL.
 
@@ -110,7 +119,7 @@ I contenuti sono gli stessi su PC e telefono. Sul telefono ognuno è una sezione
 
 ### Ponte
 
-Sul telefono è un pannello con le schede **QUI · SCANNER · ROTTA**, più **BASE** quando la nave è attraccata a una base; su PC sono le finestre Qui, Scanner, Rotta e Base. In cima ci sono le azioni del luogo:
+Sul telefono è un pannello con le schede **QUI · SCANNER · ROTTA**, più **BASE** quando la nave è attraccata a una base; su PC sono il pannello Qui sullo sfondo e le finestre Scanner, Rotta e Base. In cima ci sono le azioni del luogo:
 
 | Dove sei | Azioni |
 |---|---|
@@ -139,10 +148,12 @@ Elenco degli insediamenti (⬢ basi, ◇ estrattori), ordinabile per **riempimen
 
 ### Nave
 
-- **Statistiche**: livello, valore attuale e prossimo valore di motore, serbatoio, ricarica, scanner e stiva.
-- **Stiva**: una barra per ognuna delle 6 risorse.
-- **Potenziamenti**: sempre visibili. Mostrano il costo per risorsa (in ambra quanto manca), il tempo e il **motivo** se non si possono fare ("serve un cantiere di livello ≥ 5").
-- **Coda del cantiere**.
+Una plancia larga (900 px su PC, minimo 640) a pannelli annidati; le colonne seguono la larghezza.
+
+- **Testata**: la nave, lo stato (in viaggio, attraccata, ferma), le coordinate, i progetti e tre indicatori: carburante (con il segno del tetto fuori dalle basi), stiva piena in %, livelli in tutto.
+- **Sistemi**: un modulo per motore, serbatoio, ricarica, scanner e stiva, con icona, livello, valore attuale e prossimo, le tacche del livello rispetto al tetto del cantiere e il **potenziamento** dentro: costo per risorsa (in ambra quanto manca), tempo e **motivo** se non si può fare ("serve un cantiere di livello ≥ 5"). Tre colonne di moduli nelle finestre larghe, due nella misura iniziale, una sul telefono.
+- **Cantiere**: la coda, a lato (sul telefono prima dei sistemi).
+- **Stiva**: una barra a tacche per ognuna delle 6 risorse.
 
 ### Altro
 
@@ -212,7 +223,7 @@ I pallini segnalano sia ciò che è **successo** sia ciò che è **possibile** a
 
 | Voce | Si accende quando… | Si spegne quando… |
 |---|---|---|
-| Ponte | la nave è arrivata o si è fermata, e non l'hai ancora vista | apri il Ponte |
+| Ponte | la nave è arrivata o si è fermata, e non l'hai ancora vista | apri il Ponte (su PC Qui è sempre in vista: non si accende) |
 | Mappa | è stato rilevato un corpo raro non ancora visitato | apri la sua scheda |
 | Rete | un insediamento è pieno o una costruzione è finita | lo raccogli, o apri la Rete |
 | Nave | un potenziamento è finito, o uno è pagabile dove sei | apri Nave, o non è più pagabile |
