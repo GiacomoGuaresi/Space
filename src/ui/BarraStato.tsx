@@ -84,28 +84,24 @@ export function BarraStato({ nave, viaggio, ora, onApri }: Props) {
         accesa={volo}
         onClick={() => apri('rotta')}
         titolo="Apri la rotta"
+        icona={<Distintivo acceso={volo}>{volo ? <IconaInVolo className="size-4" /> : <IconaFerma className="size-4" />}</Distintivo>}
         className="w-[270px]"
       >
-        <div className="flex items-center gap-2.5">
-          <Distintivo acceso={volo}>{volo ? <IconaInVolo className="size-4" /> : <IconaFerma className="size-4" />}</Distintivo>
-          <div className="flex min-w-0 flex-1 flex-col gap-1">
-            <span className="flex items-baseline gap-2">
-              <span className="cifre truncate text-[13px] text-testo">{coordinatePlancia(nave.posizione)}</span>
-              {volo && (
-                <span className="cifre ml-auto text-[15px] leading-none font-semibold text-ambra [text-shadow:0_0_10px_rgb(255_181_71/0.4)]" aria-live="polite">
-                  {rovescia(nave.dal.getTime() - ora.getTime())}
-                </span>
-              )}
+        <span className="flex items-baseline gap-2 leading-none">
+          <span className="cifre truncate text-[13px] text-testo">{coordinatePlancia(nave.posizione)}</span>
+          {volo ? (
+            <span className="cifre ml-auto text-[15px] font-semibold text-ambra [text-shadow:0_0_10px_rgb(255_181_71/0.4)]" aria-live="polite">
+              {rovescia(nave.dal.getTime() - ora.getTime())}
             </span>
-            {volo ? (
-              <span className="relative h-1 bg-[#211a10]" role="progressbar" aria-label="Viaggio" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(fatto * 100)}>
-                <span className="absolute inset-y-0 left-0 bg-ambra" style={{ width: `${fatto * 100}%` }} />
-              </span>
-            ) : (
-              <span className="text-[11px] text-testo-tenue">dal {orario(nave.dal, ora)}</span>
-            )}
-          </div>
-        </div>
+          ) : (
+            <span className="ml-auto text-[11px] text-testo-tenue">dal {orario(nave.dal, ora)}</span>
+          )}
+        </span>
+        {volo && (
+          <span className="relative h-1 bg-[#211a10]" role="progressbar" aria-label="Viaggio" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(fatto * 100)}>
+            <span className="absolute inset-y-0 left-0 bg-ambra" style={{ width: `${fatto * 100}%` }} />
+          </span>
+        )}
       </Modulo>
 
       <Separatore />
@@ -255,6 +251,7 @@ export function BarraStato({ nave, viaggio, ora, onApri }: Props) {
 function Modulo({
   etichetta,
   destra,
+  icona,
   accesa = false,
   onClick,
   titolo,
@@ -263,22 +260,32 @@ function Modulo({
 }: {
   etichetta: string
   destra?: ReactNode
+  /** Un'icona grande a sinistra, alta quanto etichetta e contenuto. */
+  icona?: ReactNode
   accesa?: boolean
   onClick?: () => void
   titolo?: string
   className?: string
   children: ReactNode
 }) {
-  const interno = (
+  const testo = (
     <>
-      <span className="flex items-center gap-2">
+      <span className="flex items-center gap-2 leading-none">
         <span className={`etichetta truncate text-[9px] ${accesa ? 'text-ambra!' : ''}`}>{etichetta}</span>
         {destra && <span className="cifre ml-auto shrink-0 text-[10px] text-testo-tenue">{destra}</span>}
       </span>
       {children}
     </>
   )
-  const classi = `relative flex shrink-0 flex-col justify-center gap-1 px-4 ${className}`
+  const interno = icona ? (
+    <span className="flex items-center gap-2.5">
+      {icona}
+      <span className="flex min-w-0 flex-1 flex-col gap-1.5">{testo}</span>
+    </span>
+  ) : (
+    testo
+  )
+  const classi = `relative flex shrink-0 flex-col justify-center gap-1.5 px-4 ${className}`
   return onClick ? (
     <div className={`${classi} hover:bg-ambra/5`}>
       {/* Il clic copre il modulo; le ⓘ dentro restano sopra (z-10). */}

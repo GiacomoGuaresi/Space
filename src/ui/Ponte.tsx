@@ -1,19 +1,21 @@
-import { Suspense, lazy, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { Suspense, lazy, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { Scansione, Scoperta } from '../dati'
 import { inViaggio, type Nave, type Viaggio } from '../dominio/navigazione'
 import { settore as calcolaSettore, type Coordinate } from '../dominio/settore'
 import { vaiA } from './indirizzo'
 import { Cornice } from './Cornice'
 import { Finestra } from './Finestra'
-import { apri, FINESTRE, inPrimoPiano, useDisposizione, type IdFinestra } from './finestre'
+import { apri, chiudi, FINESTRE, inPrimoPiano, useDisposizione, type IdFinestra } from './finestre'
 import { useSfondoMappa } from './Mappa'
 import { DentroFinestra, Pannello } from './plancia'
-import { FondaEstrattore, Fondazione } from './Fondazione'
+import { Fonda, fondabile, FondabileQui, InvitoFonda } from './Fondazione'
+import { CaricoAttuale } from './SchedaNave'
 import { AcceleraRicarica, AcceleraViaggio } from './Accelera'
 import { Varco } from './Varco'
 import { MagazzinoQui } from './Magazzino'
 import { Raccolta } from './Raccolta'
 import { Rotta } from './Rotta'
+import { InArrivo } from './InArrivo'
 import { Scanner } from './Scanner'
 import { Scheda } from './Scheda'
 import { Attraccata, SchedaBase, useBaseQui } from './SchedaBase'
@@ -23,7 +25,7 @@ import { useOra } from './useNave'
 
 const Scena = lazy(async () => ({ default: (await import('../grafica/Scena')).Scena }))
 
-type Linguetta = 'qui' | 'scanner' | 'rotta' | 'base'
+type Linguetta = 'qui' | 'scanner' | 'rotta' | 'base' | 'fonda'
 
 interface Props {
   nave: Nave
@@ -57,6 +59,15 @@ export function Ponte({ nave, viaggio, scarto, scoperte, scansioni, meta: metaSc
   const disposizione = useDisposizione()
   useTastiera(pc)
   const base = useBaseQui(nave, ora)
+  // Fonda c'è solo dove si può fondare: altrove la finestra (o la linguetta) si chiude.
+  const fondare = fondabile(nave, ora, useContext(CaricoAttuale))
+  const fondaAperta = disposizione.finestre.fonda.stato !== 'chiusa'
+  useEffect(() => {
+    if (fondare === null && fondaAperta) chiudi('fonda')
+  }, [fondare, fondaAperta])
+  useEffect(() => {
+    if (fondare === null) setScheda((s) => (s === 'fonda' ? 'qui' : s))
+  }, [fondare])
   // Arrivando in una base, su PC la sua finestra si apre da sola.
   const arrivo = nave.dal.getTime()
   const idBase = base?.id
@@ -102,7 +113,6 @@ export function Ponte({ nave, viaggio, scarto, scoperte, scansioni, meta: metaSc
       }}
     />
   )
-  const inArrivo = <p className="m-0 text-xs text-testo-tenue">Disponibile all'arrivo.</p>
 
   if (pc) {
     // Qui non è una finestra: sta sempre sullo sfondo, in basso a destra, sotto le finestre.
@@ -121,49 +131,57 @@ export function Ponte({ nave, viaggio, scarto, scoperte, scansioni, meta: metaSc
           {!volo && <AcceleraRicarica nave={nave} ora={ora} />}
           <Raccolta nave={nave} ora={ora} />
           <MagazzinoQui nave={nave} ora={ora} />
-          <Fondazione nave={nave} ora={ora} />
-          <FondaEstrattore nave={nave} ora={ora} />
+          {fondare && <InvitoFonda cosa={fondare} onApri={() => apri('fonda')} />}
           <Varco nave={nave} ora={ora} />
         </DentroFinestra.Provider>
       </section>
     )
     const contenuti: Partial<Record<IdFinestra, { contenuto: ReactNode; onChiudi?: () => void }>> = {
       scanner: {
-        contenuto: volo ? inArrivo : <Scanner centro={nave.posizione} livello={nave.scanner} scoperti={scoperti} onScegli={scegli} />,
+        contenuto: volo ? (
+          <InArrivo nave={nave} viaggio={viaggio} ora={ora} cosa="Lo scanner torna disponibile all'arrivo." />
+        ) : (
+          <Scanner centro={nave.posizione} livello={nave.scanner} scoperti={scoperti} onScegli={scegli} />
+        ),
       },
-      rotta: { contenuto: volo ? inArrivo : rotta },
+      rotta: {
+        contenuto: volo ? <InArrivo nave={nave} viaggio={viaggio} ora={ora} cosa="La prossima rotta si imposta all'arrivo." /> : rotta,
+      },
       ...(base ? { base: { contenuto: <SchedaBase nave={nave} ora={ora} base={base} /> } } : {}),
+      ...(fondare ? { fonda: { contenuto: <Fonda nave={nave} ora={ora} /> } } : {}),
       ...archivio,
     }
     const attiva = inPrimoPiano(disposizione)
     return (
       <Attraccata.Provider value={base !== undefined}>
-        <Cornice
-          pagina="ponte"
-          nave={nave}
-          viaggio={viaggio}
-          scarto={scarto}
-          fondo={disposizione.sfondo === 'mappa' ? mappa.fondo : fondo}
-          barretta={disposizione.sfondo === 'mappa' ? mappa.barretta : undefined}
-          finestre
-        >
-          {qui}
-          {(Object.keys(FINESTRE) as IdFinestra[])
-            .filter((id) => disposizione.finestre[id].stato === 'aperta' && contenuti[id])
-            .map((id) => (
-              <Finestra
-                key={id}
-                id={id}
-                finestra={disposizione.finestre[id]}
-                livello={disposizione.ordine.indexOf(id) + 1}
-                attiva={attiva === id}
-                onChiudi={contenuti[id]!.onChiudi}
-              >
-                {contenuti[id]!.contenuto}
-              </Finestra>
-            ))}
-          <Scorciatoie />
-        </Cornice>
+        <FondabileQui.Provider value={fondare}>
+          <Cornice
+            pagina="ponte"
+            nave={nave}
+            viaggio={viaggio}
+            scarto={scarto}
+            fondo={disposizione.sfondo === 'mappa' ? mappa.fondo : fondo}
+            barretta={disposizione.sfondo === 'mappa' ? mappa.barretta : undefined}
+            finestre
+          >
+            {qui}
+            {(Object.keys(FINESTRE) as IdFinestra[])
+              .filter((id) => disposizione.finestre[id].stato === 'aperta' && contenuti[id])
+              .map((id) => (
+                <Finestra
+                  key={id}
+                  id={id}
+                  finestra={disposizione.finestre[id]}
+                  livello={disposizione.ordine.indexOf(id) + 1}
+                  attiva={attiva === id}
+                  onChiudi={contenuti[id]!.onChiudi}
+                >
+                  {contenuti[id]!.contenuto}
+                </Finestra>
+              ))}
+            <Scorciatoie />
+          </Cornice>
+        </FondabileQui.Provider>
       </Attraccata.Provider>
     )
   }
@@ -183,31 +201,47 @@ export function Ponte({ nave, viaggio, scarto, scoperte, scansioni, meta: metaSc
   return (
     <Cornice pagina="ponte" nave={nave} viaggio={viaggio} scarto={scarto} fondo={fondo}>
       {volo ? (
-        <Pannello className="flex flex-col gap-2 p-3 text-xs text-testo-tenue">
-          Lo scanner e la rotta tornano disponibili all'arrivo. Il nome di quello che c'è laggiù lo scoprirai arrivando.
+        <Pannello className="flex flex-col p-3">
+          <InArrivo
+            nave={nave}
+            viaggio={viaggio}
+            ora={ora}
+            cosa="Lo scanner e la rotta tornano disponibili all'arrivo. Il nome di quello che c'è laggiù lo scoprirai arrivando."
+          />
           <AcceleraViaggio nave={nave} ora={ora} />
         </Pannello>
       ) : (
         <Pannello className="flex max-h-[58dvh] flex-col">
-          <div className={`grid border-b border-linea ${base ? 'grid-cols-4' : 'grid-cols-3'}`} role="tablist">
+          <div
+            className="grid border-b border-linea"
+            style={{
+              gridTemplateColumns: `repeat(${3 + (base ? 1 : 0) + (fondare ? 1 : 0)}, minmax(0, 1fr))`,
+            }}
+            role="tablist"
+          >
             {linguetta('qui', 'Qui')}
             {linguetta('scanner', 'Scanner')}
             {linguetta('rotta', 'Rotta')}
             {base && linguetta('base', 'Base')}
+            {fondare && linguetta('fonda', 'Fonda')}
           </div>
-          <div className={`min-h-0 overflow-y-auto ${scheda === 'base' && base ? '' : 'p-3.5'}`} role="tabpanel">
+          <div
+            className={`min-h-0 ${scheda === 'scanner' ? 'flex flex-col' : 'overflow-y-auto'} ${(scheda === 'base' && base) || scheda === 'scanner' || scheda === 'fonda' ? '' : 'p-3.5'}`}
+            role="tabpanel"
+          >
             {scheda === 'base' && base ? (
               <DentroFinestra.Provider value={true}>
                 <SchedaBase nave={nave} ora={ora} base={base} />
               </DentroFinestra.Provider>
-            ) : scheda === 'qui' || scheda === 'base' ? (
+            ) : scheda === 'fonda' && fondare ? (
+              <Fonda nave={nave} ora={ora} />
+            ) : scheda === 'qui' || scheda === 'base' || scheda === 'fonda' ? (
               <>
                 <Scheda settore={settore} />
                 <AcceleraRicarica nave={nave} ora={ora} />
                 <Raccolta nave={nave} ora={ora} />
                 <MagazzinoQui nave={nave} ora={ora} />
-                <Fondazione nave={nave} ora={ora} />
-                <FondaEstrattore nave={nave} ora={ora} />
+                {fondare && <InvitoFonda cosa={fondare} onApri={() => setScheda('fonda')} />}
                 <Varco nave={nave} ora={ora} />
               </>
             ) : scheda === 'scanner' ? (

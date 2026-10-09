@@ -42,6 +42,7 @@ export const IconaCerca = plancia(P.MagnifyingGlass)
 export const IconaCasa = plancia(P.House)
 export const IconaMira = plancia(P.Crosshair)
 export const IconaFatto = plancia(P.Check)
+export const IconaBloccato = plancia(P.LockSimple)
 
 // Le azioni e gli stati.
 export const IconaFerma = plancia(P.Target)
@@ -103,6 +104,7 @@ export const ICONE_FINESTRE: Readonly<Record<IdFinestra, (props: IconProps) => R
   nave: IconaNave,
   rete: IconaRete,
   base: IconaBase,
+  fonda: IconaFonda,
   ricerche: IconaRicerche,
   diario: IconaDiario,
   wiki: IconaWiki,

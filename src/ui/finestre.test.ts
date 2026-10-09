@@ -42,8 +42,8 @@ describe('disposizione delle finestre', () => {
 
   it('riporta una finestra dentro lo schermo senza scendere sotto la misura minima', () => {
     const f = { stato: 'aperta' as const, x: 900, y: 500, w: 340, h: 420 }
-    expect(dentro(f, 'scanner', 1000, 600)).toEqual({ stato: 'aperta', x: 660, y: 180, w: 340, h: 420 })
-    expect(dentro(f, 'scanner', 200, 150)).toMatchObject({ x: 0, y: 0, w: FINESTRE.scanner.minW, h: FINESTRE.scanner.minH })
+    expect(dentro(f, 'rotta', 1000, 600)).toEqual({ stato: 'aperta', x: 660, y: 180, w: 340, h: 420 })
+    expect(dentro(f, 'rotta', 200, 150)).toMatchObject({ x: 0, y: 0, w: FINESTRE.rotta.minW, h: FINESTRE.rotta.minH })
   })
 
   it('alterna, rientra e riordina', () => {

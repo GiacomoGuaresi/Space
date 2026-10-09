@@ -175,6 +175,7 @@ export function useScansione<T>(
       return () => ascoltatori.delete(avvisa)
     },
     () => versione,
+    () => versione,
   )
   const valore = chiave === null ? undefined : (risultati.get(chiave) as T | undefined)
   const manca = chiave !== null && valore === undefined

@@ -10,6 +10,7 @@ export type IdFinestra =
   | 'nave'
   | 'rete'
   | 'base'
+  | 'fonda'
   | 'ricerche'
   | 'diario'
   | 'wiki'
@@ -47,12 +48,13 @@ export interface Disposizione {
 export const FINESTRE: Readonly<
   Record<IdFinestra, { titolo: string; tasto: string; w: number; h: number; minW: number; minH: number; piena?: boolean }>
 > = {
-  scanner: { titolo: 'Scanner', tasto: 'S', w: 340, h: 420, minW: 260, minH: 200 },
+  scanner: { titolo: 'Scanner', tasto: 'S', w: 760, h: 560, minW: 560, minH: 280, piena: true },
   rotta: { titolo: 'Rotta', tasto: 'R', w: 360, h: 400, minW: 300, minH: 280 },
   nave: { titolo: 'Nave', tasto: 'N', w: 900, h: 640, minW: 640, minH: 320, piena: true },
   base: { titolo: 'Base', tasto: 'B', w: 460, h: 560, minW: 340, minH: 260, piena: true },
+  fonda: { titolo: 'Fonda', tasto: 'F', w: 440, h: 520, minW: 340, minH: 300, piena: true },
   ricerche: { titolo: 'Ricerche', tasto: 'T', w: 800, h: 600, minW: 420, minH: 300, piena: true },
-  rete: { titolo: 'Rete', tasto: 'E', w: 460, h: 480, minW: 340, minH: 240, piena: true },
+  rete: { titolo: 'Rete', tasto: 'E', w: 860, h: 600, minW: 600, minH: 300, piena: true },
   diario: { titolo: 'Diario di bordo', tasto: 'D', w: 420, h: 520, minW: 320, minH: 260, piena: true },
   wiki: { titolo: 'Wiki', tasto: 'W', w: 720, h: 560, minW: 420, minH: 300, piena: true },
   catalogo: { titolo: 'Catalogo', tasto: 'C', w: 640, h: 520, minW: 360, minH: 260, piena: true },
@@ -86,10 +88,11 @@ export function disposizioneIniziale(larghezza: number, altezza = 816): Disposiz
       nave: alCentro('nave', 4),
       rete: alCentro('rete', 5),
       base: alCentro('base', 6),
+      fonda: alCentro('fonda', 2),
       ricerche: alCentro('ricerche', 0),
       traguardi: alCentro('traguardi', 1),
     },
-    ordine: ['nave', 'rete', 'base', 'ricerche', 'diario', 'wiki', 'catalogo', 'traguardi', 'impostazioni', 'scanner', 'rotta'],
+    ordine: ['nave', 'rete', 'base', 'fonda', 'ricerche', 'diario', 'wiki', 'catalogo', 'traguardi', 'impostazioni', 'scanner', 'rotta'],
     sfondo: 'scena',
   }
 }

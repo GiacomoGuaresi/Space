@@ -66,7 +66,7 @@ Prototipo approvato delle 7 schermate del telefono: [Space · Prototipo interfac
 
 | Tasto | Finestra | Contenuto | Da | Misura iniziale |
 |---|---|---|---|---|
-| S | **Scanner** | elenco dal più vicino; clic → Rotta | ora | 340 × 420 |
+| S | **Scanner** | in cima raggio e rilevati; a sinistra i filtri (rarità, tipo, solo da scoprire, coi conteggi; nelle finestre strette dal tasto Filtri); a destra la tabella (rarità, corpo, coordinate, ricchezza, settori), ordinabile per vicini · rari · ricchi, che si allunga scorrendo; clic → Rotta | ora | 760 × 560 |
 | R | **Rotta** | coordinate, meta, durata · distanza · arrivo, carburante all'arrivo, PARTI sempre in fondo | ora | 360 × 400 |
 | D | **Diario di bordo** | cronologia, novità evidenziate | ora | 420 × 520 |
 | W | **Wiki** | indice a sinistra, pagina a destra | ora | 720 × 560 |
@@ -75,6 +75,7 @@ Prototipo approvato delle 7 schermate del telefono: [Space · Prototipo interfac
 | N | **Nave** | statistiche, stiva, potenziamenti, coda del cantiere | M4-M5 | 420 × 560 |
 | E | **Rete** | insediamenti per riempimento, VAI → Rotta | M4 | 460 × 480 |
 | B | **Base** | strutture, cantiere, laboratorio, pieno; nel dock **solo quando si è attraccati**, si apre da sola all'arrivo | M5 | 460 × 560 |
+| F | **Fonda** | fondare una base (scelta del pianeta, produzione, costo) o un estrattore; nel dock **solo dove si può fondare** (ferma, settore libero, ricerca fatta, sotto il limite), con un invito in Qui; sul telefono è una linguetta del Ponte. Si chiude da sola quando non si può più | — | 440 × 520 |
 | T | **Ricerche** | grafo dei 4 rami | M6 | 800 × 600 |
 | G | **Traguardi** | medaglie per famiglia | M10 | 520 × 480 |
 
@@ -141,8 +142,10 @@ Mappa 3D dei settori scansionati, che si apre **centrata sulla nave**. Sul telef
 
 ### Rete
 
-Elenco degli insediamenti (⬢ basi, ◇ estrattori), ordinabile per **riempimento** o per distanza.
-- Ogni riga mostra le barre del magazzino per risorsa, lo stato ("Pieno", "Pieno tra 1 g 8 h") e il tasto **VAI**, che imposta la rotta.
+Una plancia larga (860 px su PC) con una scheda per insediamento, in griglia (una, due o tre colonne secondo la larghezza).
+- **Testata**: basi ed estrattori rispetto al limite, la **produzione della rete** all'ora per risorsa, quanti sono **pieni**.
+- **Ordine** per riempimento o per distanza, e filtro Tutti · Basi · Estrattori.
+- Ogni scheda: icona e nome, tipo e coordinate, distanza o QUI; una barra a tacche del riempimento ("Pieno · produzione ferma", "Pieno tra 1 g 8 h"); il magazzino per risorsa (da lontano solo con Telemetria, altrimenti la produzione all'ora e un lucchetto); livelli di produzione, magazzino e strutture; **VAI**, che imposta la rotta, e *Abbandona…* con conferma. Le schede piene hanno il bordo ambra.
 - Niente pianificazione automatica dei giri.
 - Un tocco apre la scheda: livelli, magazzino e strutture. COSTRUISCI compare solo se si è attraccati.
 

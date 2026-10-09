@@ -63,6 +63,24 @@
   background-origin: border-box;
 }
 
+/* Una scia di stella che scorre verso il basso (InArrivo.tsx): durata e ritardo nello stile. */
+@keyframes scia {
+  from {
+    transform: translateY(-3rem);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  to {
+    transform: translateY(18rem);
+    opacity: 0;
+  }
+}
+@utility scia {
+  animation: scia 1.8s linear infinite;
+}
+
 /* Numeri in monospazio a cifre tabulari. */
 @utility cifre {
   font-family: var(--font-mono);
@@ -103,8 +121,11 @@ input {
   font-size: 16px;
 }
 
-/* Scrollbar sottili, nei colori della plancia. */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-linea) transparent;
+/* Scrollbar sottili, nei colori della plancia. Nel livello base, così le
+   utility (per esempio [scrollbar-width:none]) possono cambiarle. */
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-linea) transparent;
+  }
 }

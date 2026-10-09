@@ -1,13 +1,14 @@
 import { Fragment, useContext, type ReactNode } from 'react'
 import { Pallini } from './Barra'
 import { Attraccata } from './SchedaBase'
+import { FondabileQui } from './Fondazione'
 import { mostraAiuto } from './tastiera'
 import { alterna, FINESTRE, mostra, riordina, useDisposizione, type IdFinestra, type StatoFinestra } from './finestre'
 import { ICONE_FINESTRE, IconaMappa, IconaRiordina, IconaScorciatoie } from './icone'
 
 const GRUPPI: readonly { nome: string; voci: readonly IdFinestra[] }[] = [
   { nome: 'Navigazione', voci: ['scanner', 'rotta'] },
-  { nome: 'Nave e rete', voci: ['nave', 'rete', 'base', 'ricerche'] },
+  { nome: 'Nave e rete', voci: ['nave', 'rete', 'base', 'fonda', 'ricerche'] },
   { nome: 'Archivio', voci: ['diario', 'wiki', 'catalogo', 'traguardi'] },
 ]
 
@@ -36,6 +37,7 @@ export function Dock() {
   const { finestre, sfondo } = useDisposizione()
   const pallini = useContext(Pallini)
   const attraccata = useContext(Attraccata)
+  const fondabile = useContext(FondabileQui)
   const mappa = sfondo === 'mappa'
   const voce = (id: IdFinestra, contenuto?: ReactNode) => {
     const { titolo, tasto } = FINESTRE[id]
@@ -64,7 +66,7 @@ export function Dock() {
           {i > 0 && <span aria-hidden="true" className="mx-2 my-2 w-px bg-separatore" />}
           <ul aria-label={gruppo.nome} className="m-0 flex list-none items-stretch gap-0.5 p-0">
             {gruppo.voci
-              .filter((id) => id !== 'base' || attraccata)
+              .filter((id) => (id !== 'base' || attraccata) && (id !== 'fonda' || fondabile !== null))
               .map((id) => (
                 <li key={id} className="flex">
                   {voce(id)}
