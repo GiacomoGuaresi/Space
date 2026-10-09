@@ -4,6 +4,7 @@
 // (bilanciamento.ts).
 
 import { BILANCIAMENTO } from './bilanciamento'
+import { livelloRicerca } from './infiniti'
 import type { TipoCorpo } from './catalogo'
 import { BASE, distanza, stessoSettore, tipoSettore, type Coordinate } from './settore'
 
@@ -152,7 +153,7 @@ export function anteprima(nave: Nave, meta: Coordinate, ora: Date, dintorni: Din
   const fionda = tipoSettore(nave.posizione) === 'buconero'
   const ponte = viaPonte(nave.posizione, meta, dintorni.ponti)
   const r = rotta(nave.posizione, meta, carburanteOra(nave, ora, dintorni), quotaConsumo(fionda, fatte, ponte))
-  const velocita = nave.velocita * (fionda ? fiondaDi(fatte).velocita : 1) * (ponte ? fattorePonte(fatte) : 1)
+  const velocita = velocitaNave(nave, fatte) * (fionda ? fiondaDi(fatte).velocita : 1) * (ponte ? fattorePonte(fatte) : 1)
   return {
     ...r,
     durata: (r.percorsa / velocita) * ORA_MS,
@@ -160,6 +161,13 @@ export function anteprima(nave: Nave, meta: Coordinate, ora: Date, dintorni: Din
     ponte,
     possibile: !stessoSettore(r.a, nave.posizione),
   }
+}
+
+/** La velocità della nave con *Propulsione avanzata* (P∞): ×1,04 a livello. Come in `space.viaggia`. */
+export function velocitaNave(nave: Pick<Nave, 'velocita'>, fatte: ReadonlySet<string> = new Set()): number {
+  let fattore = 1
+  for (let i = livelloRicerca(fatte, 'P∞'); i > 0; i--) fattore *= BILANCIAMENTO.ricerche.effetti['P∞']
+  return nave.velocita * fattore
 }
 
 /** Vero se `da` e `meta` sono due basi col ponte di curvatura. */
@@ -221,22 +229,32 @@ export interface Rilevamento {
   distanza: number
 }
 
+/** I corpi che *Rilevamento gravitazionale* (S10) vede più lontano. */
+const GRAVITAZIONALI: ReadonlySet<TipoCorpo> = new Set(['buconero', 'wormhole'])
+
 /**
  * I corpi entro il raggio dello scanner (in distanza euclidea), dal più
- * vicino; se si passano i `tipi`, solo quelli.
+ * vicino; se si passano i `tipi`, solo quelli. Con `raggioGravitazionale`
+ * buchi neri e wormhole si vedono fin lì (*Rilevamento gravitazionale*).
  */
-export function scansione(centro: Coordinate, raggio: number, tipi?: ReadonlySet<TipoCorpo>): Rilevamento[] {
+export function scansione(
+  centro: Coordinate,
+  raggio: number,
+  tipi?: ReadonlySet<TipoCorpo>,
+  raggioGravitazionale = raggio,
+): Rilevamento[] {
   const trovati: Rilevamento[] = []
-  const lato = Math.floor(raggio)
+  const lato = Math.floor(Math.max(raggio, raggioGravitazionale))
   for (let dx = -lato; dx <= lato; dx++)
     for (let dy = -lato; dy <= lato; dy++)
       for (let dz = -lato; dz <= lato; dz++) {
         if (dx === 0 && dy === 0 && dz === 0) continue
         const coordinate = { x: centro.x + dx, y: centro.y + dy, z: centro.z + dz }
         const d = distanza(centro, coordinate)
-        if (d > raggio) continue
+        if (d > raggio && d > raggioGravitazionale) continue
         const tipo = tipoSettore(coordinate)
-        if (tipo && (!tipi || tipi.has(tipo))) trovati.push({ coordinate, tipo, distanza: d })
+        if (!tipo || (tipi && !tipi.has(tipo))) continue
+        if (d <= raggio || (GRAVITAZIONALI.has(tipo) && d <= raggioGravitazionale)) trovati.push({ coordinate, tipo, distanza: d })
       }
   return trovati.sort((a, b) => a.distanza - b.distanza)
 }

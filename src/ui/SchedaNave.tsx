@@ -1,7 +1,7 @@
 import { createContext, useContext, useMemo, type ReactNode } from 'react'
 import type { Raccolto } from '../dati'
 import { coordinateBasi, coordinatePonti, type Insediamento } from '../dominio/insediamenti'
-import { raggioQui, type Dintorni, type Nave } from '../dominio/navigazione'
+import { raggioQui, velocitaNave, type Dintorni, type Nave } from '../dominio/navigazione'
 import { capacitaNave, RISORSE, type Carico, type Fatte, type Quantita } from '../dominio/risorse'
 import { NOMI_RISORSE } from '../dominio/catalogo'
 import { numero } from './formato'
@@ -46,7 +46,7 @@ export function SchedaNave({ nave, quantita, ora }: { nave: Nave; quantita: Quan
       <section aria-label="Statistiche" className="border-b border-separatore p-3.5">
         <h2 className="etichetta m-0 mb-2">Statistiche</h2>
         <dl className="m-0 grid grid-cols-[1fr_auto] gap-x-4 gap-y-2 text-[13px]">
-          <Riga nome={`Motore · liv. ${nave.livelli.motore}`}>{numero(nave.velocita, 2)} sett./h</Riga>
+          <Riga nome={`Motore · liv. ${nave.livelli.motore}`}>{numero(velocitaNave(nave, fatte), 2)} sett./h</Riga>
           <Riga nome={`Serbatoio · liv. ${nave.livelli.serbatoio}`}>{numero(nave.serbatoio, 1)} unità</Riga>
           <Riga nome={`Ricarica · liv. ${nave.livelli.ricarica}`}>{numero(nave.ricarica, 2)} unità/h</Riga>
           <Riga nome={`Scanner · liv. ${nave.scanner}`}>

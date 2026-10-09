@@ -15,7 +15,7 @@ Schema `space`. Le colonne arrivano con lo step che le usa ([06](06-roadmap.md))
 | `prelievo` ✅ | i magazzini passati nella stiva: insediamento, istante, quanto (per il diario) | M4 |
 | ~~`struttura`~~ | le strutture sono colonne di `insediamento` (`cantiere`, `deposito`, `laboratorio`, `radar`; poi `ponte`), una per tipo con il suo livello | M5, M7, M8 |
 | `costruzione` ✅ | coda: cosa (statistica della nave, struttura, produzione), dove, inizio, fine | M5 |
-| `ricerca` ✅ | nodo, livello (1 per gli sblocchi, N per i nodi infiniti), completamento | M6 |
+| `ricerca` ✅ | nodo, livello (1 per gli sblocchi, N per i nodi infiniti `P∞` e `C∞`), completamento | M6, M9 |
 | `raccolto` ✅ | settori a raccolta una tantum già svuotati da questo giocatore (comete, relitti), con istante, bottino entrato nella stiva e l'eventuale progetto | M4, M9 |
 | `traguardo` | codice, istante | M10 |
 

@@ -5,7 +5,7 @@
 import { createContext, useSyncExternalStore } from 'react'
 import type { Costruzione, Prelievo, Raccolto, RicercaAvviata, Scansione, Scoperta } from '../dati'
 import { NOMI_LAVORI } from '../dominio/cantiere'
-import { RICERCHE, type IdRicerca } from '../dominio/ricerche'
+import { infinito, RICERCHE, type IdRicerca } from '../dominio/ricerche'
 import { coordinateBasi, pienoIl, ritmoInsediamento, type Insediamento } from '../dominio/insediamenti'
 import { NOMI_RISORSE } from '../dominio/catalogo'
 import { RISORSE } from '../dominio/risorse'
@@ -282,7 +282,9 @@ function vociLaboratorio(
       return {
         quando: r.fine,
         tipo: 'ricerca',
-        testo: nodo ? `Ricerca completata: ${nodo.nome}. ${nodo.effetto}.` : `Ricerca completata: ${r.nodo}.`,
+        testo: nodo
+          ? `Ricerca completata: ${nodo.nome}${infinito(r.nodo) ? `, livello ${r.livello}` : ''}. ${nodo.effetto}.`
+          : `Ricerca completata: ${r.nodo}.`,
         breve: nodo?.nome ?? r.nodo,
       }
     }),

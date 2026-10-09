@@ -239,3 +239,13 @@ describe('ricerche dei gradini 6-8', () => {
     expect(raggioRadar(1, new Set(['S8']))).toBe(8)
   })
 })
+
+describe('Rilevamento gravitazionale', () => {
+  it('buchi neri e wormhole si vedono fino al raggio gravitazionale, gli altri no', () => {
+    const centro = { x: 400, y: 0, z: 0 }
+    const normale = scansione(centro, 4)
+    const doppio = scansione(centro, 4, undefined, 8)
+    expect(doppio.filter((r) => r.distanza <= 4)).toEqual(normale)
+    for (const r of doppio.filter((r) => r.distanza > 4)) expect(['buconero', 'wormhole']).toContain(r.tipo)
+  })
+})

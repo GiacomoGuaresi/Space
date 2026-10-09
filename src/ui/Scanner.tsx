@@ -1,5 +1,6 @@
 import { useCallback, useContext, useMemo, useState } from 'react'
 import { Check } from 'lucide-react'
+import { BILANCIAMENTO } from '../dominio/bilanciamento'
 import { CATALOGO } from '../dominio/catalogo'
 import { raggioQui, scansione, tipiRilevabili } from '../dominio/navigazione'
 import { nomeSottotipo } from '../dominio/sottotipi'
@@ -29,7 +30,9 @@ export function Scanner({ centro, livello, scoperti, onScegli }: Props) {
   const raggio = raggioQui(livello, centro, fatte)
   const filtri = tipoQui === 'nebulosa' && (fatte?.has('S5') ?? false)
   const tipi = useMemo(() => tipiRilevabili(livello), [livello])
-  const trovati = useMemo(() => scansione(centro, raggio, tipi), [centro, raggio, tipi])
+  // *Rilevamento gravitazionale* (S10): buchi neri e wormhole al doppio del raggio, solo nello scanner dal vivo.
+  const gravitazionale = fatte?.has('S10') ? raggio * BILANCIAMENTO.ricerche.effetti.S10 : raggio
+  const trovati = useMemo(() => scansione(centro, raggio, tipi, gravitazionale), [centro, raggio, tipi, gravitazionale])
   // Su PC il tasto destro su un corpo apre il menu: Imposta rotta · Apri nella wiki.
   const pc = usePC()
   const spettrometria = fatte?.has('S2') ?? false

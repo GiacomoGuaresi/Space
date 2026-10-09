@@ -238,6 +238,16 @@ export const BILANCIAMENTO = {
       I8: { gradino: 8, richiede: ['I7'] },
       I9: { gradino: 9, richiede: ['I8'] },
       I10: { gradino: 10, richiede: ['I9'] },
+      /** I due nodi infiniti, in fondo a Propulsione e Colonizzazione: si ricercano a livelli. */
+      'P∞': { gradino: 10, richiede: ['P10'] },
+      'C∞': { gradino: 10, richiede: ['C10'] },
+    },
+    /** I nodi infiniti: il livello `L` costa come un livello `livello + L` di base `base`, con la stessa ricetta. */
+    infiniti: {
+      livello: 20,
+      /** *Colonizzazione avanzata*: una base in più ogni tanti livelli, e tanti estrattori a livello. */
+      basiOgni: 2,
+      estrattori: 1,
     },
     /** I nodi che si possono già ricercare: gli altri arrivano con le loro meccaniche (doc/06-roadmap.md). */
     attive: [
@@ -246,7 +256,8 @@ export const BILANCIAMENTO = {
       'S1', 'S2', 'S3', 'S4', 'S5', 'S6',
       'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8',
       'C7', 'C8', 'S7', 'S8', 'I7', 'I8',
-      'P9', 'S9',
+      'P9', 'S9', 'P10', 'C9', 'C10', 'S10', 'I9', 'I10',
+      'P∞', 'C∞',
     ] as string[],
     /** Gli effetti, con i loro numeri. */
     effetti: {
@@ -286,6 +297,18 @@ export const BILANCIAMENTO = {
       C8: 0.15,
       /** Recupero: relitti e comete rendono per tanto. */
       C9: 2,
+      /** Raffinazione IV: l'ultima unità di Idrogeno in meno. */
+      P10: 1,
+      /** Astrofisica III: basi fondabili in più. */
+      C10: 2,
+      /** Rilevamento gravitazionale: buchi neri e wormhole si vedono a tante volte il raggio dello scanner. */
+      S10: 2,
+      /** Materia esotica: Materia oscura nelle ricette −15 %. */
+      I10: 0.15,
+      /** Propulsione avanzata: la velocità per tanto a ogni livello. */
+      'P∞': 1.04,
+      /** Colonizzazione avanzata: la produzione per tanto a ogni livello. */
+      'C∞': 1.03,
       /** Riciclo: abbandonando un insediamento torna questa parte di quanto vi si è speso. */
       I6: 0.25,
     },

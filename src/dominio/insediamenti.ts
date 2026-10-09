@@ -4,6 +4,7 @@
 
 import { BILANCIAMENTO } from './bilanciamento'
 import type { TipoCorpo } from './catalogo'
+import { livelloRicerca } from './infiniti'
 import { mixCorpo, RISORSE, ritmoRisorsa, type Fatte, type Quantita } from './risorse'
 import { settore, type Coordinate } from './settore'
 
@@ -46,9 +47,11 @@ export function mixColonia(coordinate: Coordinate, pianeta: number): Partial<Qua
 
 type Produttore = Pick<Insediamento, 'tipo' | 'coordinate' | 'pianeta' | 'produzione'>
 
-/** Di quanto le ricerche moltiplicano la produzione: *Estrazione profonda* (C8) +15 %. Come `space.ritmo_insediamento`. */
+/** Di quanto le ricerche moltiplicano la produzione: *Estrazione profonda* (C8) +15 %, *Colonizzazione avanzata* +3 % a livello. Come `space.ritmo_insediamento`. */
 export function bonusProduzione(fatte: Fatte = new Set()): number {
-  return fatte.has('C8') ? 1 + BILANCIAMENTO.ricerche.effetti.C8 : 1
+  // *Colonizzazione avanzata* (C∞): ×1,03 a livello, con moltiplicazioni ripetute come in SQL.
+  const avanzata = aLivello(1, BILANCIAMENTO.ricerche.effetti['C∞'], livelloRicerca(fatte, 'C∞') + 1)
+  return (fatte.has('C8') ? 1 + BILANCIAMENTO.ricerche.effetti.C8 : 1) * avanzata
 }
 
 /** Quanto produce all'ora per risorsa, al livello di produzione `livello`, con le ricerche `fatte`. */
@@ -142,7 +145,8 @@ const ASTROFISICA = ['C1', 'C6', 'C10'] as const
 /** Quante basi si possono fondare: 2, più quelle di *Astrofisica* (C1, C6…). Come `space.basi_fondabili`. */
 export function basiFondabili(fatte: Fatte = new Set()): number {
   const effetti: Partial<Record<string, number>> = BILANCIAMENTO.ricerche.effetti
-  return BILANCIAMENTO.fondazione.basi + ASTROFISICA.reduce((n, r) => n + (fatte.has(r) ? (effetti[r] ?? 0) : 0), 0)
+  const avanzata = Math.floor(livelloRicerca(fatte, 'C∞') / BILANCIAMENTO.ricerche.infiniti.basiOgni)
+  return BILANCIAMENTO.fondazione.basi + ASTROFISICA.reduce((n, r) => n + (fatte.has(r) ? (effetti[r] ?? 0) : 0), 0) + avanzata
 }
 
 /** I tipi di corpo su cui si fonda un estrattore, con le ricerche fatte. Come `space.fonda_estrattore`. */
@@ -159,7 +163,8 @@ export function ricercaEstrattore(tipo: TipoCorpo): string | null {
 
 /** Quanti estrattori si possono fondare: la somma di quelli dati dalle ricerche fatte. Come `space.estrattori_fondabili`. */
 export function estrattoriFondabili(fatte: Fatte = new Set()): number {
-  return Object.entries(BILANCIAMENTO.fondazione.estrattore.limite).reduce((n, [ricerca, piu]) => n + (fatte.has(ricerca) ? piu : 0), 0)
+  const avanzata = livelloRicerca(fatte, 'C∞') * BILANCIAMENTO.ricerche.infiniti.estrattori
+  return Object.entries(BILANCIAMENTO.fondazione.estrattore.limite).reduce((n, [ricerca, piu]) => n + (fatte.has(ricerca) ? piu : 0), 0) + avanzata
 }
 
 /** Quanto costa un estrattore avendone già fondati `fondati`: `60 × 1,4^fondati` in parti uguali di Metallo e Silicio. */

@@ -150,18 +150,18 @@ Porta l'interfaccia su PC nella [plancia a finestre](11-interfaccia.md#pc--planc
 
 **Si consegna**: la frontiera si sposta in avanti con le basi.
 
-## M9 · Materia oscura e rari ← *prossimo*
+## M9 · Materia oscura e rari ✅
 
 - [x] **9.1 Buchi neri**: raccolta a mano, Contenimento gravitazionale (C7), estrattori di Materia oscura. (`030_buchi_neri.sql`: `mix.buconero`, al ritmo della Materia oscura; i buchi neri entrano nel campione di `verifica-sql`.)
 - [x] **9.2 Fionda gravitazionale** (P6). (Anticipata in 8.4: la chiede *Contenimento gravitazionale*. `fiondaDi` e `space.viaggia` usano `fionda.gravitazionale`, ×2 e 30 % gratis.)
 - [x] **9.3 Relitti**: bottino una volta per giocatore, progetti. (`031_relitti.sql`: `space.bottino_relitto` dentro `assesta`, l'esito dalla quinta sequenza del seed (`esitoRelitto`, confrontato da `verifica-sql`); i progetti in `nave.progetti` dimezzano la prossima ricerca. Il raddoppio di *Recupero* su relitti e comete è già pronto, la ricerca arriva con 9.6.)
 - [x] **9.4 Accelerare** viaggi, costruzioni e ricarica con la Materia oscura. (`032_accelera.sql`: `space.accelera(cosa, lavoro)`, pagato dalla stiva da dove si vuole; il lavoro accelerato anticipa quelli dopo nella sua coda. I tasti (`Accelera.tsx`) compaiono in Qui, nel volo e nella coda solo con Materia oscura a bordo.)
 - [x] **9.5 Wormhole**: Navigazione dei varchi (P9), 50 MO, senso unico; Sonda di varco (S9). (`033_wormhole.sql`: `space.uscita_varco`, identica a `uscitaVarco` (40 varchi in `verifica-sql`, 1000 controllati una volta), e `space.attraversa()`: salto istantaneo, `viaggio.wormhole`. Il riquadro Varco sta in Qui; senza S9 l'uscita non si vede.)
-- [ ] **9.6 Ultime ricerche** (gradini 9-10) e i due **nodi infiniti**.
+- [x] **9.6 Ultime ricerche** (gradini 9-10) e i due **nodi infiniti**. (`034_ultime_ricerche.sql`: tutte le 42 ricerche attive. I nodi infiniti `P∞` e `C∞` si ricercano a livelli (`space.livello_ricerca`; nel browser ogni livello è un `nodo#livello` tra le ricerche fatte), il livello L costa come un livello 20 + L. *Doppia coda* fa due lavori insieme nella coda di una base, mai due livelli della stessa cosa; *Rilevamento gravitazionale* vale nello scanner dal vivo.)
 
 **Si consegna**: tutte le meccaniche.
 
-## M10 · Traguardi e rifinitura
+## M10 · Traguardi e rifinitura ← *prossimo*
 
 - [ ] **10.1 Traguardi** (tabella `traguardo`), medaglie (finestra G su PC, voce di Altro sul telefono), voci nel diario.
 - [ ] **10.2 Rifinitura del bilanciamento** con i dati reali di gioco, aggiornando [09](09-bilanciamento.md) e `sim/`.

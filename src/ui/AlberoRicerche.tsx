@@ -7,10 +7,13 @@ import { magazzinoOra } from '../dominio/insediamenti'
 import { inViaggio, type Nave } from '../dominio/navigazione'
 import {
   bloccata,
-  costoGradino,
   durataGradino,
   gradino,
   ID_RICERCHE,
+  costoRicerca,
+  infinito,
+  livelloRicerca,
+  ricercheFatte,
   RAMI,
   ramo,
   RICERCHE,
@@ -27,10 +30,7 @@ import { BottonePrimario, Etichetta, Pannello } from './plancia'
 import { RIFIUTI } from './rifiuti'
 import { CaricoAttuale } from './SchedaNave'
 
-/** Le ricerche completate a `ora`. */
-export function ricercheFatte(ricerche: readonly { nodo: string; fine: Date }[], ora: Date): Ricerche {
-  return new Set(ricerche.filter((r) => r.fine <= ora).map((r) => r.nodo))
-}
+export { ricercheFatte }
 
 /**
  * Le ricerche (doc/11-interfaccia.md#altro): i quattro rami, dal gradino 1 al
@@ -42,8 +42,15 @@ export function AlberoRicerche({ nave, ora }: { nave: Nave; ora: Date }) {
   const inCorso = ricerche.find((r) => r.fine > ora)
   const [scelta, setScelta] = useState<IdRicerca | null>(null)
 
+  // Un nodo infinito non è mai "fatto": resta pronto per il livello dopo.
   const stato = (id: IdRicerca) =>
-    fatte.has(id) ? 'fatta' : inCorso?.nodo === id ? 'corso' : bloccata(id, fatte) === null ? 'pronta' : 'chiusa'
+    inCorso?.nodo === id
+      ? 'corso'
+      : fatte.has(id) && !infinito(id)
+        ? 'fatta'
+        : bloccata(id, fatte) === null
+          ? 'pronta'
+          : 'chiusa'
   const STILI = {
     fatta: 'border-ambra-scura bg-ambra/15 text-ambra',
     corso: 'border-ambra text-ambra',
@@ -58,7 +65,7 @@ export function AlberoRicerche({ nave, ora }: { nave: Nave; ora: Date }) {
         <Etichetta className={inCorso ? 'text-ambra!' : ''}>
           {inCorso
             ? `In corso: ${RICERCHE[inCorso.nodo as IdRicerca]?.nome ?? inCorso.nodo} · ${rovescia(inCorso.fine.getTime() - ora.getTime())}`
-            : `${fatte.size} di ${ID_RICERCHE.length} · una alla volta, in una base col laboratorio`}
+            : `${ID_RICERCHE.filter((id) => fatte.has(id)).length} di ${ID_RICERCHE.length} · una alla volta, in una base col laboratorio`}
         </Etichetta>
       </header>
       {scelta && (
@@ -80,6 +87,9 @@ export function AlberoRicerche({ nave, ora }: { nave: Nave; ora: Date }) {
                     <span className="cifre shrink-0 text-[10px] opacity-70">{id}</span>
                     <span className="min-w-0 flex-1 truncate">{RICERCHE[id].nome}</span>
                     {stato(id) === 'fatta' && <span aria-label="fatta">✓</span>}
+                    {infinito(id) && livelloRicerca(fatte, id) > 0 && (
+                      <span className="cifre shrink-0 text-[10px]">liv. {livelloRicerca(fatte, id)}</span>
+                    )}
                   </button>
                 </li>
               ))}
@@ -114,8 +124,9 @@ function Dettaglio({
   // Un progetto trovato in un relitto dimezza la prossima ricerca.
   const progetto = nave.progetti > 0
   const costo = Object.fromEntries(
-    Object.entries(costoGradino(g, fatte)).map(([r, q]) => [r, progetto ? q * BILANCIAMENTO.relitto.sconto : q]),
+    Object.entries(costoRicerca(id, fatte)).map(([r, q]) => [r, progetto ? q * BILANCIAMENTO.relitto.sconto : q]),
   ) as Partial<Quantita>
+  const continua = infinito(id)
   const base = !inViaggio(nave, ora) ? bordo?.insediamenti.find((i) => stessoSettore(i.coordinate, nave.posizione)) : undefined
   const manca = bordo ? mancante(costo, bordo.quantita, base ? magazzinoOra(base, ora, fatte) : {}) : {}
   const motivo =
@@ -147,6 +158,7 @@ function Dettaglio({
           {RICERCHE[id].nome}{' '}
           <span className="cifre text-xs text-testo-tenue">
             · {id} · gradino {g}
+            {continua ? ` · livello ${livelloRicerca(fatte, id) + 1}` : ''}
           </span>
         </h2>
         <button type="button" className="etichetta" onClick={onChiudi} aria-label="Chiudi il dettaglio">
@@ -163,18 +175,18 @@ function Dettaglio({
         ))}
         <span className="text-testo-tenue"> · {durata(durataGradino(g) * 3_600_000)} · la nave resta ferma</span>
       </p>
-      {progetto && !fatte.has(id) && (
+      {progetto && (continua || !fatte.has(id)) && (
         <p className="m-0 text-xs text-ambra">
           Hai {nave.progetti === 1 ? 'un progetto' : `${nave.progetti} progetti`} da un relitto: questa ricerca costa la metà.
         </p>
       )}
-      {motivo && fatte.has(id) === false && <span className="text-xs text-testo-tenue">{motivo}</span>}
+      {motivo && (continua || !fatte.has(id)) && <span className="text-xs text-testo-tenue">{motivo}</span>}
       {errore && (
         <p className="m-0 text-xs text-pericolo" role="alert">
           {errore}
         </p>
       )}
-      {!fatte.has(id) && (
+      {(continua || !fatte.has(id)) && (
         <BottonePrimario disabled={motivo !== null || inCorso} onClick={() => void avvia()}>
           <FlaskConical className="size-4" aria-hidden="true" />
           Avvia

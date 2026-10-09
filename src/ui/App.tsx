@@ -71,10 +71,7 @@ export function App() {
   // Il diario si ricalcola al minuto: le voci nuove (un arrivo, una ricarica) compaiono da sole.
   const minuto = Math.floor(ora.getTime() / 60_000)
   // Le ricerche completate, che cambiano alcuni numeri: si ricalcolano al minuto.
-  const chiaveFatte = ricerche
-    .filter((r) => r.fine.getTime() <= minuto * 60_000)
-    .map((r) => r.nodo)
-    .join(',')
+  const chiaveFatte = [...ricercheFatte(ricerche, new Date(minuto * 60_000))].join(',')
   const fatte = useMemo(() => new Set(chiaveFatte ? chiaveFatte.split(',') : []), [chiaveFatte])
   const nave = stato.fase === 'pronta' ? stato.nave : null
   const voci = useMemo(
@@ -345,7 +342,7 @@ export function App() {
                 titolo: 'Ricerche',
                 sottotitolo: (() => {
                   const inCorso = ricerche.find((r) => r.fine > ora)
-                  return inCorso ? `In corso: ${inCorso.nodo}` : `${ricercheFatte(ricerche, ora).size} fatte`
+                  return inCorso ? `In corso: ${inCorso.nodo}` : `${new Set(ricerche.filter((r) => r.fine <= ora).map((r) => r.nodo)).size} fatte`
                 })(),
                 pagina: { pagina: 'ricerche' },
               },

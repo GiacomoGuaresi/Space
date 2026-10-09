@@ -452,7 +452,24 @@ language sql immutable parallel safe set search_path = '' as $$
         "richiede": [
           "I9"
         ]
+      },
+      "P∞": {
+        "gradino": 10,
+        "richiede": [
+          "P10"
+        ]
+      },
+      "C∞": {
+        "gradino": 10,
+        "richiede": [
+          "C10"
+        ]
       }
+    },
+    "infiniti": {
+      "livello": 20,
+      "basiOgni": 2,
+      "estrattori": 1
     },
     "attive": [
       "I1",
@@ -488,7 +505,15 @@ language sql immutable parallel safe set search_path = '' as $$
       "I7",
       "I8",
       "P9",
-      "S9"
+      "S9",
+      "P10",
+      "C9",
+      "C10",
+      "S10",
+      "I9",
+      "I10",
+      "P∞",
+      "C∞"
     ],
     "effetti": {
       "I1": 0.1,
@@ -509,6 +534,12 @@ language sql immutable parallel safe set search_path = '' as $$
       "I8": 0.15,
       "C8": 0.15,
       "C9": 2,
+      "P10": 1,
+      "C10": 2,
+      "S10": 2,
+      "I10": 0.15,
+      "P∞": 1.04,
+      "C∞": 1.03,
       "I6": 0.25
     }
   },

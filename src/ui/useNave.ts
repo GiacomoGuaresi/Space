@@ -15,6 +15,7 @@ import type { Lavoro } from '../dominio/cantiere'
 import type { Coordinate } from '../dominio/settore'
 import { tipoSettore } from '../dominio/settore'
 import { sosteRadar } from '../dominio/mappa'
+import { ricercheFatte } from '../dominio/infiniti'
 import { suona } from './suoni'
 import { GIORNI_DIARIO, letto, novita, segnaLetto, vociDiario } from './diario'
 
@@ -43,7 +44,7 @@ export function useOra(scarto: number): Date {
  */
 function radar(basi: readonly Insediamento[], nave: Nave, lavori: readonly Costruzione[], studi: readonly RicercaAvviata[]): Scansione[] {
   const ora = Date.now()
-  const fatte = new Set(studi.filter((r) => r.fine.getTime() <= ora).map((r) => r.nodo))
+  const fatte = ricercheFatte(studi, new Date(ora))
   return sosteRadar(
     basi,
     nave.scanner,

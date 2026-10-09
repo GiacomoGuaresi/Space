@@ -1,4 +1,4 @@
-// Le ricerche (doc/10-ricerche.md): 40 nodi in 4 rami, a gradini. Gradini e
+// Le ricerche (doc/10-ricerche.md): 42 nodi in 4 rami, a gradini, due dei quali infiniti. Gradini e
 // prerequisiti stanno in bilanciamento.ts, così il database li legge uguali;
 // qui nomi, effetti a parole, costo, durata e cosa si può avviare.
 
@@ -6,6 +6,9 @@ import { BILANCIAMENTO } from './bilanciamento'
 import { aLivello } from './insediamenti'
 import type { Quantita } from './risorse'
 import { conLeghe, ricetta } from './cantiere'
+import { infinito, livelloRicerca } from './infiniti'
+
+export { INFINITI, infinito, livelloRicerca, ricercheFatte } from './infiniti'
 
 export type Ramo = 'P' | 'C' | 'S' | 'I'
 export type IdRicerca = keyof typeof BILANCIAMENTO.ricerche.nodi
@@ -63,6 +66,8 @@ export const RICERCHE: Readonly<Record<IdRicerca, { nome: string; effetto: strin
   I8: { nome: 'Superleghe', effetto: 'Terre rare nelle ricette −15 %' },
   I9: { nome: 'Doppia coda', effetto: 'La coda di una base costruisce 2 cose insieme' },
   I10: { nome: 'Materia esotica', effetto: 'Materia oscura nelle ricette −15 %' },
+  'P∞': { nome: 'Propulsione avanzata', effetto: 'Velocità +4 % per livello' },
+  'C∞': { nome: 'Colonizzazione avanzata', effetto: '+1 base ogni 2 livelli, +1 estrattore e +3 % produzione per livello' },
 }
 
 export const ID_RICERCHE = Object.keys(BILANCIAMENTO.ricerche.nodi) as IdRicerca[]
@@ -73,6 +78,21 @@ export function ramo(id: IdRicerca): Ramo {
 
 export function gradino(id: IdRicerca): number {
   return BILANCIAMENTO.ricerche.nodi[id].gradino
+}
+
+/**
+ * Il costo della ricerca `id`, con gli sconti delle ricerche fatte: come il suo
+ * gradino, o per un nodo infinito come un livello `20 + L` di base 60, dove `L`
+ * è il livello che si ricerca. Come `space.ricerca`.
+ */
+export function costoRicerca(id: IdRicerca, fatte: Ricerche = NESSUNA_RICERCA): Partial<Quantita> {
+  if (!infinito(id)) return costoGradino(gradino(id), fatte)
+  const { base, infiniti } = BILANCIAMENTO.ricerche
+  const livello = infiniti.livello + livelloRicerca(fatte, id) + 1
+  const totale = aLivello(base, BILANCIAMENTO.cantiere.crescita, livello)
+  const risultato: Partial<Quantita> = {}
+  for (const [r, parte] of Object.entries(ricetta(livello))) risultato[r as keyof Quantita] = totale * parte
+  return conLeghe(risultato, fatte)
 }
 
 /** Il costo di una ricerca di gradino `g`: come un livello `2g` di base 60, con la stessa ricetta. */
@@ -93,7 +113,7 @@ export function durataGradino(g: number): number {
 
 /** Perché non si può avviare `id` (già fatta, prerequisiti, non ancora nel gioco), o `null` se si può. */
 export function bloccata(id: IdRicerca, fatte: Ricerche): string | null {
-  if (fatte.has(id)) return 'Già fatta.'
+  if (fatte.has(id) && !infinito(id)) return 'Già fatta.'
   const mancano = BILANCIAMENTO.ricerche.nodi[id].richiede.filter((r) => !fatte.has(r))
   if (mancano.length) return `Prima: ${mancano.map((r) => RICERCHE[r as IdRicerca].nome).join(', ')}.`
   if (!(BILANCIAMENTO.ricerche.attive as readonly string[]).includes(id)) return 'Arriva con un prossimo aggiornamento.'
