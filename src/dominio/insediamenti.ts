@@ -25,6 +25,7 @@ export interface Insediamento {
   cantiere: number
   deposito: number
   laboratorio: number
+  radar: number
 }
 
 /** `base × crescita^(livello − 1)` con moltiplicazioni ripetute, come in SQL. */

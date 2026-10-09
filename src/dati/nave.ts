@@ -330,7 +330,7 @@ export class NaveSupabase {
   async insediamenti(): Promise<Insediamento[]> {
     const { data, error } = await this.client
       .from('insediamento')
-      .select('id, x, y, z, tipo, pianeta, fondazione, ultima, scorte, produzione, magazzino, cantiere, deposito, laboratorio')
+      .select('id, x, y, z, tipo, pianeta, fondazione, ultima, scorte, produzione, magazzino, cantiere, deposito, laboratorio, radar')
       .order('id')
     if (error) throw fallita('Insediamenti non letti', error)
     return (
@@ -349,6 +349,7 @@ export class NaveSupabase {
         cantiere: number
         deposito: number
         laboratorio: number
+        radar: number
       }[]
     ).map((r) => ({
       id: r.id,
@@ -363,6 +364,7 @@ export class NaveSupabase {
       cantiere: r.cantiere,
       deposito: r.deposito,
       laboratorio: r.laboratorio,
+      radar: r.radar,
     }))
   }
 

@@ -13,7 +13,7 @@ Schema `space`. Le colonne arrivano con lo step che le usa ([06](06-roadmap.md))
 | `stiva` ✅ | una riga per risorsa: quantità a bordo, valida dall'istante `dal` (la raccolta a mano si aggiunge alla lettura); il livello della stiva sta in `nave.stiva` | M4 |
 | `insediamento` ✅ | coordinate, tipo (base, estrattore), fondatore (etichetta), fondazione, ultima raccolta, scorte a quell'istante, livelli di produzione e magazzino; la base madre è la prima riga | M4 |
 | `prelievo` ✅ | i magazzini passati nella stiva: insediamento, istante, quanto (per il diario) | M4 |
-| `struttura` | insediamento, tipo (cantiere, laboratorio, deposito, radar, ponte), livello | M5, M7, M8 |
+| ~~`struttura`~~ | le strutture sono colonne di `insediamento` (`cantiere`, `deposito`, `laboratorio`, `radar`; poi `ponte`), una per tipo con il suo livello | M5, M7, M8 |
 | `costruzione` ✅ | coda: cosa (statistica della nave, struttura, produzione), dove, inizio, fine | M5 |
 | `ricerca` ✅ | nodo, livello (1 per gli sblocchi, N per i nodi infiniti), completamento | M6 |
 | `raccolto` ✅ | settori a raccolta una tantum già svuotati da questo giocatore (comete, relitti), con istante e bottino entrato nella stiva | M4, M9 |

@@ -137,6 +137,7 @@ language sql immutable parallel safe set search_path = '' as $$
       "produzione": 40,
       "magazzino": 40,
       "deposito": 40,
+      "radar": 40,
       "cantiere": 50
     },
     "ore": 3,
@@ -472,6 +473,10 @@ language sql immutable parallel safe set search_path = '' as $$
   "deposito": {
     "idrogeno": 5,
     "crescita": 0.9
+  },
+  "radar": {
+    "raggio": 4,
+    "crescita": 1.2
   },
   "magazzino": {
     "ore": 168,

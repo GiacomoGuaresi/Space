@@ -30,6 +30,7 @@ const madre = (p: Partial<Insediamento> = {}): Insediamento => ({
   cantiere: 1,
   deposito: 1,
   laboratorio: 1,
+  radar: 0,
   ...p,
 })
 

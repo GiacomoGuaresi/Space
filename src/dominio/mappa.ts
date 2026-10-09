@@ -3,7 +3,7 @@
 // ogni sosta si ricalcolano i corpi che lo scanner aveva rilevato.
 
 import type { TipoCorpo } from './catalogo'
-import { scansione, tipiRilevabili } from './navigazione'
+import { raggioRadar, scansione, tipiRilevabili } from './navigazione'
 import type { Coordinate } from './settore'
 
 export interface Sosta {
@@ -39,4 +39,20 @@ export function corpiNoti(
     }
   }
   return [...punti.values()]
+}
+
+/**
+ * Le bolle dei radar (doc/02-meccaniche.md#strutture-di-base): uno scanner fisso
+ * attorno a ogni base che ne ha uno, con i tipi che rileva adesso lo scanner
+ * della nave. Non si salvano: si ricavano dalle basi, come una sosta che inizia
+ * `dal` (quando il radar o lo scanner sono cambiati l'ultima volta).
+ */
+export function sosteRadar<B extends { coordinate: Coordinate; radar: number }>(
+  basi: readonly B[],
+  scanner: number,
+  dal: (base: B) => Date,
+): (Sosta & { istante: Date })[] {
+  return basi
+    .filter((b) => b.radar > 0)
+    .map((b) => ({ centro: b.coordinate, raggio: raggioRadar(b.radar), livello: scanner, istante: dal(b) }))
 }

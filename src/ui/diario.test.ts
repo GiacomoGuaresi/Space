@@ -150,6 +150,7 @@ describe('insediamenti', () => {
     cantiere: 1,
     deposito: 1,
     laboratorio: 1,
+    radar: 0,
   }
 
   it('dicono quando un magazzino è pieno, non prima', () => {

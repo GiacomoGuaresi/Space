@@ -276,6 +276,10 @@ const GUIDA: PaginaWiki[] = [
           vuoto finché non ci arrivi. Il nome di un corpo lo scopri solo arrivando.
         </P>
         <P>Ogni sosta resta sulla mappa. Dentro una nebulosa il raggio si dimezza; in sosta presso una pulsar raddoppia.</P>
+        <P>
+          Con la ricerca Radar ogni base può costruire un radar: uno scanner fisso attorno alla base, che vede gli stessi tipi dello scanner
+          della nave. Il suo raggio cresce coi livelli, e quello che rileva resta sulla mappa.
+        </P>
       </>
     ),
     numeri: ({ nave }) => {
@@ -288,6 +292,7 @@ const GUIDA: PaginaWiki[] = [
         ['Rileva', [...tipiRilevabili(nave.scanner)].map((t) => CATALOGO[t].nome.toLowerCase()).join(', ')],
         ['Prossimo livello', prossimo === undefined || prossimo === 'raggio' ? 'più raggio' : CATALOGO[prossimo].nome.toLowerCase()],
         ['Nebulosa · pulsar', `×${numero(scanner.nebulosa, 1)} · ×${numero(scanner.pulsar, 1)}`],
+        ['Radar', `${BILANCIAMENTO.radar.raggio} × ${BILANCIAMENTO.radar.crescita}^(livello − 1) settori`],
       ]
     },
   },

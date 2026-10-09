@@ -5,7 +5,7 @@ import { BILANCIAMENTO } from '../dominio/bilanciamento'
 import { costoPieno } from '../dominio/cantiere'
 import type { Struttura } from '../dominio/cantiere'
 import { magazzinoOra, type Insediamento } from '../dominio/insediamenti'
-import { carburanteOra, inViaggio, type Nave } from '../dominio/navigazione'
+import { carburanteOra, inViaggio, raggioRadar, scansione, tipiRilevabili, type Nave } from '../dominio/navigazione'
 import { settore, stessoSettore } from '../dominio/settore'
 import { Coda, Potenziamenti } from './Cantiere'
 import { AzioniNave } from './azioni'
@@ -23,9 +23,10 @@ import { CaricoAttuale, useDintorni } from './SchedaNave'
  * estrattore ha solo produzione e magazzino (doc/02-meccaniche.md#strutture-di-base).
  */
 export function struttureAttive(base: Insediamento, fatte: ReadonlySet<string>): Struttura[] {
-  const tutte: Struttura[] = ['produzione', 'magazzino', 'cantiere', 'deposito', 'laboratorio']
-  if (base.tipo === 'madre') return tutte
   if (base.tipo === 'estrattore') return ['produzione', 'magazzino']
+  // Il radar arriva ovunque con *Radar* (S3).
+  const tutte: Struttura[] = ['produzione', 'magazzino', 'cantiere', 'deposito', 'laboratorio', ...(fatte.has('S3') ? (['radar'] as const) : [])]
+  if (base.tipo === 'madre') return tutte
   // Nelle colonie il cantiere arriva con *Cantiere orbitale* (I3), il deposito con *Deposito* (I5).
   return tutte.filter((s) => (s !== 'cantiere' || fatte.has('I3')) && (s !== 'deposito' || fatte.has('I5')))
 }
@@ -65,6 +66,7 @@ export function SchedaBase({ nave, ora, base }: { nave: Nave; ora: Date; base: I
       </section>
       {base.deposito > 0 && <Deposito nave={nave} ora={ora} base={base} />}
       {base.laboratorio > 0 && <Laboratorio ora={ora} base={base} />}
+      {base.radar > 0 && <Radar nave={nave} base={base} />}
       <section aria-label="Magazzino" className="p-3.5">
         <h2 className="etichetta m-0 mb-2">Magazzino</h2>
         <BarreMagazzino insediamento={base} ora={ora} />
@@ -144,6 +146,29 @@ function Laboratorio({ ora, base }: { ora: Date; base: Insediamento }) {
       <a href={indirizzo({ pagina: 'ricerche' })} className="etichetta self-start no-underline text-ambra!">
         Apri le ricerche ›
       </a>
+    </section>
+  )
+}
+
+/** Il radar: uno scanner fisso attorno alla base, con i tipi che rileva lo scanner della nave. */
+function Radar({ nave, base }: { nave: Nave; base: Insediamento }) {
+  const raggio = raggioRadar(base.radar)
+  const tipi = tipiRilevabili(nave.scanner)
+  const trovati = scansione(base.coordinate, raggio, tipi).length
+  const { raggio: iniziale, crescita } = BILANCIAMENTO.radar
+  return (
+    <section aria-label="Radar" className="flex flex-col gap-1.5 border-b border-separatore p-3.5">
+      <h2 className="etichetta m-0">Radar · liv. {base.radar}</h2>
+      <p className="m-0 flex items-center gap-1 text-[13px]">
+        Raggio {numero(raggio, 1)} sett. · {trovati} {trovati === 1 ? 'corpo rilevato' : 'corpi rilevati'}
+        <Info
+          titolo="Raggio del radar"
+          wiki="scanner"
+          formula={`${iniziale} × ${crescita}^(${base.radar} − 1)`}
+          esatto={`${numero(raggio, 3)} settori`}
+        />
+      </p>
+      <p className="m-0 text-xs text-testo-tenue">Vede gli stessi tipi dello scanner della nave; i corpi rilevati restano sulla mappa.</p>
     </section>
   )
 }

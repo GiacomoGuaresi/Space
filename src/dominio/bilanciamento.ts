@@ -156,6 +156,7 @@ export const BILANCIAMENTO = {
       produzione: 40,
       magazzino: 40,
       deposito: 40,
+      radar: 40,
       cantiere: 50,
     },
     /** Il tempo: `ore × crescitaTempo^(livello − 2) / (1 + riduzione × (cantiere − 1))`. */
@@ -253,6 +254,11 @@ export const BILANCIAMENTO = {
     /** Il pieno al deposito: tanto Idrogeno per unità di carburante, per tanto a ogni livello. */
     idrogeno: 5,
     crescita: 0.9,
+  },
+  radar: {
+    /** Il raggio del radar di una base: `raggio × crescita^(livello − 1)` settori, con i tipi che rileva lo scanner della nave. */
+    raggio: 4,
+    crescita: 1.2,
   },
   magazzino: {
     /** Il tetto di un magazzino: tante ore della produzione di livello 1… */

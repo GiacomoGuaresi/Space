@@ -14,6 +14,7 @@ import type { Insediamento } from '../dominio/insediamenti'
 import type { Lavoro } from '../dominio/cantiere'
 import type { Coordinate } from '../dominio/settore'
 import { tipoSettore } from '../dominio/settore'
+import { sosteRadar } from '../dominio/mappa'
 import { suona } from './suoni'
 import { GIORNI_DIARIO, letto, novita, segnaLetto, vociDiario } from './diario'
 
@@ -33,6 +34,21 @@ export function useOra(scarto: number): Date {
     return () => window.clearInterval(id)
   }, [scarto])
   return ora
+}
+
+/**
+ * Le bolle dei radar delle basi (mappa.ts, `sosteRadar`): iniziano quando è
+ * finito l'ultimo lavoro al radar o allo scanner della nave, se è tra quelli
+ * letti, se no alla fondazione della base.
+ */
+function radar(basi: readonly Insediamento[], nave: Nave, lavori: readonly Costruzione[]): Scansione[] {
+  const ora = Date.now()
+  return sosteRadar(basi, nave.scanner, (b) => {
+    const ultimi = lavori
+      .filter((c) => c.fine.getTime() <= ora && (c.lavoro === 'scanner' || (c.lavoro === 'radar' && c.insediamento === b.id)))
+      .map((c) => c.fine.getTime())
+    return new Date(Math.max(b.fondazione.getTime(), ...ultimi))
+  })
 }
 
 /**
@@ -76,7 +92,7 @@ export function useNave() {
       setScarto(scartoNuovo)
       setStato({ fase: 'pronta', nave: remoto.nave, viaggio: remoto.viaggio, carico: remoto.carico })
       setScoperte(elenco)
-      setScansioni(soste)
+      setScansioni([...soste, ...radar(basi, remoto.nave, lavori)])
       setViaggi(recenti)
       setRaccolti(presi)
       setInsediamenti(basi)
@@ -88,7 +104,7 @@ export function useNave() {
         const voci = vociDiario({
           viaggi: recenti,
           scoperte: elenco,
-          scansioni: soste,
+          scansioni: [...soste, ...radar(basi, remoto.nave, lavori)],
           raccolti: presi,
           prelievi: prelevati,
           insediamenti: basi,

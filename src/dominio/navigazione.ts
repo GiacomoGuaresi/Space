@@ -200,3 +200,12 @@ export function scansione(centro: Coordinate, raggio: number, tipi?: ReadonlySet
       }
   return trovati.sort((a, b) => a.distanza - b.distanza)
 }
+
+/** Il raggio del radar di una base al livello dato (doc/09-bilanciamento.md#strutture): 0 se non c'è. */
+export function raggioRadar(livello: number): number {
+  if (livello < 1) return 0
+  const { raggio, crescita } = BILANCIAMENTO.radar
+  let valore: number = raggio
+  for (let i = 1; i < livello; i++) valore *= crescita
+  return valore
+}

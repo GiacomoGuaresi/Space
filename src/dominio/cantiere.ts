@@ -7,11 +7,11 @@ import { aLivello } from './insediamenti'
 import { capacitaStiva, RISORSE, type Fatte, type Quantita } from './risorse'
 
 export type Statistica = 'motore' | 'serbatoio' | 'ricarica' | 'scanner' | 'stiva'
-export type Struttura = 'produzione' | 'magazzino' | 'cantiere' | 'deposito' | 'laboratorio'
+export type Struttura = 'produzione' | 'magazzino' | 'cantiere' | 'deposito' | 'laboratorio' | 'radar'
 export type Lavoro = Statistica | Struttura
 
 export const STATISTICHE: readonly Statistica[] = ['motore', 'serbatoio', 'ricarica', 'scanner', 'stiva']
-export const STRUTTURE: readonly Struttura[] = ['produzione', 'magazzino', 'cantiere', 'deposito', 'laboratorio']
+export const STRUTTURE: readonly Struttura[] = ['produzione', 'magazzino', 'cantiere', 'deposito', 'laboratorio', 'radar']
 
 export const NOMI_LAVORI: Readonly<Record<Lavoro, string>> = {
   motore: 'Motore',
@@ -24,6 +24,7 @@ export const NOMI_LAVORI: Readonly<Record<Lavoro, string>> = {
   cantiere: 'Cantiere',
   deposito: 'Deposito carburante',
   laboratorio: 'Laboratorio',
+  radar: 'Radar',
 }
 
 export function eDellaNave(lavoro: Lavoro): lavoro is Statistica {
