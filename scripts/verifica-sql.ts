@@ -154,10 +154,10 @@ const esitoColonie = await interroga(`
   select count(*) filter (
     where exists (
       select 1 from jsonb_each_text(ritmo) e
-      where abs((space.ritmo_insediamento(row(0, null, x, y, z, t, p, now(), now(), '{}', l, 1, 0, 0, 0, 0, '{}')::space.insediamento, l) ->> e.key)::double precision
+      where abs((space.ritmo_insediamento(row(0, null, x, y, z, t, p, now(), now(), '{}', l, 1, 0, 0, 0, 0, '{}', 0)::space.insediamento, l) ->> e.key)::double precision
         - e.value::double precision) > 1e-9 * e.value::double precision
     )
-      or (select count(*) from jsonb_object_keys(space.ritmo_insediamento(row(0, null, x, y, z, t, p, now(), now(), '{}', l, 1, 0, 0, 0, 0, '{}')::space.insediamento, l)))
+      or (select count(*) from jsonb_object_keys(space.ritmo_insediamento(row(0, null, x, y, z, t, p, now(), now(), '{}', l, 1, 0, 0, 0, 0, '{}', 0)::space.insediamento, l)))
         <> (select count(*) from jsonb_object_keys(ritmo))
   ) as colonie_diverse, count(*) as totale
   from (values ${colonie.join(',')}) as c(x, y, z, t, p, l, ritmo)`)

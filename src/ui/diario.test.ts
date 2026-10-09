@@ -29,6 +29,7 @@ const viaggio = (parziale: Partial<Viaggio>): Viaggio => ({
   arrivo: dopo(5),
   consumo: 1,
   fionda: false,
+  ponte: false,
   ...parziale,
 })
 
@@ -151,6 +152,7 @@ describe('insediamenti', () => {
     deposito: 1,
     laboratorio: 1,
     radar: 0,
+    ponte: 0,
   }
 
   it('dicono quando un magazzino è pieno, non prima', () => {

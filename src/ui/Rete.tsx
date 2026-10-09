@@ -70,7 +70,8 @@ export function Rete({ nave, insediamenti, ora }: { nave: Nave; insediamenti: re
                     {nome}
                   </span>
                   <Etichetta>
-                    {NOMI_INSEDIAMENTI[i.tipo]} · {coordinatePlancia(i.coordinate)} ·{' '}
+                    {NOMI_INSEDIAMENTI[i.tipo]}
+                    {i.ponte > 0 ? ' · ponte' : ''} · {coordinatePlancia(i.coordinate)} ·{' '}
                     {qui ? 'qui' : `${numero(distanza(nave.posizione, i.coordinate), 1)} sett.`}
                   </Etichetta>
                 </div>

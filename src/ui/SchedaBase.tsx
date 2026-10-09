@@ -24,8 +24,16 @@ import { CaricoAttuale, useDintorni } from './SchedaNave'
  */
 export function struttureAttive(base: Insediamento, fatte: ReadonlySet<string>): Struttura[] {
   if (base.tipo === 'estrattore') return ['produzione', 'magazzino']
-  // Il radar arriva ovunque con *Radar* (S3).
-  const tutte: Struttura[] = ['produzione', 'magazzino', 'cantiere', 'deposito', 'laboratorio', ...(fatte.has('S3') ? (['radar'] as const) : [])]
+  // Il radar e il ponte arrivano ovunque con *Radar* (S3) e *Ponte di curvatura* (P3).
+  const tutte: Struttura[] = [
+    'produzione',
+    'magazzino',
+    'cantiere',
+    'deposito',
+    'laboratorio',
+    ...(fatte.has('S3') ? (['radar'] as const) : []),
+    ...(fatte.has('P3') ? (['ponte'] as const) : []),
+  ]
   if (base.tipo === 'madre') return tutte
   // Nelle colonie il cantiere arriva con *Cantiere orbitale* (I3), il deposito con *Deposito* (I5).
   return tutte.filter((s) => (s !== 'cantiere' || fatte.has('I3')) && (s !== 'deposito' || fatte.has('I5')))
@@ -56,6 +64,7 @@ export function SchedaBase({ nave, ora, base }: { nave: Nave; ora: Date; base: I
           {NOMI_INSEDIAMENTI[base.tipo]} · produzione {base.produzione} · magazzino {base.magazzino}
           {base.tipo !== 'estrattore' ? ` · cantiere ${base.cantiere}` : ''}
           {base.deposito > 0 ? ` · deposito ${base.deposito}` : ''}
+          {base.ponte > 0 ? ' · ponte di curvatura' : ''}
         </Etichetta>
       </header>
       <section aria-label="Strutture" className="border-b border-separatore p-3.5">

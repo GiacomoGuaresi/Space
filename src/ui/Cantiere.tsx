@@ -40,6 +40,8 @@ export function livelloAttuale(lavoro: Lavoro, nave: Nave, base: Insediamento | 
       return base?.laboratorio ?? 0
     case 'radar':
       return base?.radar ?? 0
+    case 'ponte':
+      return base?.ponte ?? 0
   }
 }
 
@@ -121,24 +123,32 @@ export function Potenziamenti({ nave, ora, lavori, base }: Props) {
           const ore = durataLavoro(lavoro, livello, cantiere, bordo.fatte)
           const dellaNave = eDellaNave(lavoro)
           const tetto = BILANCIAMENTO.cantiere.tetto * cantiere
-          const motivo = volo
-            ? 'In viaggio: si potenzia attraccati a una base.'
-            : !attraccata
-              ? dellaNave
-                ? 'Si potenzia attraccati a una base con cantiere.'
-                : 'Si costruisce attraccati a questa base.'
-              : dellaNave && cantiere < 1
-                ? 'Questa base non ha un cantiere.'
-                : dellaNave && lavoro !== 'stiva' && livello > tetto
-                  ? `Serve un cantiere di livello ≥ ${Math.ceil(livello / BILANCIAMENTO.cantiere.tetto)}.`
-                  : Object.keys(manca).length
-                    ? 'Tra stiva e magazzino non basta.'
-                    : null
+          // Il ponte di curvatura non ha livelli: si costruisce una volta sola.
+          const unico = lavoro === 'ponte'
+          const motivo =
+            unico && livello > 1
+              ? attuale > 0
+                ? 'Già costruito.'
+                : 'In coda.'
+              : volo
+                ? 'In viaggio: si potenzia attraccati a una base.'
+                : !attraccata
+                  ? dellaNave
+                    ? 'Si potenzia attraccati a una base con cantiere.'
+                    : 'Si costruisce attraccati a questa base.'
+                  : dellaNave && cantiere < 1
+                    ? 'Questa base non ha un cantiere.'
+                    : dellaNave && lavoro !== 'stiva' && livello > tetto
+                      ? `Serve un cantiere di livello ≥ ${Math.ceil(livello / BILANCIAMENTO.cantiere.tetto)}.`
+                      : Object.keys(manca).length
+                        ? 'Tra stiva e magazzino non basta.'
+                        : null
           return (
             <li key={lavoro} className="flex flex-col gap-1 border-b border-separatore py-2.5 last:border-b-0">
               <div className="flex items-baseline gap-2 text-[13px]">
                 <span className="flex-1">
-                  {NOMI_LAVORI[lavoro]} <span className="text-testo-tenue">· liv. {attuale}</span>
+                  {NOMI_LAVORI[lavoro]}{' '}
+                  <span className="text-testo-tenue">· {unico ? (attuale > 0 ? 'costruito' : 'da costruire') : `liv. ${attuale}`}</span>
                   {inAttesa.length > 0 && <span className="text-ambra"> · in coda {inAttesa.map((c) => c.livello).join(', ')}</span>}
                 </span>
                 {eDellaNave(lavoro) && <span className="cifre text-xs text-testo-tenue">→ {valore(lavoro, livello, bordo.fatte)}</span>}
@@ -159,7 +169,7 @@ export function Potenziamenti({ nave, ora, lavori, base }: Props) {
                   onClick={() => void avvia(lavoro)}
                 >
                   <Wrench className="size-3.5" aria-hidden="true" />
-                  Liv. {livello}
+                  {unico ? 'Costruisci' : `Liv. ${livello}`}
                 </BottoneSecondario>
               </div>
               {motivo && <span className="text-xs text-testo-tenue">{motivo}</span>}

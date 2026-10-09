@@ -73,6 +73,12 @@ export const BILANCIAMENTO = {
      */
     gratis: 0.2,
   },
+  ponte: {
+    /** Tra due basi col ponte di curvatura la nave va tanto più veloce, e il carburante si divide per tanto. */
+    fattore: 3,
+    /** Il ponte non ha livelli: costa (e dura) come un livello `livello` di base `cantiere.base.ponte`, una volta sola. */
+    livello: 8,
+  },
   scanner: {
     /** Il raggio al livello 1, in settori. */
     raggio: 4,
@@ -157,6 +163,7 @@ export const BILANCIAMENTO = {
       magazzino: 40,
       deposito: 40,
       radar: 40,
+      ponte: 40,
       cantiere: 50,
     },
     /** Il tempo: `ore × crescitaTempo^(livello − 2) / (1 + riduzione × (cantiere − 1))`. */
@@ -259,6 +266,8 @@ export const BILANCIAMENTO = {
       P5: 3,
       /** Astrofisica II: basi fondabili in più. */
       C6: 2,
+      /** Ponte risonante: il fattore del ponte diventa tanto. */
+      P8: 4,
       /** Riciclo: abbandonando un insediamento torna questa parte di quanto vi si è speso. */
       I6: 0.25,
     },

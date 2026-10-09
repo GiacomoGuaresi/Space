@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo, type ReactNode } from 'react'
 import type { Raccolto } from '../dati'
-import { coordinateBasi, type Insediamento } from '../dominio/insediamenti'
+import { coordinateBasi, coordinatePonti, type Insediamento } from '../dominio/insediamenti'
 import { raggioQui, type Dintorni, type Nave } from '../dominio/navigazione'
 import { capacitaNave, RISORSE, type Carico, type Fatte, type Quantita } from '../dominio/risorse'
 import { NOMI_RISORSE } from '../dominio/catalogo'
@@ -19,11 +19,12 @@ export const CaricoAttuale = createContext<{
   fatte: Fatte
 } | null>(null)
 
-/** Le ricerche fatte e le basi, per i conti del carburante (navigazione.ts, `Dintorni`). */
+/** Le ricerche fatte, le basi e i ponti, per i conti del carburante (navigazione.ts, `Dintorni`). */
 export function useDintorni(): Dintorni {
   const bordo = useContext(CaricoAttuale)
   return useMemo(
-    () => (bordo ? { fatte: bordo.fatte, basi: coordinateBasi(bordo.insediamenti) } : {}),
+    () =>
+      bordo ? { fatte: bordo.fatte, basi: coordinateBasi(bordo.insediamenti), ponti: coordinatePonti(bordo.insediamenti) } : {},
     [bordo?.fatte, bordo?.insediamenti],
   )
 }

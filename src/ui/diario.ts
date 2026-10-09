@@ -91,7 +91,9 @@ function vociViaggi(viaggi: readonly Viaggio[], ora: Date): Voce[] {
       voci.push({
         quando: v.partenza,
         tipo: 'partenza',
-        testo: `Verso ${coordinatePlancia(v.meta)}, arrivo ${orario(v.arrivo, v.partenza)}${v.fionda ? ' · fionda gravitazionale' : ''}.${
+        testo: `Verso ${coordinatePlancia(v.meta)}, arrivo ${orario(v.arrivo, v.partenza)}${v.fionda ? ' · fionda gravitazionale' : ''}${
+          v.ponte ? ' · ponte di curvatura' : ''
+        }.${
           v === primaFionda ? ' Nuova pagina della wiki: Fionda gravitazionale.' : ''
         }`,
         breve: coordinatePlancia(v.meta),

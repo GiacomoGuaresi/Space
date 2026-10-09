@@ -253,6 +253,10 @@ const GUIDA: PaginaWiki[] = [
           fuori dalle basi solo fino a metà serbatoio, mentre in una base (la madre o una colonia, non un estrattore) o accanto a una
           stella si riempie del tutto, e accanto a una stella anche più in fretta.
         </P>
+        <P>
+          Con la ricerca Ponte di curvatura ogni base può costruire un ponte, una volta sola. Tra due basi col ponte si viaggia molto più
+          veloci e con molto meno carburante: tutte le basi col ponte formano una rete libera.
+        </P>
       </>
     ),
     numeri: ({ nave }) => [
@@ -267,6 +271,10 @@ const GUIDA: PaginaWiki[] = [
       [
         'Deposito',
         `pieno subito in una base col deposito: ${BILANCIAMENTO.deposito.idrogeno} Idrogeno per unità × ${BILANCIAMENTO.deposito.crescita}^(livello − 1), un'unità in meno per ogni Raffinazione`,
+      ],
+      [
+        'Ponte di curvatura',
+        `velocità ×${BILANCIAMENTO.ponte.fattore} e carburante ÷${BILANCIAMENTO.ponte.fattore} tra due basi col ponte (×${BILANCIAMENTO.ricerche.effetti.P8} e ÷${BILANCIAMENTO.ricerche.effetti.P8} con Ponte risonante)`,
       ],
     ],
   },

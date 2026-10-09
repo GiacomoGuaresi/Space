@@ -206,3 +206,17 @@ describe('ricerche fino al gradino 6', () => {
     expect(raggioQui(1, nebulosa, new Set(['S5']))).toBe(raggioScanner(1, null))
   })
 })
+
+describe('ponte di curvatura', () => {
+  it('tra due basi col ponte: velocità ×3 e un terzo del carburante, ×4 con Ponte risonante', () => {
+    const meta = { x: 2, y: 0, z: 0 }
+    const ponti = [BASE, meta]
+    const senza = anteprima(nave(), meta, t0)
+    const con = anteprima(nave(), meta, t0, { ponti })
+    expect(con.ponte).toBe(true)
+    expect(con.consumo).toBeCloseTo(senza.consumo / 3, 12)
+    expect(con.durata).toBeCloseTo(senza.durata / 3, 6)
+    expect(anteprima(nave(), meta, t0, { ponti, fatte: new Set(['P8']) }).consumo).toBeCloseTo(senza.consumo / 4, 12)
+    expect(anteprima(nave(), { x: 3, y: 0, z: 0 }, t0, { ponti }).ponte).toBe(false)
+  })
+})

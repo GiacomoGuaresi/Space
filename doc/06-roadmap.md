@@ -143,7 +143,7 @@ Porta l'interfaccia su PC nella [plancia a finestre](11-interfaccia.md#pc--planc
 
 ## M8 · Ponte di curvatura e Terre rare ← *prossimo*
 
-- [ ] **8.1 Ponte di curvatura** (P3): rete libera tra le basi, ×3 velocità e ⅓ carburante. *Si gioca: spostarsi nella propria rete.*
+- [x] **8.1 Ponte di curvatura** (P3): rete libera tra le basi, ×3 velocità e ⅓ carburante. *Si gioca: spostarsi nella propria rete.* (`027_ponte.sql`: colonne `insediamento.ponte` e `viaggio.ponte`; il ponte si costruisce una volta sola, come un livello 8 di base 40, ~15 h col cantiere 1. Il viaggio da una base col ponte a un'altra ha `fattore` 3, 4 con P8 (già pronto); Rotta, Rete e diario lo mostrano.)
 - [ ] **8.2 Terre rare**: raccolta a mano presso le pulsar, Estrattori stellari (C5).
 - [ ] **8.3 Ricette fino al gradino 10-14** in gioco, con un controllo dei tempi reali contro [09](09-bilanciamento.md#ritmo-atteso).
 - [ ] **8.4 Ricerche dei gradini 7-8**: Ponte risonante, Interferometria, Radar profondo, Automazione II, Estrazione profonda…

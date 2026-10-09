@@ -7,11 +7,11 @@ import { aLivello } from './insediamenti'
 import { capacitaStiva, RISORSE, type Fatte, type Quantita } from './risorse'
 
 export type Statistica = 'motore' | 'serbatoio' | 'ricarica' | 'scanner' | 'stiva'
-export type Struttura = 'produzione' | 'magazzino' | 'cantiere' | 'deposito' | 'laboratorio' | 'radar'
+export type Struttura = 'produzione' | 'magazzino' | 'cantiere' | 'deposito' | 'laboratorio' | 'radar' | 'ponte'
 export type Lavoro = Statistica | Struttura
 
 export const STATISTICHE: readonly Statistica[] = ['motore', 'serbatoio', 'ricarica', 'scanner', 'stiva']
-export const STRUTTURE: readonly Struttura[] = ['produzione', 'magazzino', 'cantiere', 'deposito', 'laboratorio', 'radar']
+export const STRUTTURE: readonly Struttura[] = ['produzione', 'magazzino', 'cantiere', 'deposito', 'laboratorio', 'radar', 'ponte']
 
 export const NOMI_LAVORI: Readonly<Record<Lavoro, string>> = {
   motore: 'Motore',
@@ -25,6 +25,7 @@ export const NOMI_LAVORI: Readonly<Record<Lavoro, string>> = {
   deposito: 'Deposito carburante',
   laboratorio: 'Laboratorio',
   radar: 'Radar',
+  ponte: 'Ponte di curvatura',
 }
 
 export function eDellaNave(lavoro: Lavoro): lavoro is Statistica {
@@ -64,9 +65,10 @@ function costoBase(lavoro: Lavoro, livello: number): Partial<Quantita> {
     for (const [r, parte] of Object.entries(cantiere.stiva.mix)) costo[r as keyof Quantita] = totale * parte
     return costo
   }
-  // Il laboratorio di livello L costa come una ricerca di gradino L (doc/09-bilanciamento.md#costi-e-tempi).
+  // Il laboratorio di livello L costa come una ricerca di gradino L, il ponte come un livello 8
+  // (doc/09-bilanciamento.md#costi-e-tempi).
   const { base, costo: passo } = BILANCIAMENTO.ricerche
-  const livelloCosto = lavoro === 'laboratorio' ? passo * livello : livello
+  const livelloCosto = lavoro === 'laboratorio' ? passo * livello : lavoro === 'ponte' ? BILANCIAMENTO.ponte.livello : livello
   const totale = aLivello(lavoro === 'laboratorio' ? base : cantiere.base[lavoro], cantiere.crescita, livelloCosto)
   for (const [r, parte] of Object.entries(ricetta(livelloCosto))) costo[r as keyof Quantita] = totale * parte
   return costo
@@ -76,8 +78,10 @@ function costoBase(lavoro: Lavoro, livello: number): Partial<Quantita> {
 export function durataLavoro(lavoro: Lavoro, livello: number, livelloCantiere: number, fatte: Fatte = new Set()): number {
   const { cantiere } = BILANCIAMENTO
   if (lavoro === 'stiva') return cantiere.stiva.ore
+  // Il ponte dura come un livello 8.
+  const fino = lavoro === 'ponte' ? BILANCIAMENTO.ponte.livello : livello
   let ore: number = cantiere.ore
-  for (let i = 2; i < livello; i++) ore *= cantiere.crescitaTempo
+  for (let i = 2; i < fino; i++) ore *= cantiere.crescitaTempo
   // *Automazione* accorcia del 10 %.
   const automazione = fatte.has('I1') ? 1 - BILANCIAMENTO.ricerche.effetti.I1 : 1
   return (ore / (1 + cantiere.riduzione * (Math.max(1, livelloCantiere) - 1))) * automazione

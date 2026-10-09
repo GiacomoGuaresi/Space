@@ -26,6 +26,8 @@ export interface Insediamento {
   deposito: number
   laboratorio: number
   radar: number
+  /** 1 se la base ha il ponte di curvatura (non ha livelli). */
+  ponte: number
 }
 
 /** `base × crescita^(livello − 1)` con moltiplicazioni ripetute, come in SQL. */
@@ -164,4 +166,9 @@ export function costoEstrattore(fondati: number): Partial<Quantita> {
 /** Dove sono le basi (base madre e colonie, non gli estrattori): lì il serbatoio si ricarica fino in fondo. */
 export function coordinateBasi(insediamenti: readonly Pick<Insediamento, 'tipo' | 'coordinate'>[]): Coordinate[] {
   return insediamenti.filter((i) => i.tipo !== 'estrattore').map((i) => i.coordinate)
+}
+
+/** Dove sono le basi col ponte di curvatura: tra due di loro si viaggia più veloci e con meno carburante. */
+export function coordinatePonti(insediamenti: readonly Pick<Insediamento, 'coordinate' | 'ponte'>[]): Coordinate[] {
+  return insediamenti.filter((i) => i.ponte > 0).map((i) => i.coordinate)
 }

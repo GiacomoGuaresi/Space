@@ -40,6 +40,8 @@ export interface Viaggio {
   arrivo: Date
   consumo: number
   fionda: boolean
+  /** Vero se è un viaggio tra due ponti di curvatura. */
+  ponte: boolean
 }
 
 export function inViaggio(nave: Nave, ora: Date): boolean {
@@ -55,6 +57,8 @@ const ORA_MS = 3_600_000
 export interface Dintorni {
   fatte?: ReadonlySet<string>
   basi?: readonly Coordinate[]
+  /** Le basi col ponte di curvatura. */
+  ponti?: readonly Coordinate[]
 }
 
 /** La ricarica all'ora, da fermi nel settore `qui`: più veloce accanto a una stella. */
@@ -132,6 +136,8 @@ export interface Anteprima extends Rotta {
   /** Quanto dura il viaggio, in millisecondi. */
   durata: number
   fionda: boolean
+  /** Vero se si parte da un ponte di curvatura verso un altro. */
+  ponte: boolean
   /** Falso se la nave non riesce nemmeno a muoversi. */
   possibile: boolean
 }
@@ -140,22 +146,34 @@ export interface Anteprima extends Rotta {
 export function anteprima(nave: Nave, meta: Coordinate, ora: Date, dintorni: Dintorni = {}): Anteprima {
   const fatte = dintorni.fatte ?? new Set<string>()
   const fionda = tipoSettore(nave.posizione) === 'buconero'
-  const r = rotta(nave.posizione, meta, carburanteOra(nave, ora, dintorni), quotaConsumo(fionda, fatte))
-  const velocita = nave.velocita * (fionda ? FIONDA.velocita : 1)
+  const ponte = viaPonte(nave.posizione, meta, dintorni.ponti)
+  const r = rotta(nave.posizione, meta, carburanteOra(nave, ora, dintorni), quotaConsumo(fionda, fatte, ponte))
+  const velocita = nave.velocita * (fionda ? FIONDA.velocita : 1) * (ponte ? fattorePonte(fatte) : 1)
   return {
     ...r,
     durata: (r.percorsa / velocita) * ORA_MS,
     fionda,
+    ponte,
     possibile: !stessoSettore(r.a, nave.posizione),
   }
 }
 
+/** Vero se `da` e `meta` sono due basi col ponte di curvatura. */
+export function viaPonte(da: Coordinate, meta: Coordinate, ponti: readonly Coordinate[] = []): boolean {
+  return ponti.some((p) => stessoSettore(p, da)) && ponti.some((p) => stessoSettore(p, meta))
+}
+
+/** Di quanto il ponte moltiplica la velocità e divide il carburante: 3, o 4 con *Ponte risonante* (P8). */
+export function fattorePonte(fatte: ReadonlySet<string>): number {
+  return fatte.has('P8') ? BILANCIAMENTO.ricerche.effetti.P8 : BILANCIAMENTO.ponte.fattore
+}
+
 /**
- * La parte dei settori percorsi che consuma carburante: meno con la fionda e
- * con *Iniettori* (P2). Come in `space.viaggia`, moltiplicando nello stesso ordine.
+ * La parte dei settori percorsi che consuma carburante: meno con la fionda,
+ * con *Iniettori* (P2) e tra due ponti. Come in `space.viaggia`, negli stessi passi.
  */
-export function quotaConsumo(fionda: boolean, fatte: ReadonlySet<string>): number {
-  return (fionda ? 1 - FIONDA.gratis : 1) * (fatte.has('P2') ? 1 - BILANCIAMENTO.ricerche.effetti.P2 : 1)
+export function quotaConsumo(fionda: boolean, fatte: ReadonlySet<string>, ponte = false): number {
+  return ((fionda ? 1 - FIONDA.gratis : 1) * (fatte.has('P2') ? 1 - BILANCIAMENTO.ricerche.effetti.P2 : 1)) / (ponte ? fattorePonte(fatte) : 1)
 }
 
 const LIVELLI_SCANNER: readonly (TipoCorpo | 'raggio')[] = SCANNER.livelli

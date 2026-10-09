@@ -95,6 +95,7 @@ export type MotivoRifiuto =
   | 'limite_estrattori'
   | 'insediamento_sconosciuto'
   | 'non_abbandonabile'
+  | 'gia_costruito'
 
 export class ViaggioRifiutato extends Error {
   constructor(readonly motivo: MotivoRifiuto) {
@@ -132,6 +133,7 @@ interface RigaViaggio {
   arrivo: string
   consumo: number
   fionda: boolean
+  ponte: boolean
 }
 
 function nave(r: RigaNave): Nave {
@@ -157,6 +159,7 @@ function viaggio(r: RigaViaggio): Viaggio {
     arrivo: new Date(r.arrivo),
     consumo: r.consumo,
     fionda: r.fionda,
+    ponte: r.ponte,
   }
 }
 
@@ -198,6 +201,7 @@ const MOTIVI: readonly MotivoRifiuto[] = [
   'limite_estrattori',
   'insediamento_sconosciuto',
   'non_abbandonabile',
+  'gia_costruito',
 ]
 
 export class NaveSupabase {
@@ -323,7 +327,7 @@ export class NaveSupabase {
   async viaggiDal(dal: Date): Promise<Viaggio[]> {
     const { data, error } = await this.client
       .from('viaggio')
-      .select('da_x, da_y, da_z, meta_x, meta_y, meta_z, a_x, a_y, a_z, partenza, arrivo, consumo, fionda')
+      .select('da_x, da_y, da_z, meta_x, meta_y, meta_z, a_x, a_y, a_z, partenza, arrivo, consumo, fionda, ponte')
       .gte('arrivo', dal.toISOString())
       .order('arrivo')
     if (error) throw fallita('Viaggi non letti', error)
@@ -345,7 +349,7 @@ export class NaveSupabase {
   async insediamenti(): Promise<Insediamento[]> {
     const { data, error } = await this.client
       .from('insediamento')
-      .select('id, x, y, z, tipo, pianeta, fondazione, ultima, scorte, produzione, magazzino, cantiere, deposito, laboratorio, radar')
+      .select('id, x, y, z, tipo, pianeta, fondazione, ultima, scorte, produzione, magazzino, cantiere, deposito, laboratorio, radar, ponte')
       .order('id')
     if (error) throw fallita('Insediamenti non letti', error)
     return (
@@ -365,6 +369,7 @@ export class NaveSupabase {
         deposito: number
         laboratorio: number
         radar: number
+        ponte: number
       }[]
     ).map((r) => ({
       id: r.id,
@@ -380,6 +385,7 @@ export class NaveSupabase {
       deposito: r.deposito,
       laboratorio: r.laboratorio,
       radar: r.radar,
+      ponte: r.ponte,
     }))
   }
 
