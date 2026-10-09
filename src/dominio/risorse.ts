@@ -57,9 +57,9 @@ export interface Carico {
 
 /**
  * Come si divide la produzione di un corpo tra le risorse, o `null` se non ne
- * ha di raccoglibili. Le pulsar danno Terre rare; la Materia oscura dei buchi
- * neri arriva con M9 (doc/06-roadmap.md). Un sistema planetario fa la media
- * dei suoi pianeti, nell'ordine delle orbite.
+ * ha di raccoglibili. Le pulsar danno Terre rare, i buchi neri Materia
+ * oscura. Un sistema planetario fa la media dei suoi pianeti, nell'ordine
+ * delle orbite.
  */
 export function mixCorpo(corpo: Corpo | null): Partial<Quantita> | null {
   if (!corpo) return null
@@ -74,6 +74,8 @@ export function mixCorpo(corpo: Corpo | null): Partial<Quantita> | null {
       return { ...mix.gigante[d.anelli ? 'anelli' : 'senza'] }
     case 'pulsar':
       return { ...mix.pulsar }
+    case 'buconero':
+      return { ...mix.buconero }
     case 'sistema': {
       const media: Partial<Quantita> = {}
       for (const p of d.pianeti) {

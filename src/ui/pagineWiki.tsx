@@ -125,7 +125,8 @@ const GUIDA: PaginaWiki[] = [
         </P>
         <P>
           In sosta presso una pulsar la nave raccoglie Terre rare, più lentamente delle risorse comuni. Servono alle ricette dal livello 10 e
-          alle ricerche dal gradino 5.
+          alle ricerche dal gradino 5. Presso un buco nero raccoglie Materia oscura, ancora più piano: serve dal livello 15, alle ricerche
+          dal gradino 8, per accelerare e per attraversare i wormhole.
         </P>
         <P>Ripartendo, quello che hai raccolto resta a bordo.</P>
         <P>Le comete si raccolgono arrivando, una volta sola: quello che non entra nella stiva si perde.</P>
@@ -137,8 +138,11 @@ const GUIDA: PaginaWiki[] = [
         (Object.entries(m) as [Risorsa, number][]).map(([r, p]) => `${SIGLE_RISORSE[r]} ${Math.round(p * 100)}`).join(' ')
       const { asteroidi, gigante, pianeti } = BILANCIAMENTO.mix
       return [
-        ['Raccolta a mano', `${mano} × ${ritmo.comune}/h (Terre rare ${ritmo.terreRare}/h) × ricchezza × parte del mix`],
-        ['Pulsar', 'Terre rare 100'],
+        [
+          'Raccolta a mano',
+          `${mano} × ${ritmo.comune}/h (Terre rare ${ritmo.terreRare}/h, Materia oscura ${ritmo.materiaOscura}/h) × ricchezza × parte del mix`,
+        ],
+        ['Pulsar · buco nero', 'Terre rare 100 · Materia oscura 100'],
         ['Asteroidi', `metallici ${mix(asteroidi.metallica)} · silicei ${mix(asteroidi.silicea)} · misti ${mix(asteroidi.mista)}`],
         ['Nebulosa', 'H 100'],
         ['Gigante gassoso', `senza anelli ${mix(gigante.senza)} · con anelli ${mix(gigante.anelli)}`],
@@ -177,7 +181,8 @@ const GUIDA: PaginaWiki[] = [
         </P>
         <P>
           Con le ricerche di Colonizzazione si fondano gli estrattori: sugli asteroidi con Estrattori minerari, su nebulose e giganti gassosi
-          con Raccoglitori di gas, sulle pulsar (Terre rare) con Estrattori stellari. Producono col mix del corpo e hanno solo produzione e magazzino: niente strutture, niente ricarica
+          con Raccoglitori di gas, sulle pulsar (Terre rare) con Estrattori stellari, sui buchi neri (Materia oscura) con Contenimento
+          gravitazionale. Producono col mix del corpo e hanno solo produzione e magazzino: niente strutture, niente ricarica
           piena. Hanno un loro limite, separato da quello delle basi.
         </P>
         <P>
@@ -369,7 +374,7 @@ const DESCRIZIONI: Readonly<Record<TipoCorpo, string>> = {
   gigante: 'Un pianeta gassoso senza stella, alla deriva tra i settori.',
   cometa: 'Un nucleo di ghiaccio con la sua coda. Si raccoglierà una volta sola.',
   pulsar: 'Il cuore spento di una stella, che gira e lampeggia. In sosta qui lo scanner vede il doppio, e si raccolgono Terre rare.',
-  buconero: 'Niente esce da qui, tranne chi parte con la fionda.',
+  buconero: 'Niente esce da qui, tranne chi parte con la fionda. Attorno si raccoglie Materia oscura.',
   relitto: 'I resti di qualcuno arrivato prima. Si saccheggerà una volta sola.',
   wormhole: 'Un varco a senso unico verso un settore lontano.',
 }

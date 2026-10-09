@@ -103,3 +103,12 @@ describe('Terre rare', () => {
     expect(ritmoMano(corpo)).toEqual({ terreRare: 3 * 3 * corpo.ricchezza })
   })
 })
+
+describe('Materia oscura', () => {
+  it('presso un buco nero si raccoglie a mano: 3 × 1,2/h × ricchezza', () => {
+    let c = { x: 80, y: 7, z: -3 }
+    for (let x = 80; tipoSettore(c) !== 'buconero'; x++) c = { x, y: 7, z: -3 }
+    const corpo = settore(c).corpo!
+    expect(ritmoMano(corpo)!.materiaOscura).toBeCloseTo(3 * 1.2 * corpo.ricchezza, 12)
+  })
+})

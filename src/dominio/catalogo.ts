@@ -84,7 +84,7 @@ export const CATALOGO: Readonly<Record<TipoCorpo, VoceCatalogo>> = {
     nome: 'Buco nero',
     rarita: 'rara',
     risorse: ['materiaOscura'],
-    colonia: null,
+    colonia: 'estrattore',
     effetto: 'Fionda: il viaggio che parte da qui è più veloce e consuma meno',
   },
   relitto: {

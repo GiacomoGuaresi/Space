@@ -152,7 +152,7 @@ Porta l'interfaccia su PC nella [plancia a finestre](11-interfaccia.md#pc--planc
 
 ## M9 · Materia oscura e rari ← *prossimo*
 
-- [ ] **9.1 Buchi neri**: raccolta a mano, Contenimento gravitazionale (C7), estrattori di Materia oscura.
+- [x] **9.1 Buchi neri**: raccolta a mano, Contenimento gravitazionale (C7), estrattori di Materia oscura. (`030_buchi_neri.sql`: `mix.buconero`, al ritmo della Materia oscura; i buchi neri entrano nel campione di `verifica-sql`.)
 - [x] **9.2 Fionda gravitazionale** (P6). (Anticipata in 8.4: la chiede *Contenimento gravitazionale*. `fiondaDi` e `space.viaggia` usano `fionda.gravitazionale`, ×2 e 30 % gratis.)
 - [ ] **9.3 Relitti**: bottino una volta per giocatore, progetti.
 - [ ] **9.4 Accelerare** viaggi, costruzioni e ricarica con la Materia oscura.

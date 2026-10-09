@@ -126,7 +126,8 @@ language sql immutable parallel safe set search_path = '' as $$
         "asteroidi": "C2",
         "nebulosa": "C3",
         "gigante": "C3",
-        "pulsar": "C5"
+        "pulsar": "C5",
+        "buconero": "C7"
       },
       "limite": {
         "C2": 3,
@@ -555,6 +556,9 @@ language sql immutable parallel safe set search_path = '' as $$
     },
     "pulsar": {
       "terreRare": 1
+    },
+    "buconero": {
+      "materiaOscura": 1
     },
     "pianeti": {
       "roccioso": {
